@@ -42,15 +42,15 @@ const Navbar = () => {
         {menuItems.map((item) => (
           <div 
             key={item.name} 
-            className="relative flex items-center gap-1 cursor-pointer group"
+            className="relative flex items-center gap-1 cursor-pointer group pb-2"
             onMouseEnter={() => setActiveMenu(item.type)}
             onMouseLeave={() => setActiveMenu(null)}
           >
             {item.hot && <span className="absolute -top-6 bg-[#5E2251] text-[9px] text-white px-1.5 py-0.5 rounded leading-none">Hot</span>}
             <span className="text-gray-700 group-hover:text-[#5E2251] transition-colors">{item.name}</span>
-            {item.hasDropdown && <ChevronDown size={14} className="text-gray-700 group-hover:text-[#5E2251] transition-colors" />}
+            {item.hasDropdown && <ChevronDown size={14} className="text-gray-700 group-hover:text-[#5E2251] group-hover:rotate-180 transition-colors duration-500" />}
             {/* Underline animation on hover */}
-            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#5E2251] group-hover:w-full transition-all duration-300"></div>
+            <div className="absolute mt-10 bottom-0 left-0 w-0 h-0.5 bg-[#5E2251] group-hover:w-full transition-all duration-500"></div>
           </div>
         ))}
       </div>
