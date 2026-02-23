@@ -1,6 +1,7 @@
 export default function Hero() {
   return (
-    <div className="relative w-full h-[600px] flex items-end overflow-hidden">
+    // Added responsive height for the Hero section
+    <div className="relative w-full h-[50vh] md:h-[70vh] flex items-end overflow-hidden">
       <img 
         src="/image 1 page d'acceuil.jpg" 
         alt="Kpop Demon " 

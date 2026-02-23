@@ -1,4 +1,5 @@
-import bestSellers from "../../../data/bestSellers";
+
+import bestSellers from "../../../data/bestsellers";
 import { ProductCard } from "../../card/ProductCard";
 const BestSellerSection = () => {
 
