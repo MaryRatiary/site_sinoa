@@ -4,6 +4,8 @@ import { Search, User, ShoppingBag, ChevronDown, ChevronRight } from 'lucide-rea
 import { menuItems, dropdownData } from '../data/menuData';
 import { useCart } from '../store/CartContext';
 import ExpandSearch from './forms/ExpandSearch';
+import CountdownBanner from './CountdownBanner';
+import AnimatedBanner from './AnimatedBanner';
 
 // ─── Shared item row used in Shop, K-Style, K-Beauty columns ─────────────────
 // Every item MUST have a slug → links to /products/:slug
@@ -65,12 +67,9 @@ const Navbar = () => {
   return (
     <nav className="relative w-full bg-white border-b border-gray-100">
 
-      {/* Top Banner */}
-      <div className="w-full bg-[#5E2251] text-white text-[11px] py-1.5 flex justify-center items-center gap-4">
-        <span>⌛ Aujourd'hui Livraison Standard Gratuite</span>
-        <span className="font-mono">5H : 30 : 23</span>
-      </div>
-
+      {/* Top Banner - Countdown très fin */}
+      {/* <CountdownBanner endDate={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)} /> */}
+      <AnimatedBanner/>
       {/* Logo */}
       <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
         <div className="flex-1">

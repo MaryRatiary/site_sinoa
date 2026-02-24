@@ -45,7 +45,7 @@ const CountDownCard = () => {
     <div ref={ref} className="scroll-animate w-full h-64 sm:h-80 md:h-96 lg:h-[70vh] my-6 sm:my-8 md:my-10 relative">
       {/* Background image */}
       <img
-        src="/fan_kpop.webp"
+        src="/horloge.jpg"
         alt="Kpop Demon - Livraison Gratuite"
         className="absolute inset-0 w-full h-full object-cover"
       />
