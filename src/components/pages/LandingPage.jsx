@@ -3,7 +3,7 @@ import Navbar from '../Header';
 import Hero from '../Hero';
 import GroupSection from '../section/home/GroupeSection';
 import BlogSection from '../section/home/BlogSection';
-import { Footer } from '../Footer';
+import Footer from '../Footer';
 import { RevealText } from '../text/RevealText';
 import PercentageReduction from '../card/PercentageReduction';
 import BestSellerSection from '../section/home/BestSellerSection';

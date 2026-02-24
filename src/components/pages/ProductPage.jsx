@@ -5,6 +5,8 @@ import { CATEGORIES } from "../../data/productData";
 import { K_STYLE_CATEGORIES } from "../../data/k-styleData";
 import { ProductCard2 } from "../card/ProductCard2";
 import Navbar from "../Header";
+import { RevealText } from '../text/RevealText';
+import Footer from '../Footer';
 
 // Merge all category maps — add more imports here as you create new data files
 const ALL_CATEGORIES = { ...CATEGORIES, ...K_STYLE_CATEGORIES };
@@ -31,75 +33,6 @@ function applyPriceFilter(products, filter) {
     if (filter === "Plus de 100€")  return price >= 100;
     return true;
   });
-}
-
-// ─── Filters Sidebar ──────────────────────────────────────────────────────────
-
-function FiltersSidebar({ open, onClose, sort, setSort, priceFilter, setPriceFilter }) {
-  return (
-    <>
-      {open && <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={onClose} />}
-
-      <aside className={`
-        fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-2xl p-8 flex flex-col gap-8 transition-transform duration-300
-        lg:static lg:translate-x-0 lg:shadow-none lg:w-56 lg:min-w-[224px] lg:z-auto lg:h-auto lg:p-0
-        ${open ? "translate-x-0" : "-translate-x-full"}
-      `}>
-        <div className="flex items-center justify-between lg:hidden">
-          <span className="font-bold text-[#5E2251] uppercase text-sm tracking-widest">Filtres</span>
-          <button onClick={onClose}><X size={20} /></button>
-        </div>
-
-        <div>
-          <h4 className="font-bold text-gray-900 uppercase text-xs tracking-widest mb-4">Trier par</h4>
-          <div className="flex flex-col gap-1">
-            {SORT_OPTIONS.map((opt) => (
-              <button
-                key={opt}
-                onClick={() => setSort(opt)}
-                className={`text-left text-sm py-1.5 px-3 rounded-lg transition-all duration-200
-                  ${sort === opt ? "bg-[#5E2251] text-white font-semibold" : "text-gray-600 hover:bg-[#5E2251]/10 hover:text-[#5E2251]"}`}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="h-px bg-gray-100" />
-
-        <div>
-          <h4 className="font-bold text-gray-900 uppercase text-xs tracking-widest mb-4">Prix</h4>
-          <div className="flex flex-col gap-1">
-            {PRICE_FILTERS.map((f) => (
-              <button
-                key={f}
-                onClick={() => setPriceFilter(f === priceFilter ? null : f)}
-                className={`text-left text-sm py-1.5 px-3 rounded-lg transition-all duration-200
-                  ${priceFilter === f ? "bg-[#5E2251] text-white font-semibold" : "text-gray-600 hover:bg-[#5E2251]/10 hover:text-[#5E2251]"}`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="h-px bg-gray-100" />
-
-        <div>
-          <h4 className="font-bold text-gray-900 uppercase text-xs tracking-widest mb-4">Disponibilité</h4>
-          <div className="flex flex-col gap-2">
-            {["En stock", "Nouveautés", "En promo"].map((f) => (
-              <label key={f} className="flex items-center gap-3 text-sm text-gray-600 cursor-pointer group">
-                <input type="checkbox" className="accent-[#5E2251] w-4 h-4 rounded" />
-                <span className="group-hover:text-[#5E2251] transition-colors">{f}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </aside>
-    </>
-  );
 }
 
 // ─── List Card ────────────────────────────────────────────────────────────────
@@ -190,7 +123,7 @@ export default function ProductPage() {
   const displayed = applyPriceFilter(applySort(category.products, sort), priceFilter);
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+    <div className="min-h-screen bg-[#FAFAFA]">
       <Navbar/>
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
@@ -213,13 +146,14 @@ export default function ProductPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
 
         {/* Page Header */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-          <div>
+        <div className="mb-8 w-screen flex flex-col justify-center items-center gap-4">
+          <RevealText>
             <h1 className="text-4xl font-black text-gray-900 leading-none tracking-tight">{category.title}</h1>
-            <p className="text-sm text-gray-400 font-sans mt-1">{displayed.length} produits</p>
-          </div>
 
-          <div className="flex items-center gap-3 font-sans">
+          </RevealText>
+
+          <div className="flex items-center gap-3 font-sans justify-between">
+            <p className="text-sm text-gray-400 font-sans mt-1">{displayed.length} produits</p>
             <button
               onClick={() => setFiltersOpen(true)}
               className="lg:hidden flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-600 hover:border-[#5E2251] hover:text-[#5E2251] transition-colors"
@@ -267,14 +201,6 @@ export default function ProductPage() {
 
         {/* Sidebar + Grid */}
         <div className="flex gap-10">
-          <FiltersSidebar
-            open={filtersOpen}
-            onClose={() => setFiltersOpen(false)}
-            sort={sort}
-            setSort={setSort}
-            priceFilter={priceFilter}
-            setPriceFilter={setPriceFilter}
-          />
 
           <div className="flex-1">
             {displayed.length === 0 ? (
@@ -298,6 +224,7 @@ export default function ProductPage() {
         </div>
 
       </div>
+      <Footer />
     </div>
   );
 }
