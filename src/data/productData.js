@@ -1,0 +1,265 @@
+// ─── Helper: converts "99,90€" or "À partir de 24,90€" → { price: 99.90, isEstimated: false }
+function parsePrice(str) {
+  if (!str) return { price: null, isEstimated: false };
+  const isEstimated = str.includes('À partir de');
+  const cleaned = str.replace('À partir de', '').replace('€', '').replace(',', '.').trim();
+  return { price: parseFloat(cleaned), isEstimated };
+}
+
+function normalize(raw) {
+  // supports both { nom, prix, prix_reduction } and { name, price, discount_price }
+  const nameRaw     = raw.nom   ?? raw.name;
+  const priceRaw    = raw.prix  ?? raw.price;
+  const reducedRaw  = raw.prix_reduction ?? raw.discount_price;
+
+  const { price, isEstimated } = parsePrice(priceRaw);
+
+  // prix_reduction is the ORIGINAL (crossed-out) price in your data
+  // discount_price is also the crossed-out price
+  const { price: originalPrice } = parsePrice(reducedRaw);
+
+  return {
+    name: nameRaw,
+    price,           // actual selling price (number)
+    originalPrice,   // crossed-out price if on sale (number | null)
+    isEstimated,     // shows "À partir de" prefix
+    rating: raw.note ? parseFloat(raw.note) || null : raw.rating ?? null,
+    url: raw.url ?? '',
+    // placeholder images — replace with real ones
+    image: raw.image ?? '',
+    hoverImage: raw.hoverImage ?? `https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=400&q=80`,
+  };
+}
+
+// ─── Raw data ──────────────────────────────────────────────────────────────────
+
+const RAW = {
+  lightsticks: [
+    { nom: "Lightstick BTS Officiel - Special Edition", prix: "99,90€", prix_reduction: "119,90€", image: `/lightstick/lightstick1.png`, hoverImage: `/lightstick/lightstick2.jpg` },
+    { nom: "Lightstick Stray Kids - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick3.png`, hoverImage: `/lightstick/lightstick4.jpg` },
+    { nom: "Lightstick BTS - Armybomb Officiel", prix: "79,90€", prix_reduction: "99,90€", image: `/lightstick/lightstick5.png`, hoverImage: `/lightstick/lightstick6.jpg` },
+    { nom: "Lightstick Blackpink Ver. 2 - Officiel (Edition Limitée)", prix: "79,90€", prix_reduction: "99,90€", image: `/lightstick/lightstick7.png`, hoverImage: `/lightstick/lightstick8.jpg` },
+
+    { nom: "Lightstick Ateez - Officiel", prix: "99,90€", prix_reduction: "119,90€", image: `/lightstick/lightstick9.png`, hoverImage: `/lightstick/lightstick10.jpg` },
+    { nom: "Lightstick Blackpink - Officiel", prix: "75,00€", prix_reduction: "", image: `/lightstick/lightstick11.png`, hoverImage: `/lightstick/lightstick12.jpg` },
+    { nom: "Lightstick officiel Version 2 - Seventeen", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick13.png`, hoverImage: `/lightstick/lightstick14.jpg` },
+    { nom: "Lightstick KPOP - Ikon", prix: "73,00€", prix_reduction: "", image: `/lightstick/lightstick15.jpg`, hoverImage: `/lightstick/lightstick16.jpg` },
+    { nom: "Lightstick GOT7", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick17.png`, hoverImage: `/lightstick/lightstick18.jpg` },
+    { nom: "Lightstick NCT - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick19.png`, hoverImage: `/lightstick/lightstick20.jpg` },
+    { nom: "Lightstick Twice - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick21.png`, hoverImage: `/lightstick/lightstick22.png` },
+    { nom: "Lightstick TXT - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick23.png`, hoverImage: `/lightstick/lightstick24.png` },
+    { nom: "Lightstick KPOP - Wanna One", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick25.jpg`, hoverImage: `/lightstick/lightstick26.png` },
+    { nom: "Lightstick Super Junior Ver.2 - Officiel", prix: "75,00€", prix_reduction: "99,90€", image: `/lightstick/lightstick27.png`, hoverImage: `/lightstick/lightstick28.jpg` },
+    { nom: "Lightstick Monsta X - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick29.jpg`, hoverImage: `/lightstick/lightstick30.png` },
+    { nom: "Lightstick EXO Ver.3 - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick31.jpg`, hoverImage: `/lightstick/lightstick32.png` },
+    { nom: "Lightstick Mamamoo Ver.2.5 - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick33.jpg`, hoverImage: `/lightstick/lightstick34.png` },
+    { nom: "Lightstick Red Velvet - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick35.jpg`, hoverImage: `/lightstick/lightstick36.png` },
+    { nom: "Lightstick SHINee - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick37.jpg`, hoverImage: `/lightstick/lightstick38.png` },
+    { nom: "Lightstick GFriend Ver.2 - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick39.jpg`, hoverImage: `/lightstick/lightstick40.png` },
+
+    { nom: "Lightstick Iz*One - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick41.jpg`, hoverImage: `/lightstick/lightstick42.png` },
+    { nom: "Lightstick WJSN - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick43.jpg`, hoverImage: `/lightstick/lightstick44.png` },
+    { nom: "Lightstick AOA - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick45.jpg`, hoverImage: `/lightstick/lightstick46.png` },
+    { nom: "Lightstick UP10TION - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick47.png`, hoverImage: `/lightstick/lightstick48.jpg` },
+    { nom: "Lightstick VICTON - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick49.png`, hoverImage: `/lightstick/lightstick50.jpg` },
+    // { nom: "Lightstick Pentagon - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick51.png`, hoverImage: `/lightstick/lightstick52.jpg` },
+    // { nom: "Lightstick AB6IX - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick53.png`, hoverImage: `/lightstick/lightstick54.jpg` },
+    // { nom: "Lightstick 2PM - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick55.png`, hoverImage: `/lightstick/lightstick56.jpg` },
+    // { nom: "Lightstick (G)I-DLE - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick57.png`, hoverImage: `/lightstick/lightstick58.jpg` },
+    // { nom: "Lightstick NU'EST - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick59.png`, hoverImage: `/lightstick/lightstick60.jpg` },
+    // { nom: "Lightstick ENHYPEN - Officiel", prix: "99,90€", prix_reduction: "119,90€", image: `/lightstick/lightstick61.png`, hoverImage: `/lightstick/lightstick62.jpg` },
+    // { nom: "Lightstick DAY6 - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick63.png`, hoverImage: `/lightstick/lightstick64.jpg` },
+    // { nom: "Lightstick ONEUS - Officiel", prix: "99,90€", prix_reduction: "", image: `/lightstick/lightstick65.png`, hoverImage: `/lightstick/lightstick66.jpg` },
+    // { nom: "Lightstick IU - Officiel", prix: "120,00€", prix_reduction: "", image: `/lightstick/lightstick67.png`, hoverImage: `/lightstick/lightstick68.jpg` },
+    // { nom: "Lampe en Peluche - BT21", prix: "19,90€", prix_reduction: "", image: `/lightstick/lightstick69.png`, hoverImage: `/lightstick/lightstick70.jpg` },
+    // { nom: "Lightstick KPOP - Groupe IVE", prix: "À partir de 89,90€", prix_reduction: "", image: `/lightstick/lightstick71.png`, hoverImage: `/lightstick/lightstick72.jpg` },
+    // { nom: "Lightstick Porte-clé KPOP - Groupe IVE", prix: "19,90€", prix_reduction: "", image: `/lightstick/lightstick73.png`, hoverImage: `/lightstick/lightstick74.jpg` },
+    // { nom: "Lightstick Fluorescent KPOP", prix: "À partir de 89,90€", prix_reduction: "", image: `/lightstick/lightstick75.png`, hoverImage: `/lightstick/lightstick76.jpg` },
+    // { nom: "Lightstick Porte-Clé KPOP - Groupe New Jeans", prix: "À partir de 69,90€", prix_reduction: "", image: `/lightstick/lightstick77.png`, hoverImage: `/lightstick/lightstick78.jpg` },
+    // { nom: "Lightstick KPOP Demon Hunters Huntrix", prix: "59,90€", prix_reduction: "", image: `/lightstick/lightstick79.png`, hoverImage: `/lightstick/lightstick80.jpg` },
+    // { nom: "Lightstick Cosplay Demon Hunters Huntrix", prix: "109,90€", prix_reduction: "", image: `/lightstick/lightstick81.png`, hoverImage: `/lightstick/lightstick82.jpg` },
+    // { nom: "Lightstick Demon Hunters KPop", prix: "54,90€", prix_reduction: "", image: `/lightstick/lightstick83.png`, hoverImage: `/lightstick/lightstick84.jpg` },
+],
+  'coques': [
+  { name: "Coque BTS - Groupe KPOP",                     price: "19,90€", discount_price: null, image: `/coques/coque1.jpg`,  hoverImage: `/coques/coque2.webp` },
+  { name: "Coque Aipords BT21 Shooky",                  price: "24,90€", discount_price: null, image: `/coques/coque3.jpg`,  hoverImage: `/coques/coque4.jpg` },
+  { name: "Coque BTS - Love Yourself Noir",             price: "19,90€", discount_price: null, image: `/coques/coque5.webp`,  hoverImage: `/coques/coque6.webp` },
+  { name: "Coque BT21 - Big Van",                       price: "19,90€", discount_price: null, image: `/coques/coque7.webp`,  hoverImage: `/coques/coque8.webp` },
+  { name: "Coque BT21 - Tata",                          price: "19,90€", discount_price: null, image: `/coques/coque9.webp`,  hoverImage: `/coques/coque10.webp` },
+  { name: "Coque BT21 - Cooky",                         price: "19,90€", discount_price: null, image: `/coques/coque11.webp`, hoverImage: `/coques/coque12.jpg` },
+  { name: "Coque BTS - Love Yourself Rose",             price: "19,90€", discount_price: null, image: `/coques/coque13.webp`, hoverImage: `/coques/coque14.webp` },
+  { name: "Coque Boisson Coréenne",                     price: "19,90€", discount_price: null, image: `/coques/coque15.png`, hoverImage: `/coques/coque16.webp` },
+  { name: "Coque Airpods EXO",                          price: "19,90€", discount_price: null, image: `/coques/coque17.png`, hoverImage: `/coques/coque18.webp` },
+  { name: "Coque Airpods BT21 Cuir",                    price: "19,90€", discount_price: null, image: `/coques/coque19.png`, hoverImage: `/coques/coque20.png` },
+  { name: "Coque Airpods BT21 Transparent",             price: "19,90€", discount_price: null, image: `/coques/coque21.jpg`, hoverImage: `/coques/coque22.webp` },
+  { name: "Coque NCT - We Boom",                        price: "19,90€", discount_price: null, image: `/coques/coque23.jpg`, hoverImage: `/coques/coque24.png` },
+  { name: "Coque BTS - Euphoria",                       price: "19,90€", discount_price: null, image: `/coques/coque25.png`, hoverImage: `/coques/coque26.png` },
+  { name: "Coque BTS - Love Yourself Blanc",            price: "19,90€", discount_price: null, image: `/coques/coque27.png`, hoverImage: `/coques/coque28.png` },
+  { name: "Coque BTS - Love Yourself Jaune",            price: "19,90€", discount_price: null, image: `/coques/coque29.png`, hoverImage: `/coques/coque30.png` },
+  { name: "Coque BTS - Love Yourself Rouge",            price: "19,90€", discount_price: null, image: `/coques/coque31.png`, hoverImage: `/coques/coque32.png` },
+  { name: "Coque BTS - Map of The Soul 7",              price: "19,90€", discount_price: null, image: `/coques/coque33.png`, hoverImage: `/coques/coque34.jpg` },
+  { name: "Coque BTS - Fanart",                         price: "19,90€", discount_price: null, image: `/coques/coque35.png`, hoverImage: `/coques/coque36.png` },
+  { name: "Coque BTS - August D Musique",               price: "19,90€", discount_price: null, image: `/coques/coque37.png`, hoverImage: `/coques/coque38.png` },
+  { name: "Coque BTS - Min Yoon Gi",                    price: "19,90€", discount_price: null, image: `/coques/coque39.jpg`, hoverImage: `/coques/coque40.jpg` },
+  { name: "Coque BTS - August D",                       price: "19,90€", discount_price: null, image: `/coques/coque41.jpg`, hoverImage: `/coques/coque42.jpg` },
+  { name: "Coque BTS - August D Assis",                 price: "19,90€", discount_price: null, image: `/coques/coque43.jpg`, hoverImage: `/coques/coque44.jpg` },
+  { name: "Coque BTS - August D Rap",                   price: "19,90€", discount_price: null, image: `/coques/coque45.jpg`, hoverImage: `/coques/coque46.jpg` },
+  { name: "Coque NCT - Long Ass Ride",                  price: "19,90€", discount_price: null, image: `/coques/coque47.jpg`, hoverImage: `/coques/coque48.jpg` },
+  { name: "Coque NCT - Logo",                           price: "19,90€", discount_price: null, image: `/coques/coque49.jpg`, hoverImage: `/coques/coque50.jpg` },
+  // { name: "Coque NCT - Don't Need Your Love",           price: "19,90€", discount_price: null, image: `/coques/coque51.png`, hoverImage: `/coques/coque52.png` },
+  // { name: "Coque NCT - Cherry Bomb",                    price: "19,90€", discount_price: null, image: `/coques/coque53.png`, hoverImage: `/coques/coque54.png` },
+  // { name: "Coque NCT - Can Do It",                      price: "19,90€", discount_price: null, image: `/coques/coque55.png`, hoverImage: `/coques/coque56.png` },
+  // { name: "Coque NCT - Photo de groupe",                price: "19,90€", discount_price: null, image: `/coques/coque57.png`, hoverImage: `/coques/coque58.png` },
+  // { name: "Coque Monsta X - Ful",                       price: "19,90€", discount_price: null, image: `/coques/coque59.png`, hoverImage: `/coques/coque60.png` },
+  // { name: "Coque Monsta X - Logo",                      price: "19,90€", discount_price: null, image: `/coques/coque61.png`, hoverImage: `/coques/coque62.png` },
+  // { name: "Coque Monsta X - Portrait",                  price: "19,90€", discount_price: null, image: `/coques/coque63.png`, hoverImage: `/coques/coque64.png` },
+  // { name: "Coque Monsta X - Groupe",                    price: "19,90€", discount_price: null, image: `/coques/coque65.png`, hoverImage: `/coques/coque66.png` },
+  // { name: "Coque Monsta X - Korean",                    price: "19,90€", discount_price: null, image: `/coques/coque67.png`, hoverImage: `/coques/coque68.png` },
+  // { name: "Coque Monsta X - Huawei",                    price: "19,90€", discount_price: null, image: `/coques/coque69.png`, hoverImage: `/coques/coque70.png` },
+  // { name: "Coque BTS - Dynamite Jimin",                  price: "19,90€", discount_price: null, image: `/coques/coque71.png`, hoverImage: `/coques/coque72.png` },
+  // { name: "Coque BTS - Yoongi",                          price: "19,90€", discount_price: null, image: `/coques/coque73.png`, hoverImage: `/coques/coque74.png` },
+  // { name: "Coque BTS - Dynamite V",                      price: "19,90€", discount_price: null, image: `/coques/coque75.png`, hoverImage: `/coques/coque76.png` },
+  // { name: "Coque BTS - Dynamite Jin",                    price: "19,90€", discount_price: null, image: `/coques/coque77.png`, hoverImage: `/coques/coque78.png` },
+  // { name: "Coque BTS - Namjoon",                         price: "19,90€", discount_price: null, image: `/coques/coque79.png`, hoverImage: `/coques/coque80.png` },
+  // { name: "Coque BTS - Hoseok",                          price: "19,90€", discount_price: null, image: `/coques/coque81.png`, hoverImage: `/coques/coque82.png` },
+  // { name: "Coque BTS Dynamite Groupe",                   price: "19,90€", discount_price: null, image: `/coques/coque83.png`, hoverImage: `/coques/coque84.png` },
+  // { name: "Coque BT21 - RJ",                             price: "19,90€", discount_price: null, image: `/coques/coque85.png`, hoverImage: `/coques/coque86.png` },
+  // { name: "Coque BT21 - Mang",                           price: "19,90€", discount_price: null, image: `/coques/coque87.png`, hoverImage: `/coques/coque88.png` },
+  // { name: "Coque BT21 - Van",                             price: "19,90€", discount_price: null, image: `/coques/coque89.png`, hoverImage: `/coques/coque90.png` },
+  // { name: "Coque BT21 - Chimmy",                          price: "19,90€", discount_price: null, image: `/coques/coque91.png`, hoverImage: `/coques/coque92.png` },
+  // { name: "Coque BT21 - Koya",                            price: "19,90€", discount_price: null, image: `/coques/coque93.png`, hoverImage: `/coques/coque94.png` },
+  // { name: "Coque BT21 - Shooky",                          price: "19,90€", discount_price: null, image: `/coques/coque95.png`, hoverImage: `/coques/coque96.png` },
+  // { name: "Coque BT21 iPhone",                            price: "19,90€", discount_price: null, image: `/coques/coque97.png`, hoverImage: `/coques/coque98.png` },
+  // { name: "Coque iPhone Demon Hunters Huntrix",           price: "24,90€", discount_price: null, image: `/coques/coque99.png`, hoverImage: `/coques/coque100.png` },
+  // { name: "Étui Airpods Huntrix",                         price: "24,90€", discount_price: null, image: `/coques/coque101.png`, hoverImage: `/coques/coque102.png` },
+  // { name: "Housse de Téléphone KPop Saja Boys",           price: "24,90€", discount_price: null, image: `/coques/coque103.png`, hoverImage: `/coques/coque104.png` },
+  // { name: "Housse pour iPhone KPop Demon Hunters Saja Boys", price: "24,90€", discount_price: null, image: `/coques/coque105.png`, hoverImage: `/coques/coque106.png` },
+  // { name: "Housse pour iPhone KPop Rumi Huntrix",         price: "24,90€", discount_price: null, image: `/coques/coque107.png`, hoverImage: `/coques/coque108.png` }
+],
+"posters": [
+  { nom: "Poster KPOP Huntrix Demon Hunters",        prix: "À partir de 24,90€", prix_reduction: "", note: "", url: "", image: `/posters/poster42.png`,  hoverImage: `/posters/poster43.png` },
+  { nom: "Poster Décoratif KPop Demon Hunters",      prix: "À partir de 24,90€", prix_reduction: "", note: "", url: "", image: `/posters/poster50.png`,  hoverImage: `/posters/poster51.png` },
+  { nom: "Poster KPop Demon Hunters",                prix: "À partir de 24,90€", prix_reduction: "", note: "", url: "", image: `/posters/poster68.png`,  hoverImage: `/posters/poster69.png` },
+  { nom: "Poster KPOP - groupe Blackpink",           prix: "24,90€",             prix_reduction: "", note: "", url: "", image: `/posters/poster1.png`,  hoverImage: `/posters/poster11.png` },
+  { nom: "Poster KPOP - groupe Stray Kids",          prix: "24,90€",             prix_reduction: "", note: "", url: "", image: `/posters/poster3.png`,  hoverImage: `/posters/poster4.png` },
+  { nom: "Poster KPOP - Groupe Twice",               prix: "24,90€",             prix_reduction: "", note: "", url: "", image: `/posters/poster5.png`, hoverImage: `/posters/poster6.png` },
+  { nom: "Poster KPOP New Jeans",                    prix: "À partir de 19,90€", prix_reduction: "", note: "", url: "", image: `/posters/poster7.png`, hoverImage: `/posters/poster8.png` },
+  { nom: "Poster KPOP - Groupe IVE",                 prix: "À partir de 19,90€", prix_reduction: "", note: "", url: "", image: `/posters/poster9.png`, hoverImage: `/posters/poster10.png` },
+  { nom: "Poster Mural KPOP - Groupe IVE",           prix: "À partir de 19,90€", prix_reduction: "", note: "", url: "", image: `/posters/poster11.png`, hoverImage: `/posters/poster12.png` },
+  { nom: "Poster Drapeau Américain KPOP - Groupe IVE", prix: "À partir de 19,90€", prix_reduction: "", note: "", url: "", image: `/posters/poster13.png`, hoverImage: `/posters/poster14.png` },
+  { nom: "Poster Cha Eun Woo - KPOP A-Astro",        prix: "24,90€",             prix_reduction: "", note: "", url: "", image: `/posters/poster17.png`, hoverImage: `/posters/poster18.png` },
+  { nom: "Poster Décoratif KPOP - Groupe Astro",     prix: "24,90€",             prix_reduction: "", note: "", url: "", image: `/posters/poster19.png`, hoverImage: `/posters/poster20.png` },
+  { nom: "Poster KPOP - Groupe GOT7",                prix: "24,90€",             prix_reduction: "", note: "", url: "", image: `/posters/poster21.png`, hoverImage: `/posters/poster22.png` },
+  { nom: "Poster KPOP - groupe A-ATEEZ",            prix: "24,90€",             prix_reduction: "", note: "", url: "", image: `/posters/poster23.png`, hoverImage: `/posters/poster24.png` },
+  { nom: "Poster Décoratif KPOP - groupe New Jeans", prix: "À partir de 19,90€", prix_reduction: "", note: "", url: "", image: `/posters/poster25.png`, hoverImage: `/posters/poster26.png` }
+],
+
+  'photocards': [
+  { nom: "Photocards NCT127",                                    prix: "9,95€",             prix_reduction: "", image: `/photocards/photocard34.png`,  hoverImage: `/photocards/photocard35.png` },
+  { nom: "Set de 10 Photocards NCT127",                           prix: "11,95€",            prix_reduction: "", image: `/photocards/photocard36.png`,  hoverImage: `` },
+  { nom: "Set de 10 photocards ATEEZ",                            prix: "12,95€",            prix_reduction: "", image: `/photocards/photocard37.png`,  hoverImage: `/photocards/photocard38.png` },
+  { nom: "Set de 6 NCT127 Photocards",                            prix: "9,95€",             prix_reduction: "", image: `/photocards/photocard39.png`,  hoverImage: `/photocards/photocard40.png` },
+  { nom: "Set de 16 LOMO Cards MONSTA X",                        prix: "11,95€",            prix_reduction: "14,95€", image: `/photocards/photocard23.png`,  hoverImage: `/photocards/photocard17.png` },
+  { nom: "Photocard NCT127 - Yellow & Orange",                    prix: "11,95€",            prix_reduction: "", image: `/photocards/photocard42.png`, hoverImage: `/photocards/photocard61.png` },
+  { nom: "Photocard Storage 240 slots",                           prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard56.png`, hoverImage: `/photocards/photocard62.png` },
+  { nom: "Mini Photocard Binder",                                 prix: "23,90€",            prix_reduction: "", image: `/photocards/photocard63.png`, hoverImage: `` },
+  { nom: "Transparent Photocard Binder",                          prix: "22,90€",            prix_reduction: "32,90€", image: `/photocards/photocard63.png`, hoverImage: `` },
+  { nom: "Mini Porte Photocard",                                  prix: "14,90€",            prix_reduction: "", image: `/photocards/photocard19.png`, hoverImage: `/photocards/photocard20.png` },
+  { nom: "Photocard Binder 120 Places",                           prix: "19,90€",            prix_reduction: "29,90€", image: `/photocards/photocard21.png`, hoverImage: `/photocards/photocard22.png` },
+  { nom: "Photocard Binder 72 Places",                            prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard23.png`, hoverImage: `/photocards/photocard24.png` },
+  { nom: "Mini Photocard Binder (version 2)",                     prix: "À partir de 9,90€", prix_reduction: "", image: `/photocards/photocard25.png`, hoverImage: `/photocards/photocard26.png` },
+  { nom: "Set of plastic photocard protectors",                   prix: "14,90€",            prix_reduction: "", image: `/photocards/photocard27.png`, hoverImage: `/photocards/photocard28.png` },
+  { nom: "Set of 13 Cards of Idol Boy Group K-pop",               prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard29.png`, hoverImage: `/photocards/photocard30.png` },
+  { nom: "Photocards Stray Kids Album Noeasy",                    prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard31.png`, hoverImage: `/photocards/photocard32.png` },
+  { nom: "Photocards Lomo K-Pop",                                 prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard33.png`, hoverImage: `/photocards/photocard34.png` },
+  { nom: "Set of 55 Twice Photo Cards",                            prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard35.png`, hoverImage: `/photocards/photocard36.png` },
+  { nom: "Set of 55 Twice Photocards - The Feels Album",          prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard37.png`, hoverImage: `/photocards/photocard38.png` },
+  { nom: "Set of 18 K-Pop Photocards - Group IVE",                prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard39.png`, hoverImage: `/photocards/photocard40.png` },
+  { nom: "12 Photocards K-Pop - Aespa",                            prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard41.png`, hoverImage: `/photocards/photocard42.png` },
+  { nom: "55 Cartes Photo K-pop - Baby Monster",                   prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard43.png`, hoverImage: `/photocards/photocard44.png` },
+  { nom: "Set of 55 Blackpink Photocards - Born Pink Album",      prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard45.png`, hoverImage: `/photocards/photocard46.png` },
+  { nom: "K-Pop style Card Holder",                                 prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard47.png`, hoverImage: `/photocards/photocard48.png` },
+  { nom: "Photocards K-Pop IVE - Album Alive",                     prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard49.png`, hoverImage: `/photocards/photocard50.png` },
+  { nom: "Set of 54 IVE Photocards",                                prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard51.png`, hoverImage: `/photocards/photocard52.png` },
+  { nom: "Set of 55 K-pop Photocards - Felix",                        prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard53.png`, hoverImage: `/photocards/photocard54.png` },
+  { nom: "Set of 54 Aespa Photocards",                                prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard55.png`, hoverImage: `/photocards/photocard56.png` },
+  { nom: "Set of 55 K-pop Photocards - Group (G) I-DLE",             prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard57.png`, hoverImage: `/photocards/photocard58.png` },
+  { nom: "Set of 10 PVC Photocard Holders",                           prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard59.png`, hoverImage: `/photocards/photocard60.png` },
+  { nom: "K-pop Photocard Protector",                                 prix: "14,90€",            prix_reduction: "", image: `/photocards/photocard61.png`, hoverImage: `/photocards/photocard62.png` },
+  { nom: "K-pop Photo Card Binder",                                   prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard63.png`, hoverImage: `/photocards/photocard64.png` },
+  { nom: "K-pop Photocard Binder A5",                                 prix: "24,90€",            prix_reduction: "", image: `/photocards/photocard65.png`, hoverImage: `/photocards/photocard66.png` },
+  { nom: "K-pop Photocard Storage Case with Keychain",                prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard67.png`, hoverImage: `/photocards/photocard68.png` },
+  { nom: "K-pop PVC Photocard Holder",                                prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard69.png`, hoverImage: `/photocards/photocard70.png` },
+  { nom: "K-pop Photocard Storage",                                   prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard71.png`, hoverImage: `/photocards/photocard72.png` },
+  { nom: "K-pop Photo Card Holder in PVC",                            prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard73.png`, hoverImage: `/photocards/photocard74.png` },
+  { nom: "Photo Card Storage for K-pop Fans",                         prix: "19,90€",            prix_reduction: "", image: `/photocards/photocard75.png`, hoverImage: `/photocards/photocard76.png` }
+],
+
+  'box-coffrets': [
+  { nom: "Calendrier de l'Avent KPop Huntrix",                prix: "À partir de 29,90€", prix_reduction: "49,90€", image: `/boxes/box1.png`,  hoverImage: `/boxes/box2.png` },
+  { nom: "Calendrier de l'Avent KPop Demon Hunters [Deluxe]", prix: "29,90€",             prix_reduction: "49,90€", image: `/boxes/box3.png`,  hoverImage: `/boxes/box4.png` },
+  { nom: "Calendrier de l'Avent Demon Hunters",               prix: "29,90€",             prix_reduction: "",        image: `/boxes/box5.png`,  hoverImage: `/boxes/box6.png` },
+  { nom: "Blackpink Coffret Cadeau",                          prix: "49,90€",             prix_reduction: "",        image: `/boxes/box7.png`,  hoverImage: `/boxes/box8.png` },
+  { nom: "Box Cadeau Surprise KPop",                          prix: "54,90€",             prix_reduction: "",        image: `/boxes/box9.png`,  hoverImage: `/boxes/box10.png` },
+  { nom: "Coffret Cadeau Fans KPop",                          prix: "44,90€",             prix_reduction: "",        image: `/boxes/box11.png`, hoverImage: `/boxes/box12.png` },
+  { nom: "Box Premium KPop Idoles",                           prix: "44,90€",             prix_reduction: "",        image: `/boxes/box13.png`, hoverImage: `/boxes/box14.png` },
+  { nom: "Boîte Cadeau Stray Kids",                           prix: "89,90€",             prix_reduction: "",        image: `/boxes/box15.png`, hoverImage: `/boxes/box16.png` },
+  { nom: "Box Cadeau Fans KPop",                              prix: "39,90€",             prix_reduction: "",        image: `/boxes/box17.png`, hoverImage: `/boxes/box18.png` },
+  { nom: "Coffret Cadeau Fans Twice",                         prix: "39,90€",             prix_reduction: "",        image: `/boxes/box19.png`, hoverImage: `/boxes/box20.png` },
+  { nom: "Box Cadeau Twice KPop",                             prix: "44,90€",             prix_reduction: "",        image: `/boxes/box21.png`, hoverImage: `/boxes/box22.png` },
+  { nom: "Coffret Cadeau KPop GI-DLE",                        prix: "39,90€",             prix_reduction: "",        image: `/boxes/box23.png`, hoverImage: `/boxes/box24.png` },
+  { nom: "Coffret Cadeau Officiel Twice",                     prix: "39,90€",             prix_reduction: "",        image: `/boxes/box25.png`, hoverImage: `/boxes/box26.png` },
+  { nom: "Box Cadeau Officiel IVE",                           prix: "44,90€",             prix_reduction: "",        image: `/boxes/box27.png`, hoverImage: `/boxes/box28.png` },
+  { nom: "Box Cadeau GI-DLE KPop",                            prix: "39,90€",             prix_reduction: "",        image: `/boxes/box29.png`, hoverImage: `/boxes/box30.png` },
+  { nom: "Coffret Cadeau GI-DLE KPop",                        prix: "44,90€",             prix_reduction: "",        image: `/boxes/box31.png`, hoverImage: `/boxes/box32.png` },
+  { nom: "Box IVE Fans Premium",                              prix: "54,90€",             prix_reduction: "",        image: `/boxes/box33.png`, hoverImage: `/boxes/box34.png` },
+],
+
+  'figurines-poupees': [
+  { name: "Poupées Huntrix Demon Hunters",          price: "À partir de 24,90€", discount_price: "39,90€", image: `/figurines/figurine23.png`,  hoverImage: `/figurines/figurine24.png` },
+  { name: "Poupées Huntrix KPop Demon Hunters",     price: "24,90€",             discount_price: "39,90€", image: `/figurines/figurine58.png`,  hoverImage: `/figurines/figurine59.png` },
+  { name: "Figurines Demon Hunters Huntrix 5pcs",   price: "24,90€",             discount_price: "39,90€", image: `/figurines/figurine61.png`,  hoverImage: `/figurines/figurine62.png` },
+  { name: "Figurines Kpop Demon Hunters",           price: "À partir de 29,90€", discount_price: null,      image: `/figurines/figurine30.png`,  hoverImage: `/figurines/figurine31.png` },
+  { name: "Figurines KPop Demon Hunters Huntrix",   price: "74,90€",             discount_price: null,      image: `/figurines/figurine32.png`,  hoverImage: `` },
+  { name: "Figurine KPOP - Groupe New Jeans",       price: "49,90€",             discount_price: null,      image: `/figurines/figurine4.png`, hoverImage: `/figurines/figurine5.png` },
+  { name: "Figurine BTS POP UP : Jungkook",         price: "49,90€",             discount_price: null,      image: `/figurines/figurine6.png`, hoverImage: `` },
+  { name: "Figurine BTS POP UP : Suga",             price: "49,90€",             discount_price: null,      image: `/figurines/figurine7.png`, hoverImage: `` },
+  { name: "Figurine BTS POP UP : V",                price: "49,90€",             discount_price: null,      image: `/figurines/figurine8.png`, hoverImage: `` },
+  { name: "Figurine BTS POP UP : J-Hope",           price: "49,90€",             discount_price: null,      image: `/figurines/figurine9.png`, hoverImage: `` },
+  { name: "Figurine BTS POP UP : Jin",              price: "49,90€",             discount_price: null,      image: `/figurines/figurine10.png`, hoverImage: `` },
+  { name: "Figurine BTS POP UP : Jimin",            price: "49,90€",             discount_price: null,      image: `/figurines/figurine11.png`, hoverImage: `` },
+  { name: "Figurine BTS POP UP : House",            price: "249,90€",            discount_price: null,      image: `/figurines/figurine12.png`, hoverImage: `` },
+  { name: "Figurine BTS POP UP : RM",               price: "49,90€",             discount_price: null,      image: `/figurines/figurine13.png`, hoverImage: `` },
+  { name: "Pack complet Figurine BTS TinyTan Mini", price: "219,90€",            discount_price: null,      image: `/figurines/figurine14.png`, hoverImage: `` },
+  { name: "Figurine BTS TinyTan Jungkook",          price: "49,90€",             discount_price: null,      image: `/figurines/figurine15.jpg`, hoverImage: `` },
+  { name: "Figurine BTS TinyTan Suga",              price: "49,90€",             discount_price: null,      image: `/figurines/figurine17.jpg`, hoverImage: `` },
+  { name: "Figurine BTS TinyTan V",                 price: "49,90€",             discount_price: null,      image: `/figurines/figurine18.jpg`, hoverImage: `` },
+  { name: "Figurine BTS TinyTan J-Hope",            price: "49,90€",             discount_price: null,      image: `/figurines/figurine19.jpg`, hoverImage: `` },
+  { name: "Figurine BTS TinyTan Jin",               price: "49,90€",             discount_price: null,      image: `/figurines/figurine20.jpg`, hoverImage: `` },
+  { name: "Figurine BTS TinyTan Jimin",             price: "49,90€",             discount_price: null,      image: `/figurines/figurine21.jpg`, hoverImage: `` },
+  { name: "Figurine BTS TinyTan RM",                price: "49,90€",             discount_price: null,      image: `/figurines/figurine22.jpg`, hoverImage: `` },
+],
+};
+
+// ─── Page metadata (title + breadcrumb) ───────────────────────────────────────
+
+const META = {
+  lightsticks:         { title: "Lightstick KPOP",      breadcrumb: ["KPOP Merch", "Lightsticks"] },
+  coques:              { title: "Coques KPOP",           breadcrumb: ["KPOP Merch", "Coques"] },
+  posters:             { title: "Posters KPOP",          breadcrumb: ["KPOP Merch", "Posters"] },
+  photocards:          { title: "Photocards KPOP",       breadcrumb: ["KPOP Merch", "Photocards"] },
+  'box-coffrets':      { title: "Box & Coffrets KPOP",   breadcrumb: ["KPOP Merch", "Box & Coffrets"] },
+  'figurines-poupees': { title: "Figurines & Poupées",   breadcrumb: ["KPOP Merch", "Figurines & Poupées"] },
+};
+
+// ─── Final export: CATEGORIES[slug] → { title, breadcrumb, products[] } ───────
+
+export const CATEGORIES = Object.fromEntries(
+  Object.entries(RAW).map(([slug, items]) => [
+    slug,
+    {
+      ...META[slug],
+      products: items.map((item, i) => ({ id: i + 1, ...normalize(item) })),
+    },
+  ])
+);

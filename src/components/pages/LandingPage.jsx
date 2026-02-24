@@ -16,11 +16,18 @@ import CountDownCard from '../card/CountDownCard';
 import { FilterBar } from '../Button/FilterBar';
 import fashion from '../../data/k-fashion';
 import beauty from '../../data/k-beauty';
+import RespNav from '../resp/RespNav';
 
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
-      <Navbar />
+      <div className="hidden lg:block">
+        <Navbar />
+      </div>
+
+      <div className="lg:hidden">
+        <RespNav />
+      </div>
       <main>
         <Hero />
         <PercentageReduction/>
