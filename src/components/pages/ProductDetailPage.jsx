@@ -1,33 +1,8 @@
 import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import CartSidebar from "../cart/CartSidebar";
 import Navbar from "../Header";
-
-const images = {
-  beige: [
-    "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1614676471928-2ed0ad1061a4?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1612336307429-8a898d10e223?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200&h=200&fit=crop",
-  ],
-  black: [
-    "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=200&h=200&fit=crop",
-  ],
-  brown: [
-    "https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=400&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1604644401890-0bd678c83788?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1508427953056-b00b8d78ebf5?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1564557287817-3785e38ec1f5?w=200&h=200&fit=crop",
-    "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=200&h=200&fit=crop",
-  ],
-};
+import { CATEGORIES } from "../../data/productData";
 
 const colorSwatches = [
   { key: "beige", bg: "#D4B896", label: "Beige" },
@@ -46,11 +21,45 @@ const tableData = [
 ];
 
 export default function ProductDetailPage() {
+  const { category, productId } = useParams();
+  const navigate = useNavigate();
   const [selectedColor, setSelectedColor] = useState("beige");
   const [selectedSize, setSelectedSize] = useState("S");
   const [activeImage, setActiveImage] = useState(0);
   const [imageAnimating, setImageAnimating] = useState(false);
   const [colorAnimating, setColorAnimating] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+
+  // Find product from CATEGORIES
+  const categoryProducts = CATEGORIES[category] || [];
+  const product = categoryProducts[parseInt(productId) - 1]; // ID is 1-indexed
+
+  if (!product) {
+    return (
+      <div style={{ fontFamily: "'Helvetica Neue', sans-serif", padding: "60px 20px", textAlign: "center" }}>
+        <h1>Produit non trouvé</h1>
+        <p>Le produit que vous cherchez n'existe pas.</p>
+        <button onClick={() => navigate("/")} style={{ marginTop: 20, padding: "10px 20px", cursor: "pointer" }}>
+          Retour à l'accueil
+        </button>
+      </div>
+    );
+  }
+
+  // Generate images for carousel (use main image and hover image)
+  const generateImages = () => {
+    const imgs = [product.image];
+    if (product.hoverImage) imgs.push(product.hoverImage);
+    // Fill remaining slots with placeholder
+    while (imgs.length < 6) {
+      imgs.push("https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&h=400&fit=crop");
+    }
+    return imgs;
+  };
+
+  const currentImages = generateImages();
+  const priceText = typeof product.price === "number" ? `${product.price.toFixed(2).replace(".", ",")}€` : product.price;
+  const originalPriceText = product.originalPrice ? `${product.originalPrice.toFixed(2).replace(".", ",")}€` : null;
 
   const handleColorChange = (colorKey) => {
     if (colorKey === selectedColor) return;
@@ -71,9 +80,6 @@ export default function ProductDetailPage() {
       setImageAnimating(false);
     }, 200);
   };
-
-  const currentImages = images[selectedColor];
-  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <div style={{ fontFamily: "'Helvetica Neue', sans-serif", background: "#fff", minHeight: "100vh" }}>
@@ -118,6 +124,7 @@ export default function ProductDetailPage() {
         .section-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; }
         .product-title { font-size: 26px; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; line-height: 1.3; }
         .price { font-size: 24px; font-weight: 700; color: #9C6BC0; margin-bottom: 12px; }
+        .original-price { font-size: 16px; color: #999; text-decoration: line-through; margin-right: 10px; }
         .promo-inline { font-size: 12px; color: #666; display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
         .tag { font-size: 11px; background: #f0e8fa; color: #7a4fa0; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
         .label { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 8px; margin-top: 14px; }
@@ -131,8 +138,11 @@ export default function ProductDetailPage() {
           <div className="main-image-wrap" style={{ marginBottom: 12 }}>
             <img
               src={currentImages[activeImage]}
-              alt="Sweat Pilou"
+              alt={product.name}
               className={`fade-img ${imageAnimating ? "animating" : ""}`}
+              onError={(e) => {
+                e.target.src = "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&h=400&fit=crop";
+              }}
             />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
@@ -143,7 +153,14 @@ export default function ProductDetailPage() {
                 onClick={() => handleThumbClick(i + 1)}
                 style={{ animation: `slideIn 0.3s ease ${i * 0.07}s both` }}
               >
-                <img src={src} alt="" style={{ width: "100%", height: 110, objectFit: "cover", display: "block" }} />
+                <img
+                  src={src}
+                  alt=""
+                  style={{ width: "100%", height: 110, objectFit: "cover", display: "block" }}
+                  onError={(e) => {
+                    e.target.src = "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&h=400&fit=crop";
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -151,12 +168,15 @@ export default function ProductDetailPage() {
 
         {/* RIGHT: Product Info */}
         <div style={{ animation: "fadeIn 0.5s ease 0.1s both" }}>
-          <h1 className="product-title">Sweat Pilou Pilou Ours</h1>
-          <div className="price">39,90€</div>
+          <h1 className="product-title">{product.name}</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div className="price">{priceText}</div>
+            {originalPriceText && <div className="original-price">{originalPriceText}</div>}
+          </div>
 
           <div className="stock-badge">
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#e57373", display: "inline-block" }}></span>
-            En rupture de stock
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#4caf50", display: "inline-block" }}></span>
+            En stock
           </div>
 
           <div className="promo-inline" style={{ marginTop: 10 }}>
@@ -195,8 +215,8 @@ export default function ProductDetailPage() {
             ))}
           </div>
 
-          <button className="add-btn out-of-stock" disabled>
-            Épuisé – 39,90€
+          <button className="add-btn">
+            Ajouter au panier – {priceText}
           </button>
 
           {/* Promo Banner */}
@@ -217,12 +237,12 @@ export default function ProductDetailPage() {
 
           {/* Description */}
           <div style={{ marginTop: 28 }}>
-            <div className="section-title">Description du Sweat Pilou Pilou Ours Mignon</div>
+            <div className="section-title">À propos de ce produit</div>
             <p style={{ fontSize: 13.5, color: "#555", marginBottom: 14, lineHeight: 1.6 }}>
-              Optez pour un style <strong>K-Fashion</strong> avec ce sweat pilou pilou bien doux qui vous tiendra bien au chaud.
+              Découvrez cette magnifique {product.name.toLowerCase()} pour les fans de K-Culture. Qualité premium et livraison rapide.
             </p>
-            <div className="desc-point">K-Fashion</div>
-            <div className="desc-point">Doux et confortable à porter</div>
+            <div className="desc-point">Produit officiel K-Culture</div>
+            <div className="desc-point">Qualité premium</div>
             <div className="desc-point">Livraison Standard Gratuite</div>
           </div>
 
