@@ -52,7 +52,7 @@ export function RevealCard({ image, children, direction = "left", className = ""
     }, [direction]);
 
     return (
-        <div ref={sectionRef} className={`relative w-full h-[500px] rounded-2xl overflow-hidden ${className}`}>
+        <div ref={sectionRef} className={`relative w-full h-48 sm:h-72 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden ${className}`}>
 
             {/* Background image — zooms out */}
             <img
@@ -75,7 +75,7 @@ export function RevealCard({ image, children, direction = "left", className = ""
                     ref={cardRef}
                     className="absolute inset-y-0 left-0 w-full flex items-center pointer-events-auto"
                 >
-                    <div className={`m-8 rounded-xl p-6 shadow-xl flex flex-col justify-center w-full ${direction === "right" ? "ml-auto" : ""}`}>
+                    <div className={`m-4 sm:m-6 md:m-8 rounded-xl p-4 sm:p-5 md:p-6 shadow-xl flex flex-col justify-center w-full ${direction === "right" ? "ml-auto" : ""}`}>
                         {children}
                     </div>
                 </div>

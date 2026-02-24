@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { useScrollAnimation } from '../../hooks/useScrollAnimation'
 
 const CountDownCard = () => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const ref = useScrollAnimation()
 
   useEffect(() => {
     // Target = now + 3 days + 3 hours
@@ -40,11 +42,11 @@ const CountDownCard = () => {
   ]
 
   return (
-    <div className="w-screen h-[70vh] my-10 relative">
+    <div ref={ref} className="scroll-animate w-full h-64 sm:h-80 md:h-96 lg:h-[70vh] my-6 sm:my-8 md:my-10 relative">
       {/* Background image */}
       <img
-        src="/huntrix/livraison.jpg"
-        alt="Kpop Demon"
+        src="/fan_kpop.webp"
+        alt="Kpop Demon - Livraison Gratuite"
         className="absolute inset-0 w-full h-full object-cover"
       />
 
@@ -53,17 +55,17 @@ const CountDownCard = () => {
 
       {/* Content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center z-10 text-white text-center px-4">
-        <h1 className="text-5xl font-semibold tracking-widest mb-10">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-widest mb-6 sm:mb-8 md:mb-10">
           Aujourd'hui Livraison Gratuite
         </h1>
 
-        <div className="flex gap-6 sm:gap-12">
+        <div className="flex gap-3 sm:gap-6 md:gap-8 lg:gap-12">
           {units.map(({ value, label }) => (
             <div key={label} className="flex flex-col items-center gap-1">
-              <span className="text-5xl sm:text-6xl font-bold tabular-nums">
+              <span className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold tabular-nums">
                 {pad(value)}
               </span>
-              <span className="text-xs sm:text-sm uppercase tracking-widest text-white/70">
+              <span className="text-[10px] sm:text-xs md:text-sm uppercase tracking-widest text-white/70">
                 {label}
               </span>
             </div>

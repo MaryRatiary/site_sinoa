@@ -9,10 +9,10 @@ const groupes = [
         url: "/logo/huntrix.png"
     },
     {
-        url: "/logo/stary_kids.png"
+        url: "/logo/stray_kids.png"
     },
     {
-        url: "/logo/twice.png"
+        url: "/logo/twiece.jpg"
     },
     {
         url: "/logo/new_jeans.webp"

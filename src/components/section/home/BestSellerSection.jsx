@@ -3,14 +3,14 @@ import { ProductCard } from "../../card/ProductCard";
 const BestSellerSection = () => {
 
   return (
-    <section className="py-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <section className="py-4 sm:py-6 md:py-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 px-4">
         {bestSellers.map((b) => (
             <div
             key={b.name}
-            className="mx-auto"
+            className="mx-auto w-full"
             >
                 <ProductCard
-                className="sm:w-50 md:w-74 xl:80 2xl:w-96"
+                className="w-full"
                 image={b.url}
                 hoverImage={b.urlHover}
                 name={b.name}

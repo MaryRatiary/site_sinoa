@@ -30,7 +30,7 @@ export default function SmoothSlider({ cards = DEFAULT_CARDS, className = "" }) 
   return (
     <div
       style={{ fontFamily: "'Sora', sans-serif" }}
-      className={`flex items-center p-10 min-h-screen ${className}`}
+      className={`flex items-center justify-center p-2 sm:p-4 md:p-6 h-auto sm:h-64 md:h-72 w-full ${className}`}
     >
       {/* Only styles that Tailwind cannot express */}
       <style>{`
@@ -49,6 +49,19 @@ export default function SmoothSlider({ cards = DEFAULT_CARDS, className = "" }) 
         /* Dot width transition (Tailwind can't animate width like this easily) */
         .dot { width: 5px; transition: background 0.28s, width 0.28s cubic-bezier(0.4,0,0.2,1); }
         .dot.on { width: 20px; }
+        
+        @media (max-width: 640px) {
+          .slider-outer { width: 95% !important; }
+          .slider-card { height: 120px !important; }
+        }
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .slider-outer { width: 90% !important; }
+          .slider-card { height: 160px !important; }
+        }
+        @media (min-width: 1025px) {
+          .slider-outer { width: 90% !important; max-width: 100%; }
+          .slider-card { height: 160px !important; }
+        }
       `}</style>
 
       <div className="slider-outer relative z-[99] w-[80%] max-w-[900px]" style={{ isolation: "isolate" }}>
@@ -56,7 +69,7 @@ export default function SmoothSlider({ cards = DEFAULT_CARDS, className = "" }) 
         {/* Prev button */}
         <button
           className="nav-btn nav-prev nav-btn absolute top-1/2 left-[-22px] z-20
-                     w-11 h-11 rounded-full flex items-center justify-center text-white cursor-pointer
+                     w-8 sm:w-10 md:w-9 h-8 sm:h-10 md:h-9 rounded-full flex items-center justify-center text-white cursor-pointer
                      border border-white/[0.13] bg-black/75 backdrop-blur-md
                      opacity-0 -translate-y-1/2 -translate-x-3.5
                      transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
@@ -66,7 +79,7 @@ export default function SmoothSlider({ cards = DEFAULT_CARDS, className = "" }) 
           disabled={offset === 0}
           aria-label="Previous"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -74,7 +87,7 @@ export default function SmoothSlider({ cards = DEFAULT_CARDS, className = "" }) 
         {/* Next button */}
         <button
           className="nav-btn nav-next nav-btn absolute top-1/2 right-[-22px] z-20
-                     w-11 h-11 rounded-full flex items-center justify-center text-white cursor-pointer
+                     w-8 sm:w-10 md:w-9 h-8 sm:h-10 md:h-9 rounded-full flex items-center justify-center text-white cursor-pointer
                      border border-white/[0.13] bg-black/75 backdrop-blur-md
                      opacity-0 -translate-y-1/2 translate-x-3.5
                      transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
@@ -84,7 +97,7 @@ export default function SmoothSlider({ cards = DEFAULT_CARDS, className = "" }) 
           disabled={offset >= maxOffset}
           aria-label="Next"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
@@ -98,7 +111,7 @@ export default function SmoothSlider({ cards = DEFAULT_CARDS, className = "" }) 
             {cards.map((card, idx) => (
             <div
               key={card.id ?? idx}
-              className={`slider-card relative h-[200px] border border-gray-500 rounded-[13px] overflow-hidden cursor-pointer bg-gradient-to-br
+              className={`slider-card relative border border-gray-500 rounded-[13px] overflow-hidden cursor-pointer bg-gradient-to-br
                           transition-[transform,box-shadow] duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]
                           hover:-translate-y-1.5 hover:scale-[1.014] hover:shadow-[0_22px_44px_rgba(0,0,0,0.05)]`}
             >
@@ -112,8 +125,8 @@ export default function SmoothSlider({ cards = DEFAULT_CARDS, className = "" }) 
                 }}
               />
               {/* Card text (only title) */}
-              <div className="absolute bottom-0 left-0 right-0 z-[2] p-5">
-                <div className="text-[1.05rem] font-semibold text-white">{card.title}</div>
+              <div className="absolute bottom-0 left-0 right-0 z-[2] p-2 sm:p-3 md:p-4">
+                <div className="text-xs sm:text-sm md:text-sm font-semibold text-white line-clamp-2">{card.title}</div>
               </div>
             </div>
           ))}
@@ -121,11 +134,11 @@ export default function SmoothSlider({ cards = DEFAULT_CARDS, className = "" }) 
         </div>
 
         {/* Dots */}
-        <div className="flex items-center justify-center gap-2 mt-5">
+        <div className="flex items-center justify-center gap-2 mt-3 sm:mt-4 md:mt-4">
           {Array.from({ length: maxOffset + 1 }).map((_, i) => (
             <button
               key={i}
-              className={`dot h-[5px] rounded-[3px] cursor-pointer border-0 p-0
+              className={`dot h-1 sm:h-1.5 md:h-1 rounded-[3px] cursor-pointer border-0 p-0
                           ${i === offset ? "on bg-white/85" : "bg-white/[0.18]"}`}
               onClick={() => go(i)}
               aria-label={`Go to position ${i + 1}`}
