@@ -160,34 +160,7 @@ const LandingPage = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-secondary-300/30 via-transparent to-primary-300/30"></div>
           <div className="relative z-10">
             <AnimatedBtn text="Collection BT21"/>
-            <div className="w-3/4 sm:w-2/3 md:w-1/2 mx-auto h-0.5 bg-gradient-to-r from-transparent via-primary-500 to-transparent"></div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-5 mt-3 sm:mt-4 mx-auto px-4">
-              <div className="flex bg-white/90 backdrop-blur-sm p-2 sm:p-3 md:p-4 rounded-lg items-center w-full sm:w-fit border border-primary-400/60 hover:border-secondary-500 transition" style={{boxShadow: '0 0 20px rgba(28, 207, 231, 0.3)'}}>
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex-shrink-0"></div>
-                <div className="flex flex-col ml-2 sm:ml-3">
-                  <div className="flex flex-col gap-0.5 px-1 text-xs sm:text-sm font-light text-center">
-                    <p className="font-medium text-secondary-600">Coussin BT21 Peluche</p>
-                    <div className="flex items-center gap-2 justify-center">
-                      <span className="text-secondary-500 line-through text-xs">$25.00</span>
-                      <span className="text-primary-600 font-semibold">$49.00</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex bg-white/90 backdrop-blur-sm p-2 sm:p-3 md:p-4 rounded-lg items-center w-full sm:w-fit border border-primary-400/60 hover:border-secondary-500 transition" style={{boxShadow: '0 0 20px rgba(28, 207, 231, 0.3)'}}>
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex-shrink-0"></div>
-                <div className="flex flex-col ml-2 sm:ml-3">
-                  <div className="flex flex-col gap-0.5 px-1 text-xs sm:text-sm font-light text-center">
-                    <p className="font-medium text-secondary-600">Coussin BT21 Peluche</p>
-                    <div className="flex items-center gap-2 justify-center">
-                      <span className="text-secondary-500 line-through text-xs">$25.00</span>
-                      <span className="text-primary-600 font-semibold">$49.00</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </RevealCard>        
         
         <CountDownCard/>
