@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, User, ShoppingBag, ChevronDown, ChevronRight } from 'lucide-react';
 import { menuItems, dropdownData } from '../data/menuData';
+import { useCart } from '../store/CartContext';
+import ExpandSearch from './forms/ExpandSearch';
 
 // ─── Shared item row used in Shop, K-Style, K-Beauty columns ─────────────────
 // Every item MUST have a slug → links to /products/:slug
@@ -49,6 +51,7 @@ const Navbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [beautyFilter, setBeautyFilter] = useState(dropdownData.beauty[0]?.title ?? '');
   const timeoutRef = useRef(null);
+  const { getItemCount } = useCart();
 
   const open  = (menu) => { clearTimeout(timeoutRef.current); setActiveMenu(menu); };
   const close  = ()    => { timeoutRef.current = setTimeout(() => setActiveMenu(null), 500); };
@@ -70,16 +73,26 @@ const Navbar = () => {
 
       {/* Logo */}
       <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
-        <div className="flex-1" />
+        <div className="flex-1">
+          <ExpandSearch />
+        </div>
         <Link to="/" className="flex-col items-center text-center">
           <h1 className="text-2xl font-bold tracking-tighter">프랑스</h1>
           <h1 className="text-3xl font-black tracking-[0.2em] mt-[-8px]">KPOP</h1>
           <p className="text-[10px] tracking-[0.3em] text-gray-500 uppercase">Boutique</p>
         </Link>
         <div className="flex-1 flex justify-end gap-5 text-gray-700">
-          <Search size={22} strokeWidth={1.5} className="cursor-pointer hover:text-[#5E2251] transition-colors" />
-          <User   size={22} strokeWidth={1.5} className="cursor-pointer hover:text-[#5E2251] transition-colors" />
-          <ShoppingBag size={22} strokeWidth={1.5} className="cursor-pointer hover:text-[#5E2251] transition-colors" />
+          <Link to="/profile" className="hover:text-[#5E2251] transition-colors">
+            <User size={22} strokeWidth={1.5} />
+          </Link>
+          <Link to="/cart" className="relative hover:text-[#5E2251] transition-colors group">
+            <ShoppingBag size={22} strokeWidth={1.5} />
+            {getItemCount() > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#5E2251] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center group-hover:bg-pink-600 transition-colors">
+                {getItemCount()}
+              </span>
+            )}
+          </Link>
         </div>
       </div>
 

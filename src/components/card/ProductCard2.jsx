@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Heart, ShoppingBag, Star } from "lucide-react";
 
 function Stars({ rating }) {
@@ -26,6 +27,7 @@ function Stars({ rating }) {
  * ProductCard2
  *
  * Expects a product object with:
+ *   id            {string|number}
  *   name          {string}
  *   price         {number}
  *   originalPrice {number|null}
@@ -39,8 +41,10 @@ export function ProductCard2({ product, className = "" }) {
   const [hovered, setHovered] = useState(false);
   const [wished, setWished] = useState(false);
   const [added, setAdded] = useState(false);
+  const navigate = useNavigate();
 
   const {
+    id,
     name,
     price,
     originalPrice,
@@ -64,8 +68,14 @@ export function ProductCard2({ product, className = "" }) {
     setTimeout(() => setAdded(false), 1500);
   };
 
+  const handleClick = () => {
+    if (id) {
+      navigate(`/product/${id}`);
+    }
+  };
+
   return (
-    <div className={`group flex flex-col gap-3 cursor-pointer ${className}`}>
+    <div className={`group flex flex-col gap-3 cursor-pointer ${className}`} onClick={handleClick}>
       
       {/* Image container */}
       <div

@@ -148,6 +148,7 @@ export default function GroupProductPage({
           {sortedProducts.map((product) => (
             <div key={product.id} className="flex flex-col">
               <ProductCard
+                id={product.id}
                 image={product.url}
                 hoverImage={product.urlHover}
                 name={product.name}

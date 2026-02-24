@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 /**
  * ProductCard
@@ -9,14 +10,22 @@ import { useState } from "react";
  *  - name         {string}  product name
  *  - price        {number}  original price
  *  - reducedPrice {number}  (optional) sale price — if provided, original is shown struck-through
+ *  - id           {string|number}  product id for navigation
  */
-export function ProductCard({ image, hoverImage, name, price, reducedPrice, isEstimated, className = "" }) {
+export function ProductCard({ image, hoverImage, name, price, reducedPrice, isEstimated, id, className = "" }) {
   const [hovered, setHovered] = useState(false);
+  const navigate = useNavigate();
 
   const isOnSale = reducedPrice !== undefined && reducedPrice !== null;
 
+  const handleClick = () => {
+    if (id) {
+      navigate(`/product/${id}`);
+    }
+  };
+
   return (
-    <div className={`group ${className} flex flex-col gap-3 cursor-pointer`}>
+    <div className={`group ${className} flex flex-col gap-3 cursor-pointer`} onClick={handleClick}>
       
       {/* Image container */}
       <div
