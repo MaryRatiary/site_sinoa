@@ -7,6 +7,7 @@ import { ProductCard2 } from "../card/ProductCard2";
 import Navbar from "../Header";
 import { RevealText } from '../text/RevealText';
 import Footer from '../Footer';
+import PercentageReduction from "../card/PercentageReduction";
 
 // Merge all category maps — add more imports here as you create new data files
 const ALL_CATEGORIES = { ...CATEGORIES, ...K_STYLE_CATEGORIES };
@@ -125,6 +126,7 @@ export default function ProductPage() {
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
       <Navbar/>
+      <PercentageReduction/>
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <nav className="flex items-center gap-1.5 text-xs text-gray-400 font-sans mb-6">
@@ -142,8 +144,8 @@ export default function ProductPage() {
           ))}
         </nav>
       </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          
 
         {/* Page Header */}
         <div className="mb-8 w-screen flex flex-col justify-center items-center gap-4">
