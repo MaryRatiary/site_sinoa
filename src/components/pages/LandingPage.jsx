@@ -160,7 +160,9 @@ const LandingPage = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-secondary-300/30 via-transparent to-primary-300/30"></div>
           <div className="relative z-10">
             <AnimatedBtn text="Collection BT21"/>
-          
+            
+           
+          </div>
         </RevealCard>        
         
         <CountDownCard/>
