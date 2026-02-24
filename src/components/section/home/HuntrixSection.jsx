@@ -1,5 +1,4 @@
-
-import bestSellers from "../../../data/bestsellers";
+import bestSellers from "../../../data/bestSellers";
 import { ProductCard } from "../../card/ProductCard";
 const HuntrixSection = () => {
 

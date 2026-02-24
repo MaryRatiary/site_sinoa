@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, User, ShoppingBag, ChevronDown, ChevronRight } from 'lucide-react';
 import { menuItems, dropdownData } from '../data/menuData';
 
@@ -35,6 +36,7 @@ const Navbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const timeoutRef = useRef(null);
   const [beautyFilter, setBeautyFilter] = useState('Produits Skincare');
+  const navigate = useNavigate();
 
   const handleMouseEnter = (menu) => {
     clearTimeout(timeoutRef.current);
@@ -134,10 +136,10 @@ const Navbar = () => {
         >
           <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
             {dropdownData.groups.map((group) => (
-              <a
+              <button
                 key={group.name}
-                href={group.url}
-                className="group flex flex-col items-center text-center"
+                onClick={() => navigate(group.url)}
+                className="group flex flex-col items-center text-center cursor-pointer"
               >
                 <div className="relative w-40 h-40 overflow-hidden rounded-xl">
                   <img
@@ -151,7 +153,7 @@ const Navbar = () => {
                 <span className="mt-4 text-gray-800 group-hover:text-[#5E2251] text-sm font-semibold uppercase tracking-wide transition-colors duration-300">
                   {group.name}
                 </span>
-              </a>
+              </button>
             ))}
           </div>
         </div>

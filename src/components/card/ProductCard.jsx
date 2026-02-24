@@ -28,8 +28,8 @@ export function ProductCard({ image, hoverImage, name, price, reducedPrice, isEs
         <img
           src={image}
           alt={name}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            hovered ? "opacity-0" : "opacity-100"
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${
+            hovered ? "opacity-0 scale-110" : "opacity-100 scale-100"
           }`}
         />
 
@@ -37,8 +37,8 @@ export function ProductCard({ image, hoverImage, name, price, reducedPrice, isEs
         <img
           src={hoverImage}
           alt={`${name} alternate view`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            hovered ? "opacity-100" : "opacity-0"
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${
+            hovered ? "opacity-100 scale-110" : "opacity-0 scale-100"
           }`}
         />
       </div>
