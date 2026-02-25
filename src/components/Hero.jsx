@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <div className="relative w-full h-[95vh] md:h-[95vh] overflow-hidden bg-black">
+    <div className="relative w-full h-[95vh] md:h-[80vh] overflow-hidden bg-black">
       {/* IMAGE : Focus équipe à droite */}
       <img 
         src="/kpoporiginal.jpg" 
