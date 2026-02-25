@@ -11,7 +11,7 @@ const HuntrixSection = () => {
       {/* Image Huntrix - Plus étroite et stylisée */}
       <div className="relative w-full lg:w-[280px] aspect-[3/4] lg:h-[450px] flex-shrink-0 overflow-hidden rounded-2xl shadow-xl group">
         <img 
-          src="/fan_kpop.webp" 
+          src="/image1.jpg" 
           alt="Kpop Demon - Huntrix" 
           className="object-cover h-full w-full transition-transform duration-700 group-hover:scale-110"
         />
@@ -23,12 +23,15 @@ const HuntrixSection = () => {
         </div>
       </div>
 
-      {/* Grille de Produits - Optimisée pour le responsive */}
-      <div className="w-full grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+     {/* Grille de Produits - Scrollable sur mobile, Grille sur Desktop */}
+      <div className="w-full flex flex-nowrap overflow-x-auto md:grid md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide">
         {bestSellers.map((b) => (
-          <div key={b.name} className="flex justify-center">
+          <div 
+            key={b.name} 
+            className="flex-shrink-0 w-[65vw] sm:w-[45vw] md:w-full snap-center flex justify-center"
+          >
             <ProductCard
-              className="w-full shadow-sm hover:shadow-md transition-shadow"
+              className="w-full shadow-sm hover:shadow-md transition-shadow border border-gray-50 rounded-xl"
               image={b.url}
               hoverImage={b.urlHover}
               name={b.name}
