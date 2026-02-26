@@ -153,53 +153,39 @@ const LandingPage = () => {
         
         <FilterBar/>
         <LightStickCard/>
-        <AnimatedBtn text="Voir tous les produits"/>
         
         {/* BT21 Collection Card */}
-        <RevealCard image="/collection.jpg" className='relative overflow-hidden' style={{boxShadow: '0 0 40px rgba(179, 95, 194, 0.3)'}}>
-          <div className="absolute inset-0 bg-gradient-to-br from-secondary-300/30 via-transparent to-primary-300/30"></div>
-          <div className="relative z-10">
-            <AnimatedBtn text="Collection BT21"/>
-            
-           
-          </div>
-        </RevealCard>        
+                
         
         <CountDownCard/>
         
-        {/* K-Fashion Section - Cyberpunk Style */}
-        <div ref={kFashionRef} className="w-full py-8 md:py-12 px-4 relative overflow-hidden bg-gradient-to-r from-dark-100 via-primary-100 to-primary-50">
-          <div className="absolute inset-0 opacity-40" style={{backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(28, 207, 231, 0.15) 0%, transparent 50%)'}}></div>
-          
-          <div className="max-w-7xl mx-auto relative z-10">
-            <div className="flex flex-col md:flex-row gap-8 items-stretch">
-              {/* Image - Left side */}
-              <div className="w-full md:w-[48%] flex-shrink-0">
-                <div className="relative w-full h-64 sm:h-80 md:h-[420px] overflow-hidden rounded-3xl" style={{boxShadow: '0 0 30px rgba(28, 207, 231, 0.5)'}}>
-                  <img
-                    src="/fashion/k-fashion.png"
-                    alt="K-Fashion"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-dark-200/40 via-transparent to-transparent"></div>
+          {/* Section K-Fashion */}
+          <div ref={kFashionRef} className="w-full py-12 md:py-20 px-4 relative overflow-hidden bg-[#f8fdff]">
+            <div className="max-w-7xl mx-auto relative z-10">
+              <div className="flex flex-col lg:flex-row gap-10 items-center">
+                
+                {/* Image de gauche - Plus grande sur desktop */}
+                <div className="w-full lg:w-[45%]">
+                  <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary-200/50 border-8 border-white">
+                    <img src="/fashion/k-fashion.png" alt="K-Fashion" className="w-full h-[350px] md:h-[500px] object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-primary-500/20 to-transparent" />
+                  </div>
                 </div>
-              </div>
 
-              {/* Content + Slider - Right side */}
-              <div className="w-full md:w-[52%] flex flex-col justify-center">
-                <div className="mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-500">K-Fashion</h2>
-                  <p className="text-primary-600 text-lg md:text-xl font-semibold italic mt-1">Korean Style</p>
-                  <p className="text-gray-700 text-sm mt-2">Inspire toi de la mode coréenne pour avoir un look tendance !</p>
-                </div>
-                <div className="flex-1">
-                  <SmoothSlider cards={fashion} className="justify-center md:justify-start"/>
+                {/* Contenu + Slider de droite */}
+                <div className="w-full lg:w-[75%]">
+                  <div className="mb-8 text-center lg:text-left">
+                    <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">K-FASHION</h2>
+                    <p className="text-primary-600 text-xl font-serif italic tracking-wide">The Seoul Trend</p>
+                    <div className="h-1 w-20 bg-primary-500 my-4 mx-auto lg:mx-0"></div>
+                    <p className="text-gray-600 max-w-md mx-auto lg:mx-0">Inspire-toi de la mode coréenne pour un look tendance et audacieux au quotidien.</p>
+                  </div>
+                  
+                  <SmoothSlider cards={fashion} />
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        
         {/* K-Beauty Section - Cyberpunk Style */}
         <div ref={kBeautyRef} className="w-full py-8 md:py-12 px-4 relative overflow-hidden bg-gradient-to-r from-secondary-100 via-accent-100 to-secondary-50">
           <div className="absolute inset-0 opacity-35" style={{backgroundImage: 'radial-gradient(circle at 70% 50%, rgba(179, 95, 194, 0.2) 0%, transparent 50%)'}}></div>
@@ -220,11 +206,12 @@ const LandingPage = () => {
 
               {/* Content + Slider - Left side */}
               <div className="w-full md:w-[52%] flex flex-col justify-center">
-                <div className="mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-secondary-600 to-accent-600">K-Beauty</h2>
-                  <p className="text-secondary-600 text-lg md:text-xl font-semibold italic mt-1">Korean Beauty</p>
-                  <p className="text-gray-700 text-sm mt-2">Découvre les meilleurs Produits Skincare de Corée du Sud !</p>
-                </div>
+                <div className="mb-8 text-center lg:text-left">
+                    <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">Korean Beauty</h2>
+                    <p className="text-primary-600 text-xl font-serif italic tracking-wide">Découvre les meilleurs Produits Skincare de Corée du Sud !</p>
+                    <div className="h-1 w-20 bg-primary-500 my-4 mx-auto lg:mx-0"></div>
+                   
+                  </div>
                 <div className="flex-1">
                   <SmoothSlider cards={beauty} className="justify-center md:justify-end"/>
                 </div>
@@ -236,9 +223,7 @@ const LandingPage = () => {
         <BlogSection />
       </main>
       <Footer/>
-      <footer className="bg-gradient-to-r from-dark-100 to-primary-100 text-gray-900 py-4 sm:py-6 md:py-8 text-center text-xs sm:text-sm border-t border-primary-400/50" style={{boxShadow: '0 -10px 30px rgba(28, 207, 231, 0.15)'}}>
-        <p>© 2026 K-POP BOUTIQUE. Made with Passion.</p>
-      </footer>
+     
     </div>
   );
 };

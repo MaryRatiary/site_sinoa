@@ -20,7 +20,7 @@ const GroupSection = () => {
               className="group flex flex-col gap-2.5 cursor-pointer transform transition-all duration-300 hover:scale-105"
             >
               {/* Image Container */}
-              <div className="relative aspect-square bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 flex items-center justify-center p-4 sm:p-6">
+              <div className="relative aspect-square overflow-hidden flex items-center justify-center rounded-lg">
                 {/* Overlay Effect */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
                 

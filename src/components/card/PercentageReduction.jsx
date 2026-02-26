@@ -36,77 +36,80 @@ const PercentageReduction = () => {
     }, []);
 
     return (
-        <section ref={containerRef} className="w-full py-6 px-4">
-            <div className="max-w-4xl mx-auto"> {/* Largeur max réduite */}
+        <section ref={containerRef} className="w-full py-4 md:py-6 px-4">
+            <div className="max-w-6xl mx-auto">
                 
-                {/* Header plus compact */}
-                <div className="text-center mb-6">
-                    <h3 className="text-xl md:text-2xl font-bold text-gray-800">
-                        Offres <span style={{ color: '#8318b3' }}>Dégressives</span>
+                {/* Header compact */}
+                <div className="text-center mb-4 md:mb-6">
+                    <h3 className="text-lg md:text-2xl text-center font-bold text-gray-900">
+                        Offres Dégressives
                     </h3>
-                    <p className="text-gray-500 text-xs md:text-sm mt-1">
+                    <p className="text-gray-500 text-[11px] md:text-sm mt-1">
                         Économisez davantage en ajoutant plus d'articles.
                     </p>
                 </div>
 
-                {/* Grid plus serré */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                {/* Grid - côte à côte même sur mobile */}
+                <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-4">
                     {percentages.map((p, index) => (
                         <div
                             key={p.value}
                             ref={(el) => (itemsRef.current[index] = el)}
-                            className="relative group p-4 rounded-2xl border border-gray-100 bg-white transition-all duration-300 hover:shadow-md overflow-hidden"
-                            style={{ boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}
+                            className="group relative p-2 md:p-4 rounded-lg md:rounded-2xl border border-primary-300/40 bg-secondary-50 transition-all duration-300 hover:shadow-md hover:border-primary-400/60 overflow-hidden"
+                            style={{
+                                background: 'linear-gradient(135deg, rgba(28, 207, 231, 0.05) 0%, rgba(179, 95, 194, 0.05) 100%)',
+                                boxShadow: '0 2px 8px rgba(82, 108, 111, 0.1)',
+                            }}
                         >
-                            {/* Barre de couleur discrète en haut */}
+                            {/* Barre colorée en haut */}
                             <div 
-                                className="absolute top-0 left-0 w-full h-1"
-                                style={{ background: `linear-gradient(90deg, #b35fc2, #8318b3)` }}
+                                className="absolute top-0 left-0 w-full h-0.5 md:h-1"
+                                style={{ background: ` #b35fc2` }}
                             ></div>
 
                             <div className="flex flex-col items-center text-center">
-                                {/* Valeur de réduction plus petite */}
-                                <div className="flex items-baseline mb-1">
+                                {/* Valeur de réduction */}
+                                <div className="flex items-baseline mb-1 md:mb-2">
                                     <span 
-                                        className="text-3xl font-black tracking-tight"
-                                        style={{ color: '#8318b3' }}
+                                        className="text-2xl md:text-4xl font-black tracking-tight"
+                                        style={{ color: 'rgba(1, 1, 1, 0.82)' }}
                                     >
                                         -{p.value}
                                     </span>
-                                    <span className="text-lg font-bold ml-0.5" style={{ color: '#b35fc2' }}>%</span>
+                                    <span className="text-sm md:text-lg font-bold ml-0.5" style={{ color: 'rgba(0, 0, 0, 0.82)' }}>%</span>
                                 </div>
 
-                                {/* Condition sur une seule ligne */}
-                                <p className="text-[11px] md:text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                {/* Condition compacte */}
+                                <p className="text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider leading-tight line-clamp-2">
                                     {p.reason}
                                 </p>
 
-                                {/* Indicateur de palier visuel */}
-                                <div className="mt-3 flex gap-1">
+                                {/* Indicateur de palier */}
+                                <div className="mt-2 md:mt-3 flex gap-0.5 md:gap-1">
                                     {[...Array(3)].map((_, i) => (
                                         <div 
                                             key={i}
-                                            className="h-1 w-4 rounded-full"
+                                            className="h-1 w-2 md:w-4 rounded-full transition-all"
                                             style={{ 
-                                                backgroundColor: i <= index ? '#b35fc2' : '#f3f4f6',
-                                                opacity: i <= index ? 1 : 0.5
+                                                backgroundColor: i <= index ? '#1ccfe7' : '#e5e7eb',
+                                                opacity: i <= index ? 1 : 0.4
                                             }}
                                         ></div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Effet discret au hover */}
+                            {/* Effet au hover */}
                             <div 
-                                className="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity pointer-events-none"
-                                style={{ backgroundColor: '#8318b3' }}
+                                className="absolute inset-0 opacity-0 group-hover:opacity-[0.05] transition-opacity pointer-events-none"
+                                style={{ backgroundColor: '#1ccfe7' }}
                             ></div>
                         </div>
                     ))}
                 </div>
 
-                {/* Info bas de page réduite */}
-                <p className="text-center mt-5 text-[10px] text-gray-400 font-medium">
+                {/* Info bas compact */}
+                <p className="text-center mt-3 md:mt-5 text-[9px] md:text-[10px] text-gray-400 font-medium">
                     * Appliqué au panier
                 </p>
             </div>
