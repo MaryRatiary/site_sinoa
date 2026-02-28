@@ -1,9 +1,9 @@
 const bestSellers = [
     {
         name: "Carte Cadeau KPOP",
-        isEstimated: true,
+        isEstimated: false,
         realPrice: 25.00,
-        reducedPrice: null,
+        reducedPrice: 19.90,
         url: "/boxes/box1.png",
         urlHover: "/boxes/box2.png"
     },

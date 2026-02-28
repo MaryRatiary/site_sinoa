@@ -2,23 +2,64 @@ import bestSellers from "../../../data/bestSellers";
 import { ProductCard } from "../../card/ProductCard";
 
 const BestSellerSection = () => {
+  const fontTitle = "'Archivo Black', sans-serif";
+  const fontHunter = "'Cinzel', serif";
+
   return (
-    <section className="w-full py-6 md:py-10 px-4 bg-white">
+    <section className="w-full py-2 md:py-4 px-4 bg-white overflow-hidden">
       <div className="max-w-[1400px] mx-auto">
         
-        {/* Conteneur Scrollable Horizontal - Mobile & Desktop */}
-        <div className="flex flex-nowrap overflow-x-auto gap-4 md:gap-6 pb-8 scrollbar-hide snap-x snap-mandatory">
-          {bestSellers.map((b) => (
+        {/* --- HEADER SECTION --- */}
+        <div className="mb-4 md:mb-4 flex flex-col items-center md:items-start relative">
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] text-[#b35fc2] mb-2" style={{ fontFamily: fontHunter }}>
+                Elite Equipment
+            </span>
+        </div>
+
+        {/* --- GRID ADAPTATIVE --- */}
+        <div className="grid-container grid gap-4 md:gap-6 overflow-x-auto overflow-y-hidden pb-8 scrollbar-hide snap-x snap-mandatory">
+          
+          {/* On gère les lignes et colonnes ici de façon conditionnelle */}
+          <style jsx>{`
+            .grid-container {
+              grid-auto-flow: column;
+              /* MOBILE : 2 lignes */
+              grid-template-rows: repeat(2, min-content);
+              --col-width: 65%;
+            }
+
+            @media (min-width: 768px) {
+              .grid-container {
+                /* DESKTOP : Retour à 1 seule ligne */
+                grid-template-rows: repeat(1, min-content);
+                --col-width: 22%;
+              }
+            }
+
+            @media (min-width: 1024px) {
+              .grid-container {
+                --col-width: 18%;
+              }
+            }
+
+            .grid-container {
+              grid-auto-columns: var(--col-width);
+            }
+            
+            .scrollbar-hide::-webkit-scrollbar { display: none; }
+            .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+          `}</style>
+
+          {bestSellers.map((b, index) => (
             <div
-              key={b.name}
-              /* Largeur adaptative : 65% sur mobile, 20% sur desktop pour voir 5 produits */
-              className="w-[65vw] sm:w-[40vw] md:w-[28vw] lg:w-[18%] flex-shrink-0 snap-start group"
+              key={b.id || `${b.name}-${index}`}
+              className="snap-start group flex flex-col h-full"
             >
               <div className="flex flex-col h-full space-y-3">
-                {/* Carte Produit - Hauteur contrôlée */}
-                <div className="relative overflow-hidden rounded-xl border border-gray-100 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+                <div className="relative overflow-hidden rounded-xl border border-gray-100 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 bg-white">
                   <ProductCard
-                    className="w-full object-cover"
+                    id={b.id}
+                    className="w-full h-full object-cover"
                     image={b.url}
                     hoverImage={b.urlHover}
                     name={b.name}
@@ -26,8 +67,10 @@ const BestSellerSection = () => {
                     reducedPrice={b.reducedPrice}
                     isEstimated={b.isEstimated}
                   />
+                  
+                  {/* Petit indicateur de rang au hover */}
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-[#b35fc2] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                 </div>
-
               </div>
             </div>
           ))}

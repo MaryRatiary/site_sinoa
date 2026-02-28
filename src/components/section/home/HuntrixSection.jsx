@@ -6,20 +6,20 @@ const HuntrixSection = () => {
   const ref = useScrollAnimation();
 
   return (
-    <section ref={ref} className="scroll-animate flex flex-col lg:flex-row gap-3 md:gap-6 items-start px-4">
+    <section ref={ref} className="scroll-animate flex flex-col lg:flex-row gap-3 md:gap-6 items-start px-0">
       
      {/* Image Huntrix - Modifiée uniquement pour le mobile */}
-<div className="relative z-20 w-full sm:w-[35vw] lg:w-[280px] 
+<div className="relative z-20 w-full sm:w-[55vw] lg:w-[280px] 
                 /* Hauteur réduite sur mobile (aspect-video ou h-fixe) */
-                aspect-video h-[220px] 
+                aspect-video h-[250px] 
                 /* Retour aux styles d'origine dès le breakpoint sm */
-                sm:aspect-[1/6] sm:h-auto lg:h-[450px] 
+                sm:aspect-[4/6] sm:h-auto lg:h-[450px] 
                 flex-shrink-0 overflow-hidden rounded-lg lg:rounded-2xl shadow-md lg:shadow-xl group lg:sticky lg:top-4">
   
   <img 
-    src="/hero.jpg" 
+    src="/kpoporiginal.jpg" 
     alt="Kpop Demon - Huntrix" 
-    className="object-cover h-full w-full transition-transform duration-700 group-hover:scale-110"
+    className="object-cover h-full w-full transition-transform duration-700 group-hover:scale-200"
   />
 
   {/* Contenu textuel sans dégradé */}
@@ -30,9 +30,9 @@ const HuntrixSection = () => {
 </div>
      {/* Liste de Produits - Style Mobile modifié (hauteur réduite) */}
       <div className="w-full flex flex-nowrap overflow-x-auto gap-3 pb-6 snap-x snap-mandatory scrollbar-hide focus:outline-none">
-        {bestSellers.map((b) => (
+        {bestSellers.map((b, index) => (
           <div 
-            key={b.name} 
+            key={b.id || `${b.name}-${index}`} 
             /* Largeur réduite sur mobile pour matcher la petite hauteur */
             className="flex-shrink-0 w-[45vw] sm:w-[40vw] md:w-[30vw] lg:w-[220px] snap-start"
           >

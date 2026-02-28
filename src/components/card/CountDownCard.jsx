@@ -5,8 +5,10 @@ const CountDownCard = () => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const ref = useScrollAnimation()
 
+  const fontTitle = "'Archivo Black', sans-serif";
+  const fontHunter = "'Cinzel', serif";
+
   useEffect(() => {
-    // Cible : +3 jours et +3 heures
     const target = new Date()
     target.setDate(target.getDate() + 3)
     target.setHours(target.getHours() + 3)
@@ -33,87 +35,73 @@ const CountDownCard = () => {
   const pad = (n) => String(n).padStart(2, '0')
 
   const units = [
-    { value: timeLeft.days,    label: 'Days' },
-    { value: timeLeft.hours,   label: 'Hours' },
-    { value: timeLeft.minutes, label: 'Min' },
-    { value: timeLeft.seconds, label: 'Sec' },
+    { value: timeLeft.days,    label: 'DAYS' },
+    { value: timeLeft.hours,   label: 'HOURS' },
+    { value: timeLeft.minutes, label: 'MIN' },
+    { value: timeLeft.seconds, label: 'SEC' },
   ]
 
   return (
     <div 
       ref={ref} 
-      className="scroll-animate w-full h-[200px] md:h-[45vh] my-6 relative overflow-hidden bg-black group border-y border-red-900/30"
+      className="scroll-animate w-full relative overflow-hidden bg-white- border-y border-gray-100 flex items-center"
+      style={{ height: '130px' }}
     >
       
-      {/* Background Image avec Parallax léger */}
+      {/* Background Image (Filigrane très léger) */}
       <img
         src="/horloge.jpg"
         alt="Kpop Demon Hunter"
-        className="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-[3000ms] group-hover:scale-105"
+        className="absolute inset-0 w-full h-full object-cover opacity-[0.03] grayscale"
       />
 
-      {/* Overlays Stylisés */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-90" />
-      <div className="absolute inset-0 bg-red-950/10 mix-blend-color-dodge" />
-      
-      {/* Scanlines Cyberpunk (Effet écran) */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px]" />
-
       {/* Content Container */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center z-10 text-white px-4">
+      <div className="max-w-7xl mx-auto w-full px-6 flex flex-col md:flex-row items-center justify-between z-10">
         
-        {/* Header Section */}
-        <div className="text-center mb-6 md:mb-8">
-            <span className="text-red-500 text-[10px] md:text-xs font-black tracking-[0.4em] uppercase animate-pulse block mb-2">
-                Mission Status: Active
+        {/* Titre Mission - Style Huntrix Light */}
+        <div className="flex flex-col items-center md:items-start mb-2 md:mb-0">
+            <span className="text-[#b35fc2] text-[10px] font-black tracking-[0.3em] uppercase block mb-1" style={{ fontFamily: fontHunter }}>
+                Free Extraction Delivery
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black italic tracking-tighter uppercase leading-tight">
-                LIVRAISON <br className="block sm:hidden" /> 
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-purple-500">GRATUITE</span>
+            <h1 className="text-xl md:text-3xl font-black tracking-tighter uppercase text-gray-900 leading-none" style={{ fontFamily: fontTitle }}>
+                HUNTRIX <span style={{ color: '#b35fc2' }}>STATUS</span>
             </h1>
         </div>
 
-        {/* Timer Row */}
-        <div className="flex gap-4 sm:gap-10 md:gap-16 items-center justify-center">
+        {/* Timer Row - Design Compact et Médical */}
+        <div className="flex gap-4 sm:gap-8 md:gap-12 items-center">
           {units.map(({ value, label }, index) => (
             <React.Fragment key={label}>
-              <div className="flex flex-col items-center group/unit">
-                <div className="relative">
-                    {/* Shadow Glow effet Néon */}
-                    <span className="absolute inset-0 text-red-600/40 blur-lg scale-125 group-hover/unit:text-red-500/60 transition-colors">
-                        {pad(value)}
-                    </span>
-                    <span className="relative text-4xl sm:text-5xl md:text-7xl font-black tabular-nums tracking-tighter">
-                        {pad(value)}
-                    </span>
-                </div>
-                <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 mt-2">
+              <div className="flex flex-col items-center">
+                <span className="text-3xl md:text-5xl font-black tabular-nums text-gray-900 leading-none" style={{ fontFamily: fontTitle }}>
+                    {pad(value)}
+                </span>
+                <span className="text-[8px] md:text-[9px] uppercase font-bold tracking-widest text-gray-400 mt-1" style={{ fontFamily: fontHunter }}>
                     {label}
                 </span>
               </div>
               
-              {/* Séparateur stylisé (incliné) */}
               {index < units.length - 1 && (
-                <div className="h-8 w-[1px] bg-red-600/40 rotate-12" />
+                <div className="h-6 w-[1.5px] bg-gray-100 rotate-[20deg]" />
               )}
             </React.Fragment>
           ))}
         </div>
 
-        {/* Bottom Line Decor - Hunter Interface */}
-        <div className="mt-8 flex items-center gap-4 opacity-40">
-            <div className="h-[1px] w-12 md:w-20 bg-gradient-to-r from-transparent to-red-600" />
-            <span className="text-[9px] tracking-[0.5em] uppercase font-light whitespace-nowrap">Hunter Interface v.2.0</span>
-            <div className="h-[1px] w-12 md:w-20 bg-gradient-to-l from-transparent to-red-600" />
+        {/* Status Badge (Desktop only) */}
+        <div className="hidden lg:flex items-center gap-3 border-l border-gray-100 pl-8">
+            <div className="text-right">
+                <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none">Voucher</p>
+                <p className="text-[10px] font-black text-[#b35fc2] uppercase">Applied</p>
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#b35fc2] shadow-[0_0_8px_#b35fc2]" />
+            </div>
         </div>
       </div>
 
-      {/* HUD Corner Elements (Angles d'interface) */}
-      <div className="absolute top-6 left-6 w-8 h-8 border-t-2 border-l-2 border-red-600/30" />
-      <div className="absolute bottom-6 right-6 w-8 h-8 border-b-2 border-r-2 border-red-600/30" />
-      
-      {/* Glitch Decorative Element (Petite barre latérale) */}
-      <div className="absolute right-0 top-1/4 w-1 h-12 bg-red-600/50 shadow-[0_0_10px_red]" />
+      {/* Barre tactique violette fine en bas */}
+      <div className="absolute bottom-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#b35fc2] to-transparent opacity-20" />
     </div>
   )
 }

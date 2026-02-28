@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const GAP = 12; 
+const GAP = 8; 
 
 export default function SmoothSlider({ cards = [], className = "" }) {
   const [offset, setOffset] = useState(0);
@@ -63,7 +63,7 @@ export default function SmoothSlider({ cards = [], className = "" }) {
           {cards.map((card, idx) => (
             <div
               key={card.id ?? idx}
-              className="slider-card group relative aspect-[3/4] rounded-2xl overflow-hidden shadow-sm border border-white/20 bg-gray-200"
+              className="slider-card group relative aspect-[4/4] rounded-2xl overflow-hidden shadow-sm border border-white/20 bg-gray-200"
             >
               <img 
                 src={card.url} 
