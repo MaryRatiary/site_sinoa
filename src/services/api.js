@@ -1,0 +1,189 @@
+// Configuration API
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Helper pour les requêtes
+export const apiCall = async (endpoint, options = {}) => {
+  const token = localStorage.getItem('token');
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'API Error');
+  }
+
+  return response.json();
+};
+
+// ============ AUTH ============
+export const authAPI = {
+  register: (email, password, firstName, lastName) =>
+    apiCall('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, firstName, lastName }),
+    }),
+
+  login: (email, password) =>
+    apiCall('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    }),
+
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  },
+};
+
+// ============ CATEGORIES ============
+export const categoriesAPI = {
+  getAll: () => apiCall('/categories'),
+
+  getById: (id) => apiCall(`/categories/${id}`),
+
+  getChildren: (parentId) => apiCall(`/categories/${parentId}/children`),
+
+  create: (data) =>
+    apiCall('/categories', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  update: (id, data) =>
+    apiCall(`/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  delete: (id) =>
+    apiCall(`/categories/${id}`, {
+      method: 'DELETE',
+    }),
+};
+
+// ============ PRODUCTS ============
+export const productsAPI = {
+  getAll: (query = '') => apiCall(`/products${query}`),
+
+  getById: (id) => apiCall(`/products/${id}`),
+
+  create: (data) =>
+    apiCall('/products', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  update: (id, data) =>
+    apiCall(`/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  delete: (id) =>
+    apiCall(`/products/${id}`, {
+      method: 'DELETE',
+    }),
+
+  // Images
+  addImage: (productId, imageData) =>
+    apiCall(`/products/${productId}/images`, {
+      method: 'POST',
+      body: JSON.stringify(imageData),
+    }),
+
+  // Tailles
+  addSize: (productId, size, stock) =>
+    apiCall(`/products/${productId}/sizes`, {
+      method: 'POST',
+      body: JSON.stringify({ size, stock }),
+    }),
+
+  updateSizeStock: (productId, sizeId, stock) =>
+    apiCall(`/products/${productId}/sizes/${sizeId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ stock }),
+    }),
+
+  // Couleurs
+  addColor: (productId, colorName, colorHex, stock) =>
+    apiCall(`/products/${productId}/colors`, {
+      method: 'POST',
+      body: JSON.stringify({ colorName, colorHex, stock }),
+    }),
+
+  updateColorStock: (productId, colorId, stock) =>
+    apiCall(`/products/${productId}/colors/${colorId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ stock }),
+    }),
+};
+
+// ============ CART ============
+export const cartAPI = {
+  addToCart: (productId, quantity, size, color) =>
+    apiCall('/cart', {
+      method: 'POST',
+      body: JSON.stringify({ productId, quantity, size, color }),
+    }),
+
+  getCart: () => apiCall('/cart'),
+
+  removeFromCart: (productId) =>
+    apiCall(`/cart/${productId}`, {
+      method: 'DELETE',
+    }),
+
+  clearCart: () =>
+    apiCall('/cart', {
+      method: 'DELETE',
+    }),
+};
+
+// ============ CHECKOUT / COMMANDES ============
+export const checkoutAPI = {
+  createOrder: (items, shippingAddress, paymentMethod) =>
+    apiCall('/checkout', {
+      method: 'POST',
+      body: JSON.stringify({ items, shippingAddress, paymentMethod }),
+    }),
+
+  getUserOrders: () => apiCall('/checkout'),
+
+  getOrderById: (orderId) => apiCall(`/checkout/${orderId}`),
+
+  cancelOrder: (orderId) =>
+    apiCall(`/checkout/${orderId}/cancel`, {
+      method: 'PUT',
+    }),
+};
+
+// ============ DASHBOARD ADMIN ============
+export const dashboardAPI = {
+  getDashboard: () => apiCall('/dashboard'),
+
+  getStats: (period = '7days') =>
+    apiCall(`/dashboard/stats?period=${period}`),
+
+  getAllOrders: (status = '', limit = 50, offset = 0) =>
+    apiCall(`/dashboard/orders?status=${status}&limit=${limit}&offset=${offset}`),
+
+  getOrderDetails: (orderId) => apiCall(`/dashboard/orders/${orderId}`),
+
+  updateOrderStatus: (orderId, status, paymentStatus, trackingNumber) =>
+    apiCall(`/dashboard/orders/${orderId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status, paymentStatus, trackingNumber }),
+    }),
+};
