@@ -155,11 +155,11 @@ export const OrderDetailsModal = ({ order, isOpen, onClose, onUpdateStatus }) =>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-white rounded p-2">
                       <p className="text-xs text-gray-600">📍 Latitude</p>
-                      <p className="text-sm font-mono font-bold text-[#5E2251]">{order.latitude.toFixed(8)}</p>
+                      <p className="text-sm font-mono font-bold text-[#5E2251]">{parseFloat(order.latitude).toFixed(8)}</p>
                     </div>
                     <div className="bg-white rounded p-2">
                       <p className="text-xs text-gray-600">📍 Longitude</p>
-                      <p className="text-sm font-mono font-bold text-[#5E2251]">{order.longitude.toFixed(8)}</p>
+                      <p className="text-sm font-mono font-bold text-[#5E2251]">{parseFloat(order.longitude).toFixed(8)}</p>
                     </div>
                   </div>
                 </div>
