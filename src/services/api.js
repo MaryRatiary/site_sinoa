@@ -71,6 +71,12 @@ export const categoriesAPI = {
     apiCall(`/categories/${id}`, {
       method: 'DELETE',
     }),
+
+  reorder: (categoryId, targetCategoryId) =>
+    apiCall(`/categories/${categoryId}/reorder`, {
+      method: 'PUT',
+      body: JSON.stringify({ targetCategoryId }),
+    }),
 };
 
 // ============ PRODUCTS ============
@@ -153,10 +159,24 @@ export const cartAPI = {
 
 // ============ CHECKOUT / COMMANDES ============
 export const checkoutAPI = {
-  createOrder: (items, shippingAddress, paymentMethod) =>
+  createOrder: (items, shippingAddress, paymentMethod, shippingDetails = {}) =>
     apiCall('/checkout', {
       method: 'POST',
-      body: JSON.stringify({ items, shippingAddress, paymentMethod }),
+      body: JSON.stringify({ 
+        items, 
+        shippingAddress, 
+        paymentMethod,
+        firstName: shippingDetails.firstName,
+        lastName: shippingDetails.lastName,
+        email: shippingDetails.email,
+        phone: shippingDetails.phone,
+        city: shippingDetails.city,
+        postalCode: shippingDetails.postalCode,
+        country: shippingDetails.country,
+        latitude: shippingDetails.latitude,
+        longitude: shippingDetails.longitude,
+        notes: shippingDetails.notes
+      }),
     }),
 
   getUserOrders: () => apiCall('/checkout'),
@@ -181,9 +201,9 @@ export const dashboardAPI = {
 
   getOrderDetails: (orderId) => apiCall(`/dashboard/orders/${orderId}`),
 
-  updateOrderStatus: (orderId, status, paymentStatus, trackingNumber) =>
+  updateOrderStatus: (orderId, status, paymentStatus, trackingNumber, notes) =>
     apiCall(`/dashboard/orders/${orderId}`, {
       method: 'PUT',
-      body: JSON.stringify({ status, paymentStatus, trackingNumber }),
+      body: JSON.stringify({ status, paymentStatus, trackingNumber, notes }),
     }),
 };

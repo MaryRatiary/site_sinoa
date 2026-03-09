@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { ChevronRight, Filter, X, ShoppingBag, Star } from "lucide-react";
-import { CATEGORIES } from "../../data/productData";
-import { K_STYLE_CATEGORIES } from "../../data/k-styleData";
+import { productsAPI, categoriesAPI } from "../../services/api";
 import { ProductCard2 } from "../card/ProductCard2";
 import Navbar from "../Header";
 import RespNav from "../resp/RespNav";
@@ -45,14 +44,48 @@ function applySort(products, sortType) {
 
 export default function ProductPage() {
   const { slug } = useParams();
-  const ALL_CATEGORIES = { ...CATEGORIES, ...K_STYLE_CATEGORIES };
-  const category = ALL_CATEGORIES[slug];
-
+  const [category, setCategory] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('vedette');
   
   useEffect(() => {
-    ALL_CATEGORIES[slug] ?? null;
+    const fetchCategoryAndProducts = async () => {
+      try {
+        setLoading(true);
+        
+        // Récupère toutes les catégories pour trouver l'ID par slug
+        const categories = await categoriesAPI.getAll();
+        const foundCategory = categories.find(c => c.slug === slug);
+        
+        if (!foundCategory) {
+          setCategory(null);
+          return;
+        }
+        
+        setCategory(foundCategory);
+        
+        // Charge les produits pour cette catégorie
+        const productsData = await productsAPI.getAll(`?categoryId=${foundCategory.id}&limit=100`);
+        setProducts(productsData);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCategoryAndProducts();
   }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-400">Chargement...</p>
+      </div>
+    );
+  }
 
   if (!category) {
     return (
@@ -62,7 +95,7 @@ export default function ProductPage() {
     );
   }
 
-  const sortedProducts = applySort(category.products, sortBy);
+  const sortedProducts = applySort(products, sortBy);
 
   return (
     <div className="min-h-screen bg-white">
@@ -96,7 +129,7 @@ export default function ProductPage() {
       <div className="w-full bg-white py-8 px-4 overflow-hidden">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl font-black text-gray-900 tracking-tight animate-slide-up">
-            {category.title}
+            {category.name}
           </h1>
         </div>
       </div>
@@ -106,7 +139,7 @@ export default function ProductPage() {
         <nav className="flex items-center justify-center gap-2 text-sm text-gray-600">
           <a href="/" className="text-[#5E2251] hover:underline">KPOP</a>
           <span>›</span>
-          <span>{category.title}</span>
+          <span>{category.name}</span>
         </nav>
       </div>
 

@@ -151,7 +151,12 @@ export default function AdminCatalog() {
       price: product.price,
       originalPrice: product.originalprice || '',
       categoryId: product.categoryid || '',
-      stock: product.stock || ''
+      stock: product.stock || '',
+      brand: product.brand || '',
+      material: product.material || '',
+      careInstructions: product.careinstructions || '',
+      sizes: product.sizes || [],
+      colors: product.colors || []
     });
     setProductImages([]);
     setModalMode('edit');
@@ -170,6 +175,11 @@ export default function AdminCatalog() {
         price: parseFloat(productForm.price),
         originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : null,
         stock: parseInt(productForm.stock) || 0,
+        brand: productForm.brand || '',
+        material: productForm.material || '',
+        careInstructions: productForm.careInstructions || '',
+        sizes: productForm.sizes || [],
+        colors: productForm.colors || [],
       };
 
       let productId;
@@ -217,7 +227,19 @@ export default function AdminCatalog() {
   };
 
   const resetProductForm = () => {
-    setProductForm({ name: '', description: '', price: '', originalPrice: '', categoryId: '', stock: '' });
+    setProductForm({ 
+      name: '', 
+      description: '', 
+      price: '', 
+      originalPrice: '', 
+      categoryId: '', 
+      stock: '',
+      brand: '',
+      material: '',
+      careInstructions: '',
+      sizes: [],
+      colors: []
+    });
     setProductImages([]);
     setEditingProduct(null);
   };

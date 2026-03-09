@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CartSidebar from "../cart/CartSidebar";
 import Navbar from "../Header";
-import { CATEGORIES } from "../../data/productData";
+
 
 const colorSwatches = [
   { key: "beige", bg: "#D4B896", label: "Beige" },

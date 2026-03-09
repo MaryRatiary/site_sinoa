@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { ChevronRight, Filter, X, ShoppingBag, Star, ArrowLeft } from "lucide-react";
-import { useProductsByCategory } from "../hooks/useProducts";
-import { useCategoryWithDetails } from "../hooks/useCategories";
-import { useCart } from "../context/CartContext";
-import { ProductCard2 } from "../components/card/ProductCard2";
-import ProductDetailModal from "../components/ProductDetailModal";
-import Navbar from "../components/Header";
-import RespNav from "../components/resp/RespNav";
-import Footer from '../components/Footer';
+import { useParams } from "react-router-dom";
+import { ChevronRight, Filter, X, ShoppingBag, Star } from "lucide-react";
+import { ProductCard2 } from "../card/ProductCard2";
+import { categoriesAPI } from "../services/api";
+import Navbar from "../Header";
+import RespNav from "../resp/RespNav";
+import Footer from '../Footer';
 import '../assets/animatedButton.css';
 
 const SORT_OPTIONS = [
@@ -28,14 +25,14 @@ function applySort(products, sortType) {
       return sorted.sort((a, b) => (b.sales || 0) - (a.sales || 0));
     case 'price-asc':
       return sorted.sort((a, b) => {
-        const priceA = parseFloat(a.price) || 0;
-        const priceB = parseFloat(b.price) || 0;
+        const priceA = a.originalPrice || a.price;
+        const priceB = b.originalPrice || b.price;
         return priceA - priceB;
       });
     case 'price-desc':
       return sorted.sort((a, b) => {
-        const priceA = parseFloat(a.price) || 0;
-        const priceB = parseFloat(b.price) || 0;
+        const priceA = a.originalPrice || a.price;
+        const priceB = b.originalPrice || b.price;
         return priceB - priceA;
       });
     default:
@@ -43,27 +40,34 @@ function applySort(products, sortType) {
   }
 }
 
-export default function DynamicProductPage() {
-  const { categoryId } = useParams();
-  const navigate = useNavigate();
-  const { addToCart } = useCart();
-  
+export default function CategoryPage() {
+  const { id } = useParams();
+  const [category, setCategory] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('vedette');
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showProductDetail, setShowProductDetail] = useState(false);
   
-  // Récupérer les produits et la catégorie
-  const { products, loading: productsLoading } = useProductsByCategory(categoryId);
-  const { category, loading: categoryLoading } = useCategoryWithDetails(categoryId);
+  useEffect(() => {
+    fetchCategory();
+  }, [id]);
 
-  const sortedProducts = applySort(products, sortBy);
-
-  const handleViewDetails = (product) => {
-    setSelectedProduct(product);
-    setShowProductDetail(true);
+  const fetchCategory = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await categoriesAPI.getById(id);
+      setCategory(data);
+      setProducts(data.products || []);
+    } catch (err) {
+      console.error('Error fetching category:', err);
+      setError('Catégorie introuvable');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (categoryLoading || productsLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-gray-500">Chargement...</div>
@@ -71,13 +75,15 @@ export default function DynamicProductPage() {
     );
   }
 
-  if (!category) {
+  if (error || !category) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-400 font-sans">
-        Catégorie introuvable
+        <div>{error || 'Catégorie introuvable'}</div>
       </div>
     );
   }
+
+  const sortedProducts = applySort(products, sortBy);
 
   return (
     <div className="min-h-screen bg-white">
@@ -88,7 +94,7 @@ export default function DynamicProductPage() {
       <div className="lg:hidden">
         <RespNav />
       </div>
-
+      
       {/* Discount Banner */}
       <div className="w-full bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-3 gap-8 text-center">
@@ -107,29 +113,15 @@ export default function DynamicProductPage() {
         </div>
       </div>
 
-      {/* Title Section */}
+      {/* Title Section with Animation */}
       <div className="w-full bg-white py-8 px-4 overflow-hidden">
-        <div className="max-w-7xl mx-auto flex items-center gap-6">
-          {/* Category Image */}
-          {category.image && (
-            <div className="flex-shrink-0">
-              <img
-                src={category.image}
-                alt={category.name}
-                className="w-24 h-24 object-cover rounded-lg border border-gray-200 shadow-sm"
-              />
-            </div>
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-4xl font-black text-gray-900 tracking-tight animate-slide-up">
+            {category.name}
+          </h1>
+          {category.description && (
+            <p className="text-gray-600 mt-2">{category.description}</p>
           )}
-          
-          {/* Title and Description */}
-          <div className="flex-1">
-            <h1 className="text-4xl font-black text-gray-900 tracking-tight animate-slide-up">
-              {category.name}
-            </h1>
-            {category.description && (
-              <p className="text-gray-600 mt-2">{category.description}</p>
-            )}
-          </div>
         </div>
       </div>
 
@@ -142,14 +134,16 @@ export default function DynamicProductPage() {
         </nav>
       </div>
 
-      {/* Filter & Sort Bar */}
+      {/* Filter & Sort Bar - Improved Design */}
       <div className="max-w-7xl mx-auto px-4 py-8 border-b border-gray-200">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+          {/* Filter Button */}
           <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 hover:border-[#5E2251] hover:bg-[#f5f0f2] transition-all duration-300 text-gray-700 hover:text-[#5E2251] font-medium">
             <Filter size={18} />
             <span>Filtrer</span>
           </button>
 
+          {/* Sort Section */}
           <div className="flex items-center gap-3 flex-wrap justify-center sm:justify-end">
             <span className="text-gray-700 font-medium text-sm">Trier par:</span>
             <div className="flex gap-2 flex-wrap">
@@ -176,37 +170,41 @@ export default function DynamicProductPage() {
         <p className="text-gray-600 text-sm">{sortedProducts.length} produits</p>
       </div>
 
-      {/* Products Grid */}
+      {/* Products Grid - 2 colonnes en mobile, 3 en tablet, 4 en desktop */}
       <div className="max-w-7xl mx-auto px-4 pb-16">
         {sortedProducts.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {sortedProducts.map((product) => (
-              <div 
-                key={product.id} 
-                className="flex flex-col group cursor-pointer"
-                onClick={() => handleViewDetails(product)}
-              >
+              <div key={product.id} className="flex flex-col">
                 <ProductCard2 product={product} />
+                {/* Rating */}
+                {product.rating && (
+                  <div className="mt-3 flex items-center gap-2">
+                    <div className="flex gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          size={14}
+                          className={i < Math.round(product.rating) ? "fill-[#5E2251] text-[#5E2251]" : "text-gray-300"}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-600">({product.reviews || 0})</span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         ) : (
           <div className="text-center py-16">
-            <p className="text-gray-500">Aucun produit trouvé dans cette catégorie</p>
+            <p className="text-gray-500 text-lg">Aucun produit dans cette catégorie</p>
           </div>
         )}
       </div>
 
-      {/* ProductDetailModal */}
-      {showProductDetail && selectedProduct && (
-        <ProductDetailModal 
-          product={selectedProduct} 
-          onClose={() => setShowProductDetail(false)}
-        />
-      )}
-
       <Footer />
       
+      {/* Bottom Footer */}
       <footer className="bg-black text-white py-10 text-center text-sm">
         <p>© 2026 K-POP BOUTIQUE. Made with Passion.</p>
       </footer>

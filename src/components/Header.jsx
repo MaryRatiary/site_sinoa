@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, ShoppingBag, ChevronDown, ChevronRight, LogOut, LayoutDashboard, Package } from 'lucide-react';
-import { dropdownData } from '../data/menuData';
 import { useCart } from '../store/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useCategories } from '../hooks/useCategories';
@@ -53,7 +52,6 @@ const MenuColumn = ({ title, items, onClose }) => (
 
 const Navbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
-  const [beautyFilter, setBeautyFilter] = useState(dropdownData.beauty[0]?.title ?? '');
   const [showUserMenu, setShowUserMenu] = useState(false);
   const timeoutRef = useRef(null);
   const { getItemCount } = useCart();
@@ -130,7 +128,7 @@ const Navbar = () => {
                     
                     {isAdmin() && (
                       <Link
-                        to="/admin/dashboard"
+                        to="/admin/management"
                         onClick={() => setShowUserMenu(false)}
                         className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#5E2251] transition-colors border-t border-gray-100"
                       >
@@ -315,66 +313,6 @@ const Navbar = () => {
           )
         );
       })}
-
-      {/* ── K-BEAUTY dropdown (garder si vous la voulez) ── */}
-      {activeMenu === 'beauty' && (
-        <div
-          className="sticky w-full bg-white z-50 shadow-lg border-t-2 border-[#5E2251] p-6 flex gap-6"
-          style={{ top: '0' }}
-          {...dropdownProps}
-        >
-          {/* Left: filter tabs */}
-          <div className="flex flex-col gap-6 w-56">
-            {dropdownData.beauty.map((filter) => {
-              const isActive = beautyFilter === filter.title;
-              return (
-                <button
-                  key={filter.title}
-                  onClick={() => setBeautyFilter(filter.title)}
-                  className="group flex items-center justify-between relative text-sm font-semibold uppercase tracking-wide"
-                >
-                  <div className="flex flex-row-reverse items-center justify-between w-full">
-                    <ChevronRight
-                      size={16}
-                      className={`transition-all duration-300 ${isActive ? "text-[#5E2251] translate-x-0" : "text-gray-400 -translate-x-1 group-hover:translate-x-0 group-hover:text-[#5E2251]"}`}
-                    />
-                    <span className={`transition-colors duration-300 ${isActive ? "text-[#5E2251]" : "text-gray-700 group-hover:text-[#5E2251]"}`}>
-                      {filter.title}
-                    </span>
-                  </div>
-                  <span className={`absolute -bottom-2 left-0 h-[2px] bg-[#5E2251] transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Right: items grid */}
-          <div className="flex-1 grid grid-cols-4 gap-6">
-            {dropdownData.beauty
-              .find((f) => f.title === beautyFilter)
-              ?.items.map((item) => (
-                <Link
-                  key={item.label}
-                  to={`/products/${item.slug}`}
-                  onClick={closeNow}
-                  className="group flex flex-col items-center text-center"
-                >
-                  <div className="relative w-36 h-36 overflow-hidden rounded-xl">
-                    <img
-                      src={item.image}
-                      alt={item.label}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition duration-300 pointer-events-none" />
-                  </div>
-                  <span className="mt-2 text-gray-800 group-hover:text-[#5E2251] text-sm font-semibold uppercase tracking-wide transition-colors duration-300">
-                    {item.label}
-                  </span>
-                </Link>
-              ))}
-          </div>
-        </div>
-      )}
 
     </nav>
   );
