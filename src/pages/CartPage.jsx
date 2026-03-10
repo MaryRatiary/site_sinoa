@@ -4,51 +4,51 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { checkoutAPI } from '../services/api';
 import { Trash2, Plus, Minus, CheckCircle, AlertCircle, Package, CreditCard, Smartphone, DollarSign, Truck, Lock } from 'lucide-react';
-import Header from '../components/Header';
+import LayoutWrapper from '../components/LayoutWrapper';
 import AddressSelector from '../components/AddressSelector';
-
+import Footer from '../components/Footer';
 // Footer Component
-const Footer = () => {
-  return (
-    <footer className="bg-gray-900 text-white mt-16 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <div>
-            <h3 className="text-lg font-bold mb-4">À propos</h3>
-            <p className="text-gray-400 text-sm">Sinoa - Votre boutique officielle KPOP de confiance depuis 2024.</p>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold mb-4">Liens rapides</h3>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="/" className="hover:text-[#5E2251]">Accueil</a></li>
-              <li><a href="/category/1" className="hover:text-[#5E2251]">Boutique</a></li>
-              <li><a href="/cart" className="hover:text-[#5E2251]">Panier</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold mb-4">Support</h3>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="#" className="hover:text-[#5E2251]">Contact</a></li>
-              <li><a href="#" className="hover:text-[#5E2251]">FAQ</a></li>
-              <li><a href="#" className="hover:text-[#5E2251]">Conditions</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold mb-4">Suivez-nous</h3>
-            <div className="flex gap-4">
-              <a href="#" className="hover:text-[#5E2251]">📘 Facebook</a>
-              <a href="#" className="hover:text-[#5E2251]">📸 Instagram</a>
-              <a href="#" className="hover:text-[#5E2251]">𝕏 Twitter</a>
-            </div>
-          </div>
-        </div>
-        <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-          <p>&copy; 2024 Sinoa KPOP. Tous droits réservés. | Livraison gratuite dès 50€ 🎁</p>
-        </div>
-      </div>
-    </footer>
-  );
-};
+// const Footer = () => {
+//   return (
+//     <footer className="bg-gray-900 text-white mt-16 py-12">
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+//           <div>
+//             <h3 className="text-lg font-bold mb-4">À propos</h3>
+//             <p className="text-gray-400 text-sm">Sinoa - Votre boutique officielle KPOP de confiance depuis 2024.</p>
+//           </div>
+//           <div>
+//             <h3 className="text-lg font-bold mb-4">Liens rapides</h3>
+//             <ul className="space-y-2 text-gray-400 text-sm">
+//               <li><a href="/" className="hover:text-[#5E2251]">Accueil</a></li>
+//               <li><a href="/category/1" className="hover:text-[#5E2251]">Boutique</a></li>
+//               <li><a href="/cart" className="hover:text-[#5E2251]">Panier</a></li>
+//             </ul>
+//           </div>
+//           <div>
+//             <h3 className="text-lg font-bold mb-4">Support</h3>
+//             <ul className="space-y-2 text-gray-400 text-sm">
+//               <li><a href="#" className="hover:text-[#5E2251]">Contact</a></li>
+//               <li><a href="#" className="hover:text-[#5E2251]">FAQ</a></li>
+//               <li><a href="#" className="hover:text-[#5E2251]">Conditions</a></li>
+//             </ul>
+//           </div>
+//           <div>
+//             <h3 className="text-lg font-bold mb-4">Suivez-nous</h3>
+//             <div className="flex gap-4">
+//               <a href="#" className="hover:text-[#5E2251]">📘 Facebook</a>
+//               <a href="#" className="hover:text-[#5E2251]">📸 Instagram</a>
+//               <a href="#" className="hover:text-[#5E2251]">𝕏 Twitter</a>
+//             </div>
+//           </div>
+//         </div>
+//         <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
+//           <p>&copy; 2024 Sinoa KPOP. Tous droits réservés. | Livraison gratuite dès 50€ 🎁</p>
+//         </div>
+//       </div>
+//     </footer>
+//   );
+// };
 
 // Success Modal Component
 const SuccessModal = ({ orderId, onClose }) => {
@@ -109,8 +109,7 @@ export default function CartPage() {
 
   if (!isAuthenticated) {
     return (
-      <>
-        <Header />
+      <LayoutWrapper>
         <div className="min-h-screen bg-gray-50 py-16">
           <div className="max-w-2xl mx-auto px-4">
             <div className="bg-white rounded-lg shadow-lg p-8 text-center">
@@ -127,14 +126,13 @@ export default function CartPage() {
           </div>
         </div>
         <Footer />
-      </>
+      </LayoutWrapper>
     );
   }
 
   if (cartItems.length === 0 && currentStep === 0) {
     return (
-      <>
-        <Header />
+      <LayoutWrapper>
         <div className="min-h-screen bg-gray-50 py-16">
           <div className="max-w-2xl mx-auto px-4">
             <div className="bg-white rounded-lg shadow-lg p-8 text-center">
@@ -151,7 +149,7 @@ export default function CartPage() {
           </div>
         </div>
         <Footer />
-      </>
+      </LayoutWrapper>
     );
   }
 
@@ -212,8 +210,7 @@ export default function CartPage() {
   const total = (parseFloat(subtotal) + shipping + parseFloat(tax)).toFixed(2);
 
   return (
-    <>
-      <Header />
+    <LayoutWrapper>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Étapes du processus */}
@@ -632,6 +629,6 @@ export default function CartPage() {
       {success && <SuccessModal orderId={successOrderId} onClose={() => setSuccess(false)} />}
 
       <Footer />
-    </>
+    </LayoutWrapper>
   );
 }
