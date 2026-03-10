@@ -1,28 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Filter, TrendingUp } from 'lucide-react';
 import { productsAPI, categoriesAPI } from '../services/api';
-import Navbar from '../components/Header';
-import Footer from '../components/Footer';
+import ProductFormModal from '../components/admin/ProductFormModal';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    detailedDescription: '',
-    composition: '',
-    careInstructions: '',
-    brand: '',
-    price: '',
-    originalPrice: '',
-    categoryId: '',
-    stock: '',
-    image: '',
-  });
+  const [showModal, setShowModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -44,52 +32,18 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const data = {
-        ...formData,
-        price: parseFloat(formData.price),
-        originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
-        stock: parseInt(formData.stock),
-        categoryId: formData.categoryId ? parseInt(formData.categoryId) : null,
-      };
-
-      if (editingId) {
-        await productsAPI.update(editingId, data);
-        alert('Produit mis à jour!');
-      } else {
-        await productsAPI.create(data);
-        alert('Produit créé!');
-      }
-
-      resetForm();
-      fetchData();
-    } catch (err) {
-      alert('Erreur: ' + err.message);
-    }
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setShowModal(true);
   };
 
-  const handleEdit = (product) => {
-    setFormData({
-      name: product.name,
-      description: product.description || '',
-      detailedDescription: product.detailedDescription || '',
-      composition: product.composition || '',
-      careInstructions: product.careInstructions || '',
-      brand: product.brand || '',
-      price: product.price || '',
-      originalPrice: product.originalPrice || '',
-      categoryId: product.categoryId || '',
-      stock: product.stock || '',
-      image: product.image || '',
-    });
-    setEditingId(product.id);
-    setShowForm(true);
+  const handleCreateNew = () => {
+    setEditingProduct(null);
+    setShowModal(true);
   };
 
   const handleDelete = async (id) => {
-    if (confirm('Êtes-vous sûr?')) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce produit?')) {
       try {
         await productsAPI.delete(id);
         alert('Produit supprimé!');
@@ -100,229 +54,188 @@ export default function AdminProductsPage() {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      description: '',
-      detailedDescription: '',
-      composition: '',
-      careInstructions: '',
-      brand: '',
-      price: '',
-      originalPrice: '',
-      categoryId: '',
-      stock: '',
-      image: '',
-    });
-    setEditingId(null);
-    setShowForm(false);
-  };
-
   const getCategoryName = (categoryId) => {
     const category = categories.find((c) => c.id === categoryId);
     return category?.name || 'N/A';
   };
 
+  // Filtrer les produits
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = !filterCategory || product.categoryId === parseInt(filterCategory);
+    return matchesSearch && matchesCategory;
+  });
+
+  // Calculer les statistiques
+  const stats = {
+    total: products.length,
+    lowStock: products.filter(p => p.stock < 10).length,
+    totalValue: products.reduce((sum, p) => sum + (p.price * p.stock), 0).toFixed(2),
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Gestion des Produits</h1>
-          <button
-            onClick={() => resetForm()}
-            className="flex items-center gap-2 bg-[#5E2251] text-white px-4 py-2 rounded-lg hover:bg-[#4a1a3f] transition"
-          >
-            <Plus size={20} />
-            Nouveau Produit
-          </button>
-        </div>
-
-        {/* Formulaire */}
-        {showForm && (
-          <div className="bg-white p-6 rounded-lg border border-gray-200 mb-8">
-            <h2 className="text-xl font-bold mb-4">
-              {editingId ? 'Modifier Produit' : 'Créer Produit'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="Nom du produit"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                  required
-                />
-
-                <select
-                  value={formData.categoryId}
-                  onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                >
-                  <option value="">Sélectionner une catégorie</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-
-                <input
-                  type="text"
-                  placeholder="Marque"
-                  value={formData.brand}
-                  onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                />
-
-                <input
-                  type="number"
-                  placeholder="Prix (€)"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                  step="0.01"
-                  required
-                />
-
-                <input
-                  type="number"
-                  placeholder="Prix original (€)"
-                  value={formData.originalPrice}
-                  onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                  step="0.01"
-                />
-
-                <input
-                  type="number"
-                  placeholder="Stock"
-                  value={formData.stock}
-                  onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                  required
-                />
-              </div>
-
-              <textarea
-                placeholder="Description courte"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                rows="2"
-              />
-
-              <textarea
-                placeholder="Description détaillée"
-                value={formData.detailedDescription}
-                onChange={(e) => setFormData({ ...formData, detailedDescription: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                rows="3"
-              />
-
-              <textarea
-                placeholder="Composition"
-                value={formData.composition}
-                onChange={(e) => setFormData({ ...formData, composition: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                rows="2"
-              />
-
-              <textarea
-                placeholder="Instructions de soin"
-                value={formData.careInstructions}
-                onChange={(e) => setFormData({ ...formData, careInstructions: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                rows="2"
-              />
-
-              <input
-                type="url"
-                placeholder="URL Image"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-              />
-
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                >
-                  Enregistrer
-                </button>
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
-                >
-                  Annuler
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {/* Liste des produits */}
-        {loading ? (
-          <div className="text-center text-gray-500">Chargement...</div>
-        ) : (
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-100 border-b">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Nom</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Catégorie</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Prix</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Stock</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.length > 0 ? (
-                    products.map((product) => (
-                      <tr key={product.id} className="border-b hover:bg-gray-50">
-                        <td className="px-4 py-3 text-gray-900">{product.name}</td>
-                        <td className="px-4 py-3 text-gray-600">{getCategoryName(product.categoryid)}</td>
-                        <td className="px-4 py-3 text-gray-900 font-semibold">{product.price}€</td>
-                        <td className="px-4 py-3">
-                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${product.stock > 10 ? 'bg-green-100 text-green-700' : product.stock > 0 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
-                            {product.stock}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 flex gap-2">
-                          <button
-                            onClick={() => handleEdit(product)}
-                            className="p-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
-                          >
-                            <Edit2 size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(product.id)}
-                            className="p-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
-                        Aucun produit
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+    <div className="space-y-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Total Produits</p>
+              <p className="text-4xl font-bold text-purple-900 mt-2">{stats.total}</p>
+            </div>
+            <div className="bg-purple-900 p-3 rounded-lg text-white">
+              <TrendingUp size={28} />
             </div>
           </div>
-        )}
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Stock Bas</p>
+              <p className="text-4xl font-bold text-purple-900 mt-2">{stats.lowStock}</p>
+            </div>
+            <div className="bg-purple-900 p-3 rounded-lg text-white">
+              <Filter size={28} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Valeur Stock</p>
+              <p className="text-4xl font-bold text-purple-900 mt-2">{stats.totalValue}€</p>
+            </div>
+            <div className="bg-purple-900 p-3 rounded-lg text-white">
+              <TrendingUp size={28} />
+            </div>
+          </div>
+        </div>
       </div>
 
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900">Gestion des Produits</h2>
+        <button
+          onClick={handleCreateNew}
+          className="flex items-center gap-2 bg-purple-900 text-white px-6 py-3 rounded-lg hover:bg-purple-950 transition-all font-semibold"
+        >
+          <Plus size={20} />
+          Nouveau Produit
+        </button>
+      </div>
+
+      {/* Recherche et filtrage */}
+      <div className="flex gap-4 bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex-1 relative">
+          <Search size={20} className="absolute left-3 top-2.5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Rechercher un produit..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900"
+          />
+        </div>
+
+        <select
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900"
+        >
+          <option value="">Toutes les catégories</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Liste des produits */}
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-900"></div>
+          <p className="text-gray-600 mt-4">Chargement des produits...</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Produit</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Catégorie</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Prix</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Stock</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map((product) => (
+                    <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{product.name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{getCategoryName(product.categoryid)}</td>
+                      <td className="px-6 py-4 text-sm font-semibold text-gray-900">{product.price}€</td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          product.stock > 20 
+                            ? 'bg-green-100 text-green-800' 
+                            : product.stock > 5 
+                            ? 'bg-yellow-100 text-yellow-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {product.stock} unités
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm flex gap-2">
+                        <button
+                          onClick={() => handleEdit(product)}
+                          className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                          title="Éditer"
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product.id)}
+                          className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                          title="Supprimer"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
+                      Aucun produit trouvé
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Modal */}
+      <ProductFormModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setEditingProduct(null);
+        }}
+        product={editingProduct}
+        categories={categories}
+        onSuccess={() => {
+          fetchData();
+          setShowModal(false);
+          setEditingProduct(null);
+        }}
+      />
     </div>
   );
 }

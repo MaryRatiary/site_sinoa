@@ -263,18 +263,18 @@ export default function AdminCatalog() {
   const allCategoriesAsOptions = getAllCategoriesAsOptions();
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-2xl">Chargement...</div>;
+    return <div className="min-h-screen flex items-start justify-start text-2xl">Chargement...</div>;
   }
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-900 to-black text-white p-4">
+      {/* <div className="bg-gradient-to-r from-purple-900 to-black text-white p-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold">Gestion du Catalogue</h1>
           <p className="text-gray-300">Bienvenue, {user?.email}</p>
         </div>
-      </div>
+      </div> */}
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mx-4 mt-4 rounded">
@@ -285,7 +285,7 @@ export default function AdminCatalog() {
       {/* Main Layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar - Category Tree */}
-        <div className="w-72 bg-gray-50 border-r border-gray-300 overflow-hidden">
+        <div className="w-200 bg-gray-50 border-r border-gray-300 overflow-hidden">
           <CategoryTree
             categories={categories}
             selectedItem={selectedItem}

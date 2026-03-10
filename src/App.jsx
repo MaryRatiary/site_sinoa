@@ -6,19 +6,17 @@ import { CartProvider } from './context/CartContext'
 // Pages existantes
 import LandingPage from './components/pages/LandingPage'
 
-
 // Nouvelles pages
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import OrdersPage from './pages/OrdersPage'
+import OrderDetailPage from './pages/OrderDetailPage'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminCatalog from './pages/AdminCatalog'
 import AdminManagementPage from './pages/AdminManagementPage'
 import DynamicProductPage from './pages/DynamicProductPage'
-
-
 
 // Composant pour les routes protégées (authentification requise)
 const ProtectedRoute = ({ children }) => {
@@ -65,6 +63,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <OrdersPage />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/order/:orderId" 
+        element={
+          <ProtectedRoute>
+            <OrderDetailPage />
           </ProtectedRoute>
         } 
       />

@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, ChevronRight, GripVertical, ChevronDown } from 'lucide-react';
+import { Plus, Edit2, Trash2, ChevronRight, ChevronDown, AlertCircle } from 'lucide-react';
 import { categoriesAPI } from '../services/api';
-import Navbar from '../components/Header';
-import Footer from '../components/Footer';
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [expandedIds, setExpandedIds] = useState(new Set());
   const [draggedItem, setDraggedItem] = useState(null);
   const [dragOverId, setDragOverId] = useState(null);
-  const [dragPosition, setDragPosition] = useState(null); // 'above' ou 'below'
-  const [expandedIds, setExpandedIds] = useState(new Set()); // Nouveau: gère les catégories dépliées
+  const [dragPosition, setDragPosition] = useState(null);
+  const [reordering, setReordering] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -67,7 +66,7 @@ export default function AdminCategoriesPage() {
   };
 
   const handleDelete = async (id) => {
-    if (confirm('Êtes-vous sûr?')) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette catégorie?')) {
       try {
         await categoriesAPI.delete(id);
         alert('Catégorie supprimée!');
@@ -78,6 +77,17 @@ export default function AdminCategoriesPage() {
     }
   };
 
+  const toggleExpand = (categoryId) => {
+    const newExpanded = new Set(expandedIds);
+    if (newExpanded.has(categoryId)) {
+      newExpanded.delete(categoryId);
+    } else {
+      newExpanded.add(categoryId);
+    }
+    setExpandedIds(newExpanded);
+  };
+
+  // Drag and Drop Functions
   const handleDragStart = (e, category) => {
     setDraggedItem(category);
     e.dataTransfer.effectAllowed = 'move';
@@ -110,49 +120,38 @@ export default function AdminCategoriesPage() {
       return;
     }
 
-    // Vérifier que les deux catégories sont au même niveau (même parentId)
-    if (draggedItem.parentid !== targetCategory.parentid) {
-      alert('Vous pouvez seulement réorganiser les catégories au même niveau!');
-      setDraggedItem(null);
-      return;
-    }
-
     try {
+      setReordering(true);
+      
       // Appel API pour réorganiser
-      await categoriesAPI.reorder(draggedItem.id, targetCategory.id);
+      if (categoriesAPI.reorder) {
+        await categoriesAPI.reorder(draggedItem.id, targetCategory.id);
+      }
+      
       await fetchCategories();
     } catch (err) {
       alert('Erreur lors de la réorganisation: ' + err.message);
     } finally {
       setDraggedItem(null);
+      setReordering(false);
     }
-  };
-
-  const toggleExpand = (categoryId) => {
-    const newExpanded = new Set(expandedIds);
-    if (newExpanded.has(categoryId)) {
-      newExpanded.delete(categoryId);
-    } else {
-      newExpanded.add(categoryId);
-    }
-    setExpandedIds(newExpanded);
   };
 
   const renderCategories = (items, level = 0) => {
-    return items.map((category, index) => (
-      <div key={category.id} className="mb-1">
+    return items.map((category) => (
+      <div key={category.id} className="mb-3">
         {/* Ligne d'insertion au-dessus */}
         {draggedItem && dragOverId === category.id && dragPosition === 'above' && (
-          <div className="h-1 bg-[#5E2251] mb-1 rounded"></div>
+          <div className="h-1 bg-purple-900 mb-2 rounded-full shadow-lg animate-pulse"></div>
         )}
 
         <div
-          className={`flex items-center justify-between p-3 bg-gray-50 border-2 rounded-lg hover:bg-gray-100 transition cursor-move ${
+          className={`flex items-center justify-between p-4 bg-white border-2 rounded-lg transition-all hover:shadow-md cursor-move group ${
             draggedItem?.id === category.id 
-              ? 'opacity-50 bg-blue-100 border-blue-400' 
+              ? 'opacity-50 bg-gray-50 border-purple-900 shadow-lg' 
               : dragOverId === category.id
-              ? 'border-[#5E2251] bg-purple-50'
-              : 'border-gray-200'
+              ? 'border-purple-900 bg-gray-50 shadow-md'
+              : 'border-gray-200 hover:border-purple-900'
           }`}
           draggable
           onDragStart={(e) => handleDragStart(e, category)}
@@ -161,72 +160,87 @@ export default function AdminCategoriesPage() {
           onDrop={(e) => handleDrop(e, category)}
           style={{ marginLeft: `${level * 24}px` }}
         >
-          {/* Poignée de drag avec 6 points */}
-          <div className="flex items-center gap-3 flex-1">
-            {/* Bouton expand/collapse */}
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {/* Poignée de drag - 6 points */}
+            <div className="flex flex-col gap-1.5 cursor-grab active:cursor-grabbing opacity-40 group-hover:opacity-100 transition-opacity">
+              <div className="flex gap-1">
+                <span className="w-1.5 h-1.5 bg-purple-900 rounded-full"></span>
+                <span className="w-1.5 h-1.5 bg-purple-900 rounded-full"></span>
+                <span className="w-1.5 h-1.5 bg-purple-900 rounded-full"></span>
+              </div>
+              <div className="flex gap-1">
+                <span className="w-1.5 h-1.5 bg-purple-900 rounded-full"></span>
+                <span className="w-1.5 h-1.5 bg-purple-900 rounded-full"></span>
+                <span className="w-1.5 h-1.5 bg-purple-900 rounded-full"></span>
+              </div>
+            </div>
+
+            {/* Expand/Collapse button */}
             {category.children && category.children.length > 0 ? (
               <button
                 onClick={() => toggleExpand(category.id)}
-                className="p-1 hover:bg-gray-300 rounded transition"
+                className="p-1 hover:bg-gray-200 rounded transition-colors flex-shrink-0"
               >
                 {expandedIds.has(category.id) ? (
-                  <ChevronDown size={18} className="text-[#5E2251]" />
+                  <ChevronDown size={20} className="text-purple-900" />
                 ) : (
-                  <ChevronRight size={18} className="text-[#5E2251]" />
+                  <ChevronRight size={20} className="text-purple-900" />
                 )}
               </button>
             ) : (
-              <div className="w-6"></div>
+              <div className="w-6 flex-shrink-0"></div>
             )}
 
-            <div className="flex flex-col gap-1.5 cursor-grab active:cursor-grabbing hover:opacity-100 opacity-60">
-              <div className="flex gap-1.5">
-                <span className="w-2 h-2 bg-[#5E2251] rounded-full"></span>
-                <span className="w-2 h-2 bg-[#5E2251] rounded-full"></span>
-                <span className="w-2 h-2 bg-[#5E2251] rounded-full"></span>
-              </div>
-              <div className="flex gap-1.5">
-                <span className="w-2 h-2 bg-[#5E2251] rounded-full"></span>
-                <span className="w-2 h-2 bg-[#5E2251] rounded-full"></span>
-                <span className="w-2 h-2 bg-[#5E2251] rounded-full"></span>
-              </div>
-            </div>
-
+            {/* Category image */}
             {category.image && (
-              <img src={category.image} alt={category.name} className="w-8 h-8 rounded object-cover" />
+              <img 
+                src={category.image} 
+                alt={category.name} 
+                className="w-10 h-10 rounded-lg object-cover border border-gray-200 flex-shrink-0" 
+              />
             )}
-            <div>
-              <p className="font-semibold text-gray-900">{category.name}</p>
-              {category.description && <p className="text-xs text-gray-600">{category.description}</p>}
+
+            {/* Category info */}
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-gray-900 truncate">{category.name}</p>
+              {category.description && (
+                <p className="text-xs text-gray-600 line-clamp-1">{category.description}</p>
+              )}
               {category.children && category.children.length > 0 && (
-                <p className="text-xs text-gray-500 mt-1">{category.children.length} sous-catégorie(s)</p>
+                <p className="text-xs text-purple-900 font-medium mt-1">
+                  {category.children.length} sous-catégorie(s)
+                </p>
               )}
             </div>
           </div>
-          <div className="flex gap-2">
+
+          {/* Actions */}
+          <div className="flex gap-2 ml-4 flex-shrink-0">
             <button
               onClick={() => handleEdit(category)}
-              className="p-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition"
+              className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors opacity-0 group-hover:opacity-100"
+              title="Éditer"
             >
-              <Edit2 size={16} />
+              <Edit2 size={18} />
             </button>
             <button
               onClick={() => handleDelete(category.id)}
-              className="p-2 bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
+              className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors opacity-0 group-hover:opacity-100"
+              title="Supprimer"
             >
-              <Trash2 size={16} />
+              <Trash2 size={18} />
             </button>
           </div>
         </div>
 
         {/* Ligne d'insertion au-dessous */}
         {draggedItem && dragOverId === category.id && dragPosition === 'below' && (
-          <div className="h-1 bg-[#5E2251] mt-1 rounded"></div>
+          <div className="h-1 bg-purple-900 mt-2 rounded-full shadow-lg animate-pulse"></div>
         )}
 
-        {/* Afficher les enfants seulement si la catégorie est dépliée */}
+        {/* Render children if expanded */}
         {expandedIds.has(category.id) && category.children && category.children.length > 0 && (
-          <div className="border-l-2 border-gray-300 ml-3 pl-2">
+          <div className="border-l-2 border-gray-300 ml-3 pl-2 mt-3">
             {renderCategories(category.children, level + 1)}
           </div>
         )}
@@ -235,104 +249,139 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Gestion des Catégories</h1>
-          <button
-            onClick={() => {
-              setFormData({ name: '', description: '', image: '', parentId: null });
-              setEditingId(null);
-              setShowForm(true);
-            }}
-            className="flex items-center gap-2 bg-[#5E2251] text-white px-4 py-2 rounded-lg hover:bg-[#4a1a3f] transition"
-          >
-            <Plus size={20} />
-            Nouvelle Catégorie
-          </button>
+    <div className="space-y-6">
+      {/* Stats */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-600 text-sm font-medium">Total Catégories</p>
+            <p className="text-4xl font-bold text-purple-900 mt-2">{categories.length}</p>
+            <p className="text-xs text-gray-600 mt-2">Drag and drop pour réorganiser</p>
+          </div>
+          <div className="bg-purple-900 p-4 rounded-lg text-white">
+            <ChevronDown size={32} />
+          </div>
         </div>
-
-        {/* Formulaire */}
-        {showForm && (
-          <div className="bg-white p-6 rounded-lg border border-gray-200 mb-8">
-            <h2 className="text-xl font-bold mb-4">
-              {editingId ? 'Modifier Catégorie' : 'Créer Catégorie'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                placeholder="Nom"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                required
-              />
-              <textarea
-                placeholder="Description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-                rows="3"
-              />
-              <input
-                type="url"
-                placeholder="URL Image"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-              />
-              <select
-                value={formData.parentId || ''}
-                onChange={(e) => setFormData({ ...formData, parentId: e.target.value ? parseInt(e.target.value) : null })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#5E2251]"
-              >
-                <option value="">Pas de parent (catégorie racine)</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                >
-                  Enregistrer
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
-                >
-                  Annuler
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {/* Liste des catégories */}
-        {loading ? (
-          <div className="text-center text-gray-500">Chargement...</div>
-        ) : (
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h2 className="text-xl font-bold mb-2">Catégories ({categories.length})</h2>
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <strong>💡 Guide:</strong> Glissez les 6 points (:::) pour réorganiser. Les catégories au même niveau apparaîtront en <span className="text-[#5E2251]">violet</span> au survol. Une barre <span className="text-[#5E2251]">violette</span> indique où l'élément sera inséré.
-              </p>
-            </div>
-            {categories.length > 0 ? (
-              renderCategories(categories)
-            ) : (
-              <p className="text-gray-500 text-center py-8">Aucune catégorie</p>
-            )}
-          </div>
-        )}
       </div>
+
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900">Gestion des Catégories</h2>
+        <button
+          onClick={() => {
+            setFormData({ name: '', description: '', image: '', parentId: null });
+            setEditingId(null);
+            setShowForm(true);
+          }}
+          className="flex items-center gap-2 bg-purple-900 text-white px-6 py-3 rounded-lg hover:bg-purple-950 transition-all font-semibold"
+        >
+          <Plus size={20} />
+          Nouvelle Catégorie
+        </button>
+      </div>
+
+      {/* Form */}
+      {showForm && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-lg animate-in fade-in slide-in-from-top-2">
+          <h3 className="text-xl font-bold mb-6">
+            {editingId ? 'Modifier la Catégorie' : 'Créer une Nouvelle Catégorie'}
+          </h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              type="text"
+              placeholder="Nom de la catégorie"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
+              required
+            />
+            
+            <textarea
+              placeholder="Description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
+              rows="3"
+            />
+            
+            <input
+              type="url"
+              placeholder="URL de l'image"
+              value={formData.image}
+              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
+            />
+            
+            <select
+              value={formData.parentId || ''}
+              onChange={(e) => setFormData({ ...formData, parentId: e.target.value ? parseInt(e.target.value) : null })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
+            >
+              <option value="">Pas de parent (catégorie racine)</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition-all"
+              >
+                Enregistrer
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="px-6 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 font-semibold transition-all"
+              >
+                Annuler
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Info Box */}
+      <div className="bg-blue-50 border border-blue-300 rounded-lg p-4 flex items-start gap-3">
+        <AlertCircle size={20} className="text-blue-600 flex-shrink-0 mt-0.5" />
+        <div>
+          <h4 className="font-semibold text-blue-900 mb-1">Comment utiliser le Drag & Drop</h4>
+          <ul className="text-sm text-blue-800 space-y-1">
+            <li>Cliquez et maintenez les points (:::) pour glisser une catégorie</li>
+            <li>Une barre violet sombre indique où l'élément sera inséré</li>
+            <li>Les flèches permettent de dérouler/réduire les sous-catégories</li>
+            <li>Les boutons d'édition/suppression apparaissent au survol</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Status Indicator */}
+      {reordering && (
+        <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 text-yellow-800 animate-pulse font-medium">
+          Réorganisation en cours...
+        </div>
+      )}
+
+      {/* Categories List */}
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-900"></div>
+          <p className="text-gray-600 mt-4">Chargement des catégories...</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          {categories.length > 0 ? (
+            <div className={reordering ? 'opacity-50 pointer-events-none' : ''}>
+              {renderCategories(categories)}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center py-8">Aucune catégorie créée</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

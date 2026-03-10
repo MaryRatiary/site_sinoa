@@ -5,7 +5,7 @@ import { dashboardAPI } from '../services/api';
 import { AdminStats } from '../components/admin/AdminStats';
 import { AdminOrders } from '../components/admin/AdminOrders';
 import { AdminStock } from '../components/admin/AdminStock';
-import { Folder } from 'lucide-react';
+import { TrendingUp, Package, AlertCircle, Clock } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { user, isAdmin } = useAuth();
@@ -63,55 +63,110 @@ export default function AdminDashboard() {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-2xl">Chargement...</div>;
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-900 to-black text-white p-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Dashboard Admin</h1>
-            <p className="text-gray-300">Bienvenue, {user?.email}</p>
-          </div>
-          <button
-            onClick={() => navigate('/admin/catalog')}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors"
-          >
-            <Folder size={20} />
-            Gestion du Catalogue
-          </button>
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-900 mb-4"></div>
+          <p className="text-gray-600">Chargement du dashboard...</p>
         </div>
       </div>
+    );
+  }
 
+  // Quick stats cards
+  const quickStats = [
+    {
+      label: 'Total Ventes',
+      value: dashboard?.totalSales || '0€',
+      icon: TrendingUp,
+      iconBg: 'bg-purple-900',
+      textColor: 'text-purple-900',
+    },
+    {
+      label: 'Commandes',
+      value: orders.length,
+      icon: Package,
+      iconBg: 'bg-purple-900',
+      textColor: 'text-purple-900',
+    },
+    {
+      label: 'Stock Bas',
+      value: dashboard?.lowStock?.length || 0,
+      icon: AlertCircle,
+      iconBg: 'bg-purple-900',
+      textColor: 'text-purple-900',
+    },
+    {
+      label: 'En Attente',
+      value: orders.filter(o => o.status === 'pending').length,
+      icon: Clock,
+      iconBg: 'bg-purple-900',
+      textColor: 'text-purple-900',
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded m-4">
-          {error}
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800 flex items-start gap-3">
+          <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+          <div>
+            <h3 className="font-semibold">Erreur</h3>
+            <p className="text-sm mt-1">{error}</p>
+          </div>
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto p-4">
-        {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b overflow-x-auto">
-          {['stats', 'orders', 'stock'].map((tab) => (
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {quickStats.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <div 
+              key={index}
+              className="bg-white rounded-lg border border-gray-200 p-6 transition-all hover:shadow-md"
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">{stat.label}</p>
+                  <p className={`text-3xl font-bold ${stat.textColor} mt-2`}>{stat.value}</p>
+                </div>
+                <div className={`${stat.iconBg} p-3 rounded-lg text-white`}>
+                  <Icon size={24} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Tabs Navigation */}
+      <div className="flex gap-2 border-b border-gray-300 overflow-x-auto bg-white rounded-t-lg px-6">
+        {[
+          { id: 'stats', label: 'Statistiques', icon: TrendingUp },
+          { id: 'orders', label: `Commandes (${orders.length})`, icon: Package },
+          { id: 'stock', label: 'Stock Bas', icon: AlertCircle },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          return (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 font-bold whitespace-nowrap ${
-                activeTab === tab
-                  ? 'border-b-2 border-purple-600 text-purple-600'
-                  : 'text-gray-600 hover:text-purple-600'
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm whitespace-nowrap transition-all ${
+                activeTab === tab.id
+                  ? 'text-purple-900 border-b-2 border-purple-900'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              {tab === 'stats' && 'Statistiques'}
-              {tab === 'orders' && `Commandes (${orders.length})`}
-              {tab === 'stock' && 'Stock Bas'}
+              <Icon size={18} />
+              {tab.label}
             </button>
-          ))}
-        </div>
+          );
+        })}
+      </div>
 
-        {/* Content */}
+      {/* Content Sections */}
+      <div className="bg-white rounded-b-lg border border-gray-200 border-t-0 p-6">
         {activeTab === 'stats' && dashboard && (
           <AdminStats dashboard={dashboard} stats={stats} />
         )}
