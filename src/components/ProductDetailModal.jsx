@@ -57,7 +57,13 @@ const ProductDetailModal = ({ product, onClose }) => {
     images: (fullProduct.images && Array.isArray(fullProduct.images)) ? fullProduct.images.filter(img => img) : [fullProduct.image || ''],
     description: fullProduct.description || 'Produit officiel KPOP de haute qualité',
     sizes: (fullProduct.sizes && Array.isArray(fullProduct.sizes)) ? fullProduct.sizes : [],
-    colors: (fullProduct.colors && Array.isArray(fullProduct.colors)) ? fullProduct.colors : [],
+    // Normaliser les couleurs - gérer les deux formats (minuscules et camelCase)
+    colors: (fullProduct.colors && Array.isArray(fullProduct.colors)) ? fullProduct.colors.map(c => ({
+      colorname: c.colorname || c.colorName || c.name || '',
+      colorhex: c.colorhex || c.colorHex || c.hex || '#000000',
+      stock: c.stock || 0,
+      id: c.id
+    })) : [],
     inStock: fullProduct.stock > 0,
     stockQuantity: fullProduct.stock || 0,
     material: fullProduct.material || '',
@@ -253,31 +259,27 @@ const ProductDetailModal = ({ product, onClose }) => {
                           const sizeStock = sizeObj.stock || 0;
                           const isAvailable = sizeStock > 0;
                           return (
-                            <div key={sizeValue} className="relative">
-                              <button
-                                onClick={() => isAvailable && setSelectedSize(sizeValue)}
-                                disabled={!isAvailable}
-                                className={`w-full py-2 px-2 rounded text-xs font-semibold transition-all duration-200 ${
-                                  selectedSize === sizeValue
-                                    ? 'bg-pink-600 text-white border-2 border-pink-600'
-                                    : isAvailable
-                                    ? 'bg-gray-100 text-gray-900 border-2 border-gray-300 hover:border-pink-600 cursor-pointer'
-                                    : 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed opacity-50'
-                                }`}
-                              >
-                                {sizeValue}
-                              </button>
+                            <button
+                              key={sizeValue}
+                              onClick={() => isAvailable && setSelectedSize(sizeValue)}
+                              disabled={!isAvailable}
+                              className={`w-full py-2 px-2 rounded text-xs font-semibold transition-all duration-200 relative ${
+                                selectedSize === sizeValue
+                                  ? 'bg-pink-600 text-white border-2 border-pink-600'
+                                  : isAvailable
+                                  ? 'bg-gray-100 text-gray-900 border-2 border-gray-300 hover:border-pink-600 cursor-pointer'
+                                  : 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed opacity-50'
+                              }`}
+                              title={isAvailable ? `${sizeStock} en stock` : 'Rupture de stock'}
+                            >
+                              {sizeValue}
                               {!isAvailable && (
-                                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[8px] text-gray-500 font-bold whitespace-nowrap pointer-events-none">
-                                  Rupture
-                                </span>
+                                <span className="block text-[7px] leading-none">Rupture</span>
                               )}
                               {isAvailable && sizeStock > 0 && sizeStock <= 3 && (
-                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] px-1.5 rounded-full font-bold">
-                                  {sizeStock}
-                                </span>
+                                <span className="block text-[7px] leading-none text-yellow-500">({sizeStock})</span>
                               )}
-                            </div>
+                            </button>
                           );
                         })}
                       </div>
@@ -291,42 +293,41 @@ const ProductDetailModal = ({ product, onClose }) => {
                       </label>
                       <div className="flex gap-2 flex-wrap">
                         {productDetails.colors.map((colorObj) => {
-                          const colorName = colorObj.colorname || colorObj.name || colorObj;
-                          const colorHex = colorObj.colorhex || colorObj.hex || '#000000';
+                          // Gérer les deux formats de noms de colonnes (minuscules de la DB et camelCase)
+                          const colorName = colorObj.colorname || colorObj.colorName || colorObj.name || colorObj;
+                          const colorHex = colorObj.colorhex || colorObj.colorHex || colorObj.hex || '#000000';
                           const colorStock = colorObj.stock || 0;
                           const isAvailable = colorStock > 0;
                           return (
-                            <div key={colorName} className="relative">
-                              <button
-                                onClick={() => isAvailable && setSelectedColor(colorName)}
-                                disabled={!isAvailable}
-                                className={`px-3 py-1.5 rounded text-xs font-semibold transition-all duration-200 flex items-center gap-2 ${
-                                  selectedColor === colorName
-                                    ? 'bg-pink-600 text-white border-2 border-pink-600'
-                                    : isAvailable
-                                    ? 'bg-gray-100 text-gray-900 border-2 border-gray-300 hover:border-pink-600 cursor-pointer'
-                                    : 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed opacity-50'
+                            <button
+                              key={colorName}
+                              onClick={() => isAvailable && setSelectedColor(colorName)}
+                              disabled={!isAvailable}
+                              className={`px-3 py-1.5 rounded text-xs font-semibold transition-all duration-200 flex items-center gap-2 relative ${
+                                selectedColor === colorName
+                                  ? 'bg-pink-600 text-white border-2 border-pink-600'
+                                  : isAvailable
+                                  ? 'bg-gray-100 text-gray-900 border-2 border-gray-300 hover:border-pink-600 cursor-pointer'
+                                  : 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed opacity-50'
+                              }`}
+                              title={isAvailable ? `${colorStock} en stock` : 'Rupture de stock'}
+                            >
+                              <div
+                                className={`w-3 h-3 rounded-full border-2 flex-shrink-0 ${
+                                  isAvailable ? 'border-gray-400' : 'border-gray-300'
                                 }`}
-                              >
-                                <div
-                                  className={`w-3 h-3 rounded-full border-2 ${
-                                    isAvailable ? 'border-gray-400' : 'border-gray-300'
-                                  }`}
-                                  style={{ backgroundColor: isAvailable ? colorHex : '#d1d5db' }}
-                                />
+                                style={{ backgroundColor: isAvailable ? colorHex : '#d1d5db' }}
+                              />
+                              <span className="flex-1 text-left">
                                 {colorName}
-                              </button>
-                              {!isAvailable && (
-                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[7px] px-1 rounded-full font-bold">
-                                  Rupture
-                                </span>
-                              )}
-                              {isAvailable && colorStock > 0 && colorStock <= 3 && (
-                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] px-1.5 rounded-full font-bold">
-                                  {colorStock}
-                                </span>
-                              )}
-                            </div>
+                                {!isAvailable && (
+                                  <span className="block text-[7px] leading-none">Rupture</span>
+                                )}
+                                {isAvailable && colorStock > 0 && colorStock <= 3 && (
+                                  <span className="block text-[7px] leading-none text-yellow-500">({colorStock})</span>
+                                )}
+                              </span>
+                            </button>
                           );
                         })}
                       </div>
