@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Heart, Star } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import ReviewsSection from "../components/ReviewsSection";
 import Navbar from "../components/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from '../components/Footer';
@@ -278,6 +279,11 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="bg-gray-50 py-0">
+        <ReviewsSection />
       </div>
 
       <Footer />

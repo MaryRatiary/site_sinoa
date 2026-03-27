@@ -2,7 +2,9 @@ const groupes = [
   {
     id: 'groupe-blackpink',
     name: 'BLACKPINK',
+    url: '/menu/groups/blackpink.jpg',
     image: '/menu/groups/blackpink.jpg',
+    urlHover: '/menu/groups/blackpink.jpg',
     description: 'Le groupe de filles K-pop le plus influent du monde. Découvrez leur collection exclusive.',
     membersCount: 4,
     debutYear: 2016,
@@ -19,7 +21,9 @@ const groupes = [
   {
     id: 'groupe-bts',
     name: 'BTS',
+    url: '/menu/groups/bts.jpg',
     image: '/menu/groups/bts.jpg',
+    urlHover: '/menu/groups/bts.jpg',
     description: 'BTS - Bangtan Boys, le groupe révolutionnaire qui a changé le K-pop. Collection officielle.',
     membersCount: 7,
     debutYear: 2013,
@@ -36,7 +40,9 @@ const groupes = [
   {
     id: 'groupe-newjeans',
     name: 'NewJeans',
+    url: '/menu/groups/nj.webp',
     image: '/menu/groups/nj.webp',
+    urlHover: '/menu/groups/nj.webp',
     description: 'NewJeans - Les nouvelles stars du K-pop avec un son innovant et moderne.',
     membersCount: 5,
     debutYear: 2022,
@@ -53,7 +59,9 @@ const groupes = [
   {
     id: 'groupe-twice',
     name: 'TWICE',
+    url: '/menu/groups/twice.jpg',
     image: '/menu/groups/twice.jpg',
+    urlHover: '/menu/groups/twice.jpg',
     description: 'TWICE - Le groupe de filles du moment avec des hits internationaux. Collection complète.',
     membersCount: 9,
     debutYear: 2015,
@@ -70,7 +78,9 @@ const groupes = [
   {
     id: 'groupe-seventeen',
     name: 'SEVENTEEN',
+    url: '/menu/groups/seventeen.png',
     image: '/menu/groups/seventeen.png',
+    urlHover: '/menu/groups/seventeen.png',
     description: 'SEVENTEEN - Le groupe des leaders du K-pop. Leur merchandise exclusive vous attend.',
     membersCount: 13,
     debutYear: 2015,
@@ -87,7 +97,9 @@ const groupes = [
   {
     id: 'groupe-straykids',
     name: 'Stray Kids',
+    url: '/menu/groups/straykids.png',
     image: '/menu/groups/straykids.png',
+    urlHover: '/menu/groups/straykids.png',
     description: 'Stray Kids - Le groupe qui monte en puissance dans le K-pop mondial.',
     membersCount: 8,
     debutYear: 2018,
@@ -104,7 +116,9 @@ const groupes = [
   {
     id: 'groupe-ateez',
     name: 'ATEEZ',
+    url: '/menu/groups/ateez.jpg',
     image: '/menu/groups/ateez.jpg',
+    urlHover: '/menu/groups/ateez.jpg',
     description: 'ATEEZ - Voyage vers le succès avec ce groupe innovant du K-pop.',
     membersCount: 8,
     debutYear: 2018,
@@ -121,7 +135,9 @@ const groupes = [
   {
     id: 'groupe-itzy',
     name: 'ITZY',
+    url: '/menu/groups/itzy.png',
     image: '/menu/groups/itzy.png',
+    urlHover: '/menu/groups/itzy.png',
     description: 'ITZY - Le groupe de jeunes talents pleins de potentiel et d\'énergie.',
     membersCount: 5,
     debutYear: 2019,
@@ -138,7 +154,9 @@ const groupes = [
   {
     id: 'groupe-ive',
     name: 'IVE',
+    url: '/menu/groups/ive.webp',
     image: '/menu/groups/ive.webp',
+    urlHover: '/menu/groups/ive.webp',
     description: 'IVE - La nouvelle génération du K-pop avec un son unique et moderne.',
     membersCount: 6,
     debutYear: 2021,
@@ -155,7 +173,9 @@ const groupes = [
   {
     id: 'groupe-txt',
     name: 'TXT (Tomorrow X Together)',
+    url: '/menu/groups/txt.png',
     image: '/menu/groups/txt.png',
+    urlHover: '/menu/groups/txt.png',
     description: 'TXT - Les futurs leaders du K-pop. Collection exclusive de Tomorrow X Together.',
     membersCount: 5,
     debutYear: 2019,
@@ -172,7 +192,9 @@ const groupes = [
   {
     id: 'groupe-nct',
     name: 'NCT',
+    url: '/menu/groups/nct.jpg',
     image: '/menu/groups/nct.jpg',
+    urlHover: '/menu/groups/nct.jpg',
     description: 'NCT - Le supergroupe avec plusieurs unités. Découvrez la diversité du K-pop.',
     membersCount: 23,
     debutYear: 2016,

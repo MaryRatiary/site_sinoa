@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Filter } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import ProductDetail from "../components/ProductDetail";
+import ReviewsSection from "../components/ReviewsSection";
 import Navbar from "../components/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from '../components/Footer';
@@ -69,7 +70,7 @@ function getCategoryInfo(type) {
     groupes: {
       name: 'Nos Groupes KPOP',
       description: 'Explorez la collection complète de vos groupes K-pop préférés.',
-      image: '/Par groupe/blackpink.jpg'
+      image: '/menu/groups/blackpink.jpg'
     },
     huntrix: {
       name: 'Huntrix - K-pop Demon Hunter',
@@ -79,7 +80,7 @@ function getCategoryInfo(type) {
     lightsticks: {
       name: 'K-pop Merch & Goodies',
       description: 'Light sticks officiels et merchandises des groupes KPOP les plus populaires.',
-      image: '/lightstick/bts-bomb.png'
+      image: '/lightstick/lightstick1.png'
     }
   };
   return info[type] || { name: 'Produits', description: '', image: '' };
@@ -213,7 +214,7 @@ export default function StaticCategoryPage() {
       </div>
 
       {/* Product Detail or Grid */}
-      <div className="max-w-7xl mx-auto px-4 pb-16">
+      <div className="max-w-full mx-auto px-4 pb-10">
         {selectedProduct ? (
           <div className="mt-8">
             <button
@@ -223,75 +224,87 @@ export default function StaticCategoryPage() {
               ← Retour à la liste
             </button>
             <ProductDetail product={selectedProduct} />
+            
+            {/* Reviews Section */}
+            <div className="bg-gray-50 -mb-6 mt-6 px-4 py-6">
+              <ReviewsSection />
+            </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sortedProducts.map((product) => {
-              const price = product.price || 0;
-              const originalPrice = product.originalPrice || null;
-              
-              return (
-                <div 
-                  key={product.id} 
-                  className="flex flex-col group cursor-pointer"
-                  onClick={() => setSelectedProduct(product)}
-                >
-                  <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 hover:shadow-lg transition-all duration-300 p-4">
-                    <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden mb-4">
-                      <img
-                        src={product.url || '/placeholder.png'}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      {originalPrice && price < originalPrice && (
-                        <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-lg">
-                          Soldes
-                        </div>
-                      )}
-                    </div>
-                    
-                    <h3 className="text-base font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-pink-600 transition-colors">
-                      {product.name}
-                    </h3>
-                    
-                    <div className="flex items-center gap-1 mb-3">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className={`text-sm ${i < Math.floor(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}>
-                          ★
-                        </span>
-                      ))}
-                      <span className="text-xs text-gray-600 ml-2">({product.reviewCount || 0})</span>
-                    </div>
-
-                    {price > 0 && (
-                      <div className="flex items-baseline gap-2">
-                        {originalPrice && price < originalPrice ? (
-                          <>
-                            <span className="text-lg font-bold text-red-600">
-                              {price.toFixed(2)}€
-                            </span>
-                            <span className="text-sm text-gray-400 line-through">
-                              {originalPrice.toFixed(2)}€
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-lg font-bold text-gray-900">
-                            {price.toFixed(2)}€
-                          </span>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {sortedProducts.map((product) => {
+                const price = product.price || 0;
+                const originalPrice = product.originalPrice || null;
+                
+                return (
+                  <div 
+                    key={product.id} 
+                    className="flex flex-col group cursor-pointer"
+                    onClick={() => setSelectedProduct(product)}
+                  >
+                    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 hover:shadow-lg transition-all duration-300 p-4">
+                      <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden mb-4">
+                        <img
+                          src={product.url || '/placeholder.png'}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                        {originalPrice && price < originalPrice && (
+                          <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                            Soldes
+                          </div>
                         )}
                       </div>
-                    )}
+                      
+                      <h3 className="text-base font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-pink-600 transition-colors">
+                        {product.name}
+                      </h3>
+                      
+                      <div className="flex items-center gap-1 mb-3">
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i} className={`text-sm ${i < Math.floor(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}>
+                            ★
+                          </span>
+                        ))}
+                        <span className="text-xs text-gray-600 ml-2">({product.reviewCount || 0})</span>
+                      </div>
 
-                    <div className="mt-4 pt-4 border-t border-gray-100">
-                      <p className="text-xs text-gray-600">
-                        {product.stock > 0 ? `${product.stock} en stock` : 'Indisponible'}
-                      </p>
+                      {price > 0 && (
+                        <div className="flex items-baseline gap-2">
+                          {originalPrice && price < originalPrice ? (
+                            <>
+                              <span className="text-lg font-bold text-red-600">
+                                {price.toFixed(2)}€
+                              </span>
+                              <span className="text-sm text-gray-400 line-through">
+                                {originalPrice.toFixed(2)}€
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-lg font-bold text-gray-900">
+                              {price.toFixed(2)}€
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                        <p className="text-xs text-gray-600">
+                          {product.stock > 0 ? `${product.stock} en stock` : 'Indisponible'}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+
+            {/* Reviews Section - Affichée sur la page de liste */}
+            <div className="w-full bg-gray-50 -mx-4 -mb-10 mt-16 px-4 py-8">
+              <ReviewsSection />
+            </div>
+          </>
         )}
       </div>
 
