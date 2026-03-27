@@ -1,9 +1,15 @@
+import { useNavigate } from "react-router-dom";
 import bestSellers from "../../../data/bestSellers";
 import { ProductCard } from "../../card/ProductCard";
 
 const BestSellerSection = () => {
+  const navigate = useNavigate();
   const fontTitle = "'Archivo Black', sans-serif";
   const fontHunter = "'Cinzel', serif";
+
+  const handleProductClick = (productId) => {
+    navigate(`/staticcategory/bestsellers?product=${productId}`);
+  };
 
   return (
     <section className="w-full py-2 md:py-4 px-4 bg-white overflow-hidden">
@@ -53,20 +59,26 @@ const BestSellerSection = () => {
           {bestSellers.map((b, index) => (
             <div
               key={b.id || `${b.name}-${index}`}
-              className="snap-start group flex flex-col h-full"
+              className="snap-start group flex flex-col h-full cursor-pointer"
+              onClick={() => handleProductClick(b.id)}
             >
               <div className="flex flex-col h-full space-y-3">
                 <div className="relative overflow-hidden rounded-xl border border-gray-100 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 bg-white">
-                  <ProductCard
-                    id={b.id}
-                    className="w-full h-full object-cover"
-                    image={b.url}
-                    hoverImage={b.urlHover}
-                    name={b.name}
-                    price={b.realPrice}
-                    reducedPrice={b.reducedPrice}
-                    isEstimated={b.isEstimated}
-                  />
+                  <div className="w-full h-full object-cover" onClick={(e) => {
+                    e.stopPropagation();
+                    handleProductClick(b.id);
+                  }}>
+                    <ProductCard
+                      id={null}
+                      className="w-full h-full object-cover"
+                      image={b.url}
+                      hoverImage={b.urlHover}
+                      name={b.name}
+                      price={b.realPrice}
+                      reducedPrice={b.reducedPrice}
+                      isEstimated={b.isEstimated}
+                    />
+                  </div>
                   
                   {/* Petit indicateur de rang au hover */}
                   <div className="absolute bottom-0 left-0 w-full h-1 bg-[#b35fc2] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>

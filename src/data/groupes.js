@@ -1,40 +1,191 @@
 const groupes = [
-    {
-        url: "/logo/BTS.jpg"
-    },
-    {
-        url: "/logo/black_pink.jpg"
-    },
-    {
-        url: "/logo/huntrix.png"
-    },
-    {
-        url: "/logo/stray_kids.png"
-    },
-    {
-        url: "/logo/twiece.jpg"
-    },
-    {
-        url: "/logo/new_jeans.webp"
-    },
-    {
-        url: "/logo/ateez.jpg"
-    },
-    {
-        url: "/logo/seventeen.png"
-    },
-    {
-        url: "/logo/txt.png"
-    },
-    {
-        url: "/logo/nct.jpg"
-    },
-    {
-        url: "/logo/itzy.png"
-    },
-    {
-        url: "/logo/imgi.jpg"
-    },
-]
+  {
+    id: 'groupe-blackpink',
+    name: 'BLACKPINK',
+    image: '/Par groupe/blackpink.jpg',
+    description: 'Le groupe de filles K-pop le plus influent du monde. Découvrez leur collection exclusive.',
+    membersCount: 4,
+    debutYear: 2016,
+    company: 'YG Entertainment',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 5,
+    reviewCount: 892,
+    careInstructions: ''
+  },
+  {
+    id: 'groupe-bts',
+    name: 'BTS',
+    image: '/Par groupe/bts.jpg',
+    description: 'BTS - Bangtan Boys, le groupe révolutionnaire qui a changé le K-pop. Collection officielle.',
+    membersCount: 7,
+    debutYear: 2013,
+    company: 'HYBE',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 5,
+    reviewCount: 1243,
+    careInstructions: ''
+  },
+  {
+    id: 'groupe-newjeans',
+    name: 'NewJeans',
+    image: '/Par groupe/newjeans.jpg',
+    description: 'NewJeans - Les nouvelles stars du K-pop avec un son innovant et moderne.',
+    membersCount: 5,
+    debutYear: 2022,
+    company: 'HYBE',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 4.9,
+    reviewCount: 567,
+    careInstructions: ''
+  },
+  {
+    id: 'groupe-twice',
+    name: 'TWICE',
+    image: '/Par groupe/twice.jpg',
+    description: 'TWICE - Le groupe de filles du moment avec des hits internationaux. Collection complète.',
+    membersCount: 9,
+    debutYear: 2015,
+    company: 'JYP Entertainment',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 4.8,
+    reviewCount: 756,
+    careInstructions: ''
+  },
+  {
+    id: 'groupe-seventeen',
+    name: 'SEVENTEEN',
+    image: '/Par groupe/seventeen.jpg',
+    description: 'SEVENTEEN - Le groupe des leaders du K-pop. Leur merchandise exclusive vous attend.',
+    membersCount: 13,
+    debutYear: 2015,
+    company: 'Pledis Entertainment',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 4.9,
+    reviewCount: 834,
+    careInstructions: ''
+  },
+  {
+    id: 'groupe-straykids',
+    name: 'Stray Kids',
+    image: '/Par groupe/straykids.jpg',
+    description: 'Stray Kids - Le groupe qui monte en puissance dans le K-pop mondial.',
+    membersCount: 8,
+    debutYear: 2018,
+    company: 'JYP Entertainment',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 4.8,
+    reviewCount: 623,
+    careInstructions: ''
+  },
+  {
+    id: 'groupe-ateez',
+    name: 'ATEEZ',
+    image: '/Par groupe/ateez.jpg',
+    description: 'ATEEZ - Voyage vers le succès avec ce groupe innovant du K-pop.',
+    membersCount: 8,
+    debutYear: 2018,
+    company: 'KQ Entertainment',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 4.7,
+    reviewCount: 445,
+    careInstructions: ''
+  },
+  {
+    id: 'groupe-itzy',
+    name: 'ITZY',
+    image: '/Par groupe/itzy.jpg',
+    description: 'ITZY - Le groupe de jeunes talents pleins de potentiel et d\'énergie.',
+    membersCount: 5,
+    debutYear: 2019,
+    company: 'JYP Entertainment',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 4.8,
+    reviewCount: 512,
+    careInstructions: ''
+  },
+  {
+    id: 'groupe-ive',
+    name: 'IVE',
+    image: '/Par groupe/ive.jpg',
+    description: 'IVE - La nouvelle génération du K-pop avec un son unique et moderne.',
+    membersCount: 6,
+    debutYear: 2021,
+    company: 'Starship Entertainment',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 4.8,
+    reviewCount: 389,
+    careInstructions: ''
+  },
+  {
+    id: 'groupe-txt',
+    name: 'TXT (Tomorrow X Together)',
+    image: '/Par groupe/txt.jpg',
+    description: 'TXT - Les futurs leaders du K-pop. Collection exclusive de Tomorrow X Together.',
+    membersCount: 5,
+    debutYear: 2019,
+    company: 'HYBE',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 4.7,
+    reviewCount: 478,
+    careInstructions: ''
+  },
+  {
+    id: 'groupe-nct',
+    name: 'NCT',
+    image: '/Par groupe/nct.jpg',
+    description: 'NCT - Le supergroupe avec plusieurs unités. Découvrez la diversité du K-pop.',
+    membersCount: 23,
+    debutYear: 2016,
+    company: 'SM Entertainment',
+    price: null,
+    inStock: true,
+    stock: 999,
+    colors: [],
+    sizes: [],
+    rating: 4.6,
+    reviewCount: 701,
+    careInstructions: ''
+  }
+];
 
 export default groupes;

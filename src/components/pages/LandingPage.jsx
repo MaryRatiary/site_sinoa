@@ -211,7 +211,7 @@ const LandingPage = () => {
                   <h2 className="text-3xl md:text-5xl font-black tracking-tighter" style={{ fontFamily: fontTitle }}>K-FASHION</h2>
                   <p className="max-w-md mx-auto lg:mx-0 font-medium italic">Inspire-toi de la mode coréenne pour un look tendance et audacieux au quotidien.</p>
                 </div>
-                <SmoothSlider cards={fashion} className="justify-center md:justify-end"/>
+                <SmoothSlider cards={fashion} productType="fashion" className="justify-center md:justify-end"/>
               </div>
             </div>
           </div>
@@ -234,7 +234,7 @@ const LandingPage = () => {
                     <div className="h-1.5 w-24 bg-primary-500 my-0 mx-auto md:mx-0"></div>
                 </div>
                 <div className="flex-1">
-                  <SmoothSlider cards={beauty} className="justify-center md:justify-end"/>
+                  <SmoothSlider cards={beauty} productType="beauty" className="justify-center md:justify-end"/>
                 </div>
               </div>
             </div>

@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const GAP = 8; 
 
-export default function SmoothSlider({ cards = [], className = "" }) {
+export default function SmoothSlider({ cards = [], className = "", productType = null }) {
   const [offset, setOffset] = useState(0);
   const [visibleCards, setVisibleCards] = useState(4);
+  const navigate = useNavigate();
 
   // Gestion du nombre de cartes selon la largeur de l'écran
   useEffect(() => {
     const updateSize = () => {
-      if (window.innerWidth < 640) setVisibleCards(2.4); // On voit un bout de la 2ème carte
+      if (window.innerWidth < 640) setVisibleCards(2.4);
       else if (window.innerWidth < 1024) setVisibleCards(2);
-      else setVisibleCards(3); // 3 car la zone est partagée avec l'image latérale
+      else setVisibleCards(3);
     };
     updateSize();
     window.addEventListener("resize", updateSize);
@@ -25,7 +27,16 @@ export default function SmoothSlider({ cards = [], className = "" }) {
     setOffset(next);
   };
 
-  // Calcul dynamique de la largeur d'une carte
+  const handleCardClick = (card) => {
+    if (productType) {
+      // Redirection vers la page statique
+      navigate(`/static/${productType}?product=${card.id}`);
+    } else if (card.id) {
+      // Redirection vers la page produit standard
+      navigate(`/product/${card.id}`);
+    }
+  };
+
   const cardWidth = `calc((100% - ${(Math.ceil(visibleCards) - 1) * GAP}px) / ${visibleCards})`;
   const translateX = `calc(${offset} * -1 * (${cardWidth} + ${GAP}px))`;
 
@@ -63,7 +74,8 @@ export default function SmoothSlider({ cards = [], className = "" }) {
           {cards.map((card, idx) => (
             <div
               key={card.id ?? idx}
-              className="slider-card group relative aspect-[4/4] rounded-2xl overflow-hidden shadow-sm border border-white/20 bg-gray-200"
+              className="slider-card group relative aspect-[4/4] rounded-2xl overflow-hidden shadow-sm border border-white/20 bg-gray-200 cursor-pointer hover:shadow-lg transition-shadow duration-300"
+              onClick={() => handleCardClick(card)}
             >
               <img 
                 src={card.url} 

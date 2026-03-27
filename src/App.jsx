@@ -17,6 +17,8 @@ import AdminDashboard from './pages/AdminDashboard'
 import AdminCatalog from './pages/AdminCatalog'
 import AdminManagementPage from './pages/AdminManagementPage'
 import DynamicProductPage from './pages/DynamicProductPage'
+import StaticProductPage from './pages/StaticProductPage'
+import StaticCategoryPage from './pages/StaticCategoryPage'
 
 // Composant pour les routes protégées (authentification requise)
 const ProtectedRoute = ({ children }) => {
@@ -44,6 +46,10 @@ const AppRoutes = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/cart" element={<CartPage />} />
+      
+      {/* Routes pour les produits statiques - AVANT les routes dynamiques */}
+      <Route path="/static/:productType" element={<StaticProductPage />} />
+      <Route path="/staticcategory/:categoryType" element={<StaticCategoryPage />} />
       
       {/* Route dynamique pour les catégories */}
       <Route path="/category/:categoryId" element={<DynamicProductPage />} />
