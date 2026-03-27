@@ -15,7 +15,7 @@ export default function ExpandSearch() {
   };
 
   return (
-    <div className="bg-white">
+    <div className="">
       <div className="relative flex items-center h-10">
         {/* Icon — rotates on hover when collapsed, becomes inline icon when expanded */}
         <button
@@ -27,7 +27,7 @@ export default function ExpandSearch() {
             transition-all duration-200 ease-in-out
             ${isExpanded
               ? "border-transparent bg-transparent text-gray-800 cursor-default"
-              : "border-gray-800 bg-white text-gray-800 cursor-pointer"
+              : "border-gray-800  text-gray-800 cursor-pointer"
             }
           `}
         >
@@ -48,7 +48,7 @@ export default function ExpandSearch() {
             text-gray-700 placeholder-gray-400
             transition-all duration-500 ease-in-out
             ${isExpanded
-              ? "w-72 pl-10 pr-4 bg-white border-gray-600 cursor-text"
+              ? "w-72 pl-10 pr-4  border-gray-600 cursor-text"
               : "w-10 pl-10 pr-0 bg-transparent border-transparent cursor-pointer"
             }
           `}
