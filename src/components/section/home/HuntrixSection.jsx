@@ -1,4 +1,4 @@
-import bestSellers from "../../../data/bestSellers";
+import huntrixProducts from "../../../data/huntrixProducts";
 import { ProductCard } from "../../card/ProductCard";
 import { useScrollAnimation } from "../../../hooks/useScrollAnimation";
 
@@ -30,20 +30,22 @@ const HuntrixSection = () => {
 </div>
      {/* Liste de Produits - Style Mobile modifié (hauteur réduite) */}
       <div className="w-full flex flex-nowrap overflow-x-auto gap-3 pb-6 snap-x snap-mandatory scrollbar-hide focus:outline-none">
-        {bestSellers.map((b, index) => (
+        {huntrixProducts.map((product, index) => (
           <div 
-            key={b.id || `${b.name}-${index}`} 
+            key={product.id || `${product.name}-${index}`} 
             /* Largeur réduite sur mobile pour matcher la petite hauteur */
             className="flex-shrink-0 w-[45vw] sm:w-[40vw] md:w-[30vw] lg:w-[220px] snap-start"
           >
             {/* Conteneur pour forcer la réduction de hauteur sur mobile uniquement */}
             <div className="h-[200px] md:h-auto overflow-hidden rounded-lg">
                 <ProductCard
+                  id={product.id}
                   className="w-full h-full object-cover shadow-sm hover:shadow-md transition-shadow border border-gray-50"
-                  image={b.url}
-                  hoverImage={b.urlHover}
-                  name={b.name}
-                  price={b.realPrice}
+                  image={product.url}
+                  hoverImage={product.urlHover}
+                  name={product.name}
+                  price={product.price}
+                  reducedPrice={product.originalPrice}
                 />
             </div>
           </div>

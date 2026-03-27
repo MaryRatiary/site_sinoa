@@ -1,11 +1,13 @@
 import { useRef, useEffect, useState } from 'react';
 import groupes from "../../../data/groupes";
+import { useNavigate } from "react-router-dom";
 
 const GroupSection = () => {
   const scrollContainerRef = useRef(null);
   const headerRef = useRef(null);
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
 
+  const navigate = useNavigate();
   // Intersection Observer pour déclencher l'animation au scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -73,9 +75,10 @@ const GroupSection = () => {
           >
             {groupes.map((group) => (
               <div 
-                key={group.url} 
-                className="flex-none w-[160px] sm:w-[200px] md:w-[220px] group flex flex-col gap-3 cursor-pointer transform transition-all duration-300 hover:scale-105 snap-start"
-              >
+              key={group.id} 
+              onClick={() => navigate(`/staticcategory/groupes?product=${group.id}`)}
+              className="flex-none w-[160px] sm:w-[200px] md:w-[220px] group flex flex-col gap-3 cursor-pointer transform transition-all duration-300 hover:scale-105 snap-start"
+            >
                 {/* Image Container */}
                 <div className="relative aspect-square overflow-hidden flex items-center justify-center rounded-2xl shadow-md border border-gray-100 bg-white">
                   {/* Overlay Effect */}
@@ -83,12 +86,12 @@ const GroupSection = () => {
                   
                   {/* Image */}
                   <div className="w-full h-full overflow-hidden">
-                    <img
-                      src={group.url}
-                      alt={group.name}
-                      className="object-cover h-full w-full group-hover:scale-110 transition-transform duration-300"
-                      loading="lazy"
-                    />
+                  <img
+                    src={group.image}
+                    alt={group.name}
+                    className="object-cover h-full w-full group-hover:scale-110 transition-transform duration-300"
+                    loading="lazy"
+                  />
                   </div>
                 </div>
 

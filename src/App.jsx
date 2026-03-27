@@ -19,6 +19,7 @@ import AdminManagementPage from './pages/AdminManagementPage'
 import DynamicProductPage from './pages/DynamicProductPage'
 import StaticProductPage from './pages/StaticProductPage'
 import StaticCategoryPage from './pages/StaticCategoryPage'
+import ProductDetailPage from './pages/ProductDetailPage'
 
 // Composant pour les routes protégées (authentification requise)
 const ProtectedRoute = ({ children }) => {
@@ -50,6 +51,9 @@ const AppRoutes = () => {
       {/* Routes pour les produits statiques - AVANT les routes dynamiques */}
       <Route path="/static/:productType" element={<StaticProductPage />} />
       <Route path="/staticcategory/:categoryType" element={<StaticCategoryPage />} />
+      
+      {/* Route pour les produits individuels (lightstick, huntrix, groupes, bestsellers) */}
+      <Route path="/product/:productId" element={<ProductDetailPage />} />
       
       {/* Route dynamique pour les catégories */}
       <Route path="/category/:categoryId" element={<DynamicProductPage />} />
