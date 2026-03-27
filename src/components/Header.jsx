@@ -53,13 +53,52 @@ const MenuColumn = ({ title, items, onClose }) => (
 const Navbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [navbarVisible, setNavbarVisible] = useState(true);
   const timeoutRef = useRef(null);
+  const lastScrollYRef = useRef(0);
+  const lastTimestampRef = useRef(Date.now());
   const { getItemCount } = useCart();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   
   // Récupérer les catégories du backend
   const { categories, loading: categoriesLoading } = useCategories();
+
+  // Hook pour gérer le scroll reveal avec détection simple et fluidité
+  useEffect(() => {
+    const scrollThreshold = 20; // ~2cm
+    let scrollTimeout;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Annuler le timeout précédent pour éviter les changements rapides
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      
+      // Si on est au top, toujours afficher
+      if (currentScrollY <= scrollThreshold) {
+        setNavbarVisible(true);
+      }
+      // Si on scroll vers le haut (position diminue)
+      else if (currentScrollY < lastScrollYRef.current) {
+        setNavbarVisible(true);
+      }
+      // Si on scroll vers le bas (position augmente) - avec délai pour plus de fluidité
+      else if (currentScrollY > lastScrollYRef.current) {
+        scrollTimeout = setTimeout(() => {
+          setNavbarVisible(false);
+        }, 150); // Délai de 150ms pour réduire la vélocité
+      }
+      
+      lastScrollYRef.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+    };
+  }, []);
 
   const open  = (menu) => { clearTimeout(timeoutRef.current); setActiveMenu(menu); };
   const close  = ()    => { timeoutRef.current = setTimeout(() => setActiveMenu(null), 500); };
@@ -77,7 +116,10 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 w-full bg-white border-b border-gray-100 z-40">
+    <nav className={navbarVisible
+      ? 'fixed top-0 left-0 right-0 w-full bg-white border-b border-gray-100 z-40 transition-all duration-300 ease-out'
+      : 'fixed -top-full left-0 right-0 w-full bg-white border-b border-gray-100 z-40 transition-all duration-300 ease-out'
+    }>
 
       {/* Top Banner */}
       <AnimatedBanner/>

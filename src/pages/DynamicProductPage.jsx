@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronRight, Filter, X, ShoppingBag, Star, ArrowLeft } from "lucide-react";
+import { Filter, Star, BookOpen, Sparkles, Layers, ArrowLeft } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useProductsByCategory } from "../hooks/useProducts";
 import { useCategoryWithDetails } from "../hooks/useCategories";
-import { useCart } from "../context/CartContext";
 import { ProductCard2 } from "../components/card/ProductCard2";
-import ProductDetailModal from "../components/ProductDetailModal";
+import ProductDetail from "../components/ProductDetail";
+import ReviewSection from "../components/ReviewSection";
 import Navbar from "../components/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from '../components/Footer';
@@ -46,11 +48,9 @@ function applySort(products, sortType) {
 export default function DynamicProductPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
   
   const [sortBy, setSortBy] = useState('vedette');
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showProductDetail, setShowProductDetail] = useState(false);
   
   // Récupérer les produits et la catégorie
   const { products, loading: productsLoading } = useProductsByCategory(categoryId);
@@ -59,8 +59,7 @@ export default function DynamicProductPage() {
   const sortedProducts = applySort(products, sortBy);
 
   const handleViewDetails = (product) => {
-    setSelectedProduct(product);
-    setShowProductDetail(true);
+    navigate(`/product/${product.id}`);
   };
 
   if (categoryLoading || productsLoading) {
@@ -110,7 +109,6 @@ export default function DynamicProductPage() {
       {/* Title Section */}
       <div className="w-full bg-white py-8 px-4 overflow-hidden">
         <div className="max-w-7xl mx-auto flex items-center gap-6">
-          {/* Category Image */}
           {category.image && (
             <div className="flex-shrink-0">
               <img
@@ -121,14 +119,10 @@ export default function DynamicProductPage() {
             </div>
           )}
           
-          {/* Title and Description */}
           <div className="flex-1">
             <h1 className="text-4xl font-black text-gray-900 tracking-tight animate-slide-up">
               {category.name}
             </h1>
-            {category.description && (
-              <p className="text-gray-600 mt-2">{category.description}</p>
-            )}
           </div>
         </div>
       </div>
@@ -197,12 +191,94 @@ export default function DynamicProductPage() {
         )}
       </div>
 
-      {/* ProductDetailModal */}
-      {showProductDetail && selectedProduct && (
-        <ProductDetailModal 
-          product={selectedProduct} 
-          onClose={() => setShowProductDetail(false)}
-        />
+      {/* Sub-categories Section */}
+      {category.children && Array.isArray(category.children) && category.children.length > 0 && (
+        <div className="w-full bg-gray-50 border-t border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 py-16">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="h-1 w-12 bg-[#5E2251]"></div>
+              <div className="flex items-center gap-2">
+                <Layers className="text-[#5E2251]" size={28} />
+                <h2 className="text-3xl font-bold text-gray-900">Sous-catégories</h2>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {category.children.map((subcat) => (
+                <div 
+                  key={subcat.id}
+                  className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all cursor-pointer"
+                  onClick={() => navigate(`/category/${subcat.id}`)}
+                >
+                  {subcat.image && (
+                    <img 
+                      src={subcat.image} 
+                      alt={subcat.name}
+                      className="w-full h-40 object-cover rounded-lg mb-4"
+                    />
+                  )}
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{subcat.name}</h3>
+                  {subcat.description && (
+                    <p className="text-sm text-gray-600 line-clamp-2">{subcat.description}</p>
+                  )}
+                  <button className="mt-4 text-[#5E2251] font-semibold hover:underline text-sm">
+                    Voir →
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review Section */}
+      <ReviewSection categoryId={categoryId} />
+
+      {/* Category Description Section */}
+      {category.description && category.description.trim().length > 0 && (
+        <div className="w-full bg-gradient-to-b from-gray-50 via-white to-gray-50 border-t-2 border-[#5E2251]">
+          <div className="max-w-7xl mx-auto px-4 py-20">
+            {/* Section Header */}
+            <div className="flex items-center gap-3 mb-12">
+              <div className="h-1 w-12 bg-[#5E2251]"></div>
+              <div className="flex items-center gap-2">
+                <BookOpen className="text-[#5E2251]" size={28} />
+                <h2 className="text-4xl font-black text-gray-900">À propos de {category.name}</h2>
+              </div>
+            </div>
+
+            {/* Description Content with Markdown Support */}
+            <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+              <div className="prose prose-lg max-w-none text-gray-700 space-y-6">
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    h1: ({node, ...props}) => <h1 className="text-3xl font-bold text-[#5E2251] mt-6 mb-4" {...props} />,
+                    h2: ({node, ...props}) => <h2 className="text-2xl font-bold text-[#5E2251] mt-5 mb-3" {...props} />,
+                    h3: ({node, ...props}) => <h3 className="text-xl font-bold text-[#5E2251] mt-4 mb-2" {...props} />,
+                    p: ({node, ...props}) => <p className="text-gray-700 leading-relaxed text-justify" {...props} />,
+                    ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-2 text-gray-700" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal list-inside space-y-2 text-gray-700" {...props} />,
+                    li: ({node, ...props}) => <li className="text-gray-700" {...props} />,
+                    code: ({node, ...props}) => <code className="bg-gray-100 px-2 py-1 rounded text-[#5E2251] font-mono" {...props} />,
+                    blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-[#5E2251] pl-4 italic text-gray-600" {...props} />,
+                  }}
+                >
+                  {category.description}
+                </ReactMarkdown>
+              </div>
+            </div>
+
+            {/* Info Box */}
+            <div className="mt-8 flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <Sparkles className="text-blue-600 flex-shrink-0 mt-1" size={20} />
+              <div>
+                <p className="text-sm text-blue-900 font-medium">💡 Conseil client</p>
+                <p className="text-sm text-blue-800 mt-1">Découvrez tous nos produits {category.name.toLowerCase()} avec des descriptions détaillées et des images haute résolution.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       <Footer />

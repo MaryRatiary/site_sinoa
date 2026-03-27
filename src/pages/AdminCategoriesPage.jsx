@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, ChevronRight, ChevronDown, AlertCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, ChevronRight, ChevronDown, AlertCircle, Info } from 'lucide-react';
+import MarkdownEditor from '../components/MarkdownEditor';
 import { categoriesAPI } from '../services/api';
 
 export default function AdminCategoriesPage() {
@@ -99,7 +100,6 @@ export default function AdminCategoriesPage() {
     e.dataTransfer.dropEffect = 'move';
     setDragOverId(targetId);
     
-    // Déterminer si c'est au-dessus ou au-dessous
     const rect = e.currentTarget.getBoundingClientRect();
     const midpoint = rect.top + rect.height / 2;
     setDragPosition(e.clientY < midpoint ? 'above' : 'below');
@@ -123,7 +123,6 @@ export default function AdminCategoriesPage() {
     try {
       setReordering(true);
       
-      // Appel API pour réorganiser
       if (categoriesAPI.reorder) {
         await categoriesAPI.reorder(draggedItem.id, targetCategory.id);
       }
@@ -140,7 +139,6 @@ export default function AdminCategoriesPage() {
   const renderCategories = (items, level = 0) => {
     return items.map((category) => (
       <div key={category.id} className="mb-3">
-        {/* Ligne d'insertion au-dessus */}
         {draggedItem && dragOverId === category.id && dragPosition === 'above' && (
           <div className="h-1 bg-purple-900 mb-2 rounded-full shadow-lg animate-pulse"></div>
         )}
@@ -161,7 +159,6 @@ export default function AdminCategoriesPage() {
           style={{ marginLeft: `${level * 24}px` }}
         >
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            {/* Poignée de drag - 6 points */}
             <div className="flex flex-col gap-1.5 cursor-grab active:cursor-grabbing opacity-40 group-hover:opacity-100 transition-opacity">
               <div className="flex gap-1">
                 <span className="w-1.5 h-1.5 bg-purple-900 rounded-full"></span>
@@ -175,7 +172,6 @@ export default function AdminCategoriesPage() {
               </div>
             </div>
 
-            {/* Expand/Collapse button */}
             {category.children && category.children.length > 0 ? (
               <button
                 onClick={() => toggleExpand(category.id)}
@@ -191,7 +187,6 @@ export default function AdminCategoriesPage() {
               <div className="w-6 flex-shrink-0"></div>
             )}
 
-            {/* Category image */}
             {category.image && (
               <img 
                 src={category.image} 
@@ -200,7 +195,6 @@ export default function AdminCategoriesPage() {
               />
             )}
 
-            {/* Category info */}
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-gray-900 truncate">{category.name}</p>
               {category.description && (
@@ -214,7 +208,6 @@ export default function AdminCategoriesPage() {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex gap-2 ml-4 flex-shrink-0">
             <button
               onClick={() => handleEdit(category)}
@@ -233,12 +226,10 @@ export default function AdminCategoriesPage() {
           </div>
         </div>
 
-        {/* Ligne d'insertion au-dessous */}
         {draggedItem && dragOverId === category.id && dragPosition === 'below' && (
           <div className="h-1 bg-purple-900 mt-2 rounded-full shadow-lg animate-pulse"></div>
         )}
 
-        {/* Render children if expanded */}
         {expandedIds.has(category.id) && category.children && category.children.length > 0 && (
           <div className="border-l-2 border-gray-300 ml-3 pl-2 mt-3">
             {renderCategories(category.children, level + 1)}
@@ -282,60 +273,90 @@ export default function AdminCategoriesPage() {
 
       {/* Form */}
       {showForm && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-lg animate-in fade-in slide-in-from-top-2">
+        <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-lg animate-in fade-in slide-in-from-top-2">
           <h3 className="text-xl font-bold mb-6">
             {editingId ? 'Modifier la Catégorie' : 'Créer une Nouvelle Catégorie'}
           </h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="text"
-              placeholder="Nom de la catégorie"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
-              required
-            />
+          
+          {/* Info Box */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex gap-3">
+            <Info className="text-blue-600 flex-shrink-0 mt-1" size={20} />
+            <div>
+              <p className="text-sm font-medium text-blue-900">💡 Conseil</p>
+              <p className="text-sm text-blue-800 mt-1">
+                La description s'affichera en bas de la page catégorie, visible par les clients. Utilisez le Markdown pour formater votre contenu !
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                Nom de la catégorie *
+              </label>
+              <input
+                type="text"
+                placeholder="Ex: Light Sticks KPOP"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
+                required
+              />
+            </div>
             
-            <textarea
-              placeholder="Description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
-              rows="3"
-            />
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                Description (avec support Markdown) *
+              </label>
+              <MarkdownEditor
+                value={formData.description}
+                onChange={(value) => setFormData({ ...formData, description: value })}
+                placeholder="Décrivez votre catégorie en détail..."
+              />
+            </div>
             
-            <input
-              type="url"
-              placeholder="URL de l'image"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
-            />
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                URL de l'image
+              </label>
+              <input
+                type="url"
+                placeholder="https://exemple.com/image.jpg"
+                value={formData.image}
+                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
+              />
+            </div>
             
-            <select
-              value={formData.parentId || ''}
-              onChange={(e) => setFormData({ ...formData, parentId: e.target.value ? parseInt(e.target.value) : null })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
-            >
-              <option value="">Pas de parent (catégorie racine)</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                Catégorie parent
+              </label>
+              <select
+                value={formData.parentId || ''}
+                onChange={(e) => setFormData({ ...formData, parentId: e.target.value ? parseInt(e.target.value) : null })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
+              >
+                <option value="">Pas de parent (catégorie racine)</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             
-            <div className="flex gap-2">
+            <div className="flex gap-2 pt-4">
               <button
                 type="submit"
-                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition-all"
+                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition-all"
               >
-                Enregistrer
+                {editingId ? '✓ Mettre à jour' : '✓ Créer'}
               </button>
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="px-6 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 font-semibold transition-all"
+                className="px-6 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-500 font-semibold transition-all"
               >
                 Annuler
               </button>
@@ -350,10 +371,10 @@ export default function AdminCategoriesPage() {
         <div>
           <h4 className="font-semibold text-blue-900 mb-1">Comment utiliser le Drag & Drop</h4>
           <ul className="text-sm text-blue-800 space-y-1">
-            <li>Cliquez et maintenez les points (:::) pour glisser une catégorie</li>
-            <li>Une barre violet sombre indique où l'élément sera inséré</li>
-            <li>Les flèches permettent de dérouler/réduire les sous-catégories</li>
-            <li>Les boutons d'édition/suppression apparaissent au survol</li>
+            <li>✓ Cliquez et maintenez les points (:::) pour glisser une catégorie</li>
+            <li>✓ Une barre violet sombre indique où l'élément sera inséré</li>
+            <li>✓ Les flèches permettent de dérouler/réduire les sous-catégories</li>
+            <li>✓ Les boutons d'édition/suppression apparaissent au survol</li>
           </ul>
         </div>
       </div>

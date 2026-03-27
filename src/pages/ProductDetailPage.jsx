@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ShoppingCart, Heart, Star } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Heart, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import ReviewsSection from "../components/ReviewsSection";
 import Navbar from "../components/Header";
@@ -12,16 +12,14 @@ import bestSellersData from '../data/bestSellers';
 import groupesData from '../data/groupes';
 import '../assets/animatedButton.css';
 
-// Fonction pour rechercher un produit dans toutes les données statiques
-function findProductById(productId) {
+function findProductInStaticData(productId) {
   const allProducts = [
     ...lightStickData,
     ...huntrixData,
     ...bestSellersData,
     ...groupesData
   ];
-  
-  return allProducts.find(p => p.id === productId);
+  return allProducts.find(p => p.id === parseInt(productId) || p.id === productId);
 }
 
 export default function ProductDetailPage() {
@@ -34,27 +32,116 @@ export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    const foundProduct = findProductById(productId);
-    if (foundProduct) {
-      setProduct(foundProduct);
-      // Pré-sélectionner la première couleur
-      if (foundProduct.colors && foundProduct.colors.length > 0) {
-        setSelectedColor(foundProduct.colors[0]);
+    const loadProduct = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        let foundProduct = findProductInStaticData(productId);
+
+        if (!foundProduct) {
+          const response = await fetch(`http://localhost:5000/api/products/${productId}`);
+          if (response.ok) {
+            const data = await response.json();
+            console.log('Product from API:', data);
+            foundProduct = data;
+          }
+        }
+
+        if (foundProduct) {
+          // Normaliser les couleurs - accepter minuscules de PostgreSQL
+          const normalizedColors = foundProduct.colors && Array.isArray(foundProduct.colors)
+            ? foundProduct.colors.map(color => ({
+                id: color.id,
+                colorName: color.colorName || color.colorname || 'Couleur',
+                colorHex: color.colorHex || color.colorhex || '#808080',
+                stock: color.stock || 0
+              }))
+            : [];
+
+          // Normaliser les tailles - accepter minuscules de PostgreSQL
+          const normalizedSizes = foundProduct.sizes && Array.isArray(foundProduct.sizes)
+            ? foundProduct.sizes.map(size => ({
+                id: size.id,
+                size: size.size || size.name || 'Taille',
+                stock: size.stock || 0
+              }))
+            : [];
+
+          const normalizedProduct = {
+            ...foundProduct,
+            price: parseFloat(foundProduct.price || foundProduct.realPrice || foundProduct.prixActuel || 0),
+            originalPrice: foundProduct.originalPrice ? parseFloat(foundProduct.originalPrice) : 
+                          foundProduct.reducedPrice ? parseFloat(foundProduct.reducedPrice) : 
+                          foundProduct.prixOriginal ? parseFloat(foundProduct.prixOriginal) : null,
+            
+            images: foundProduct.images && Array.isArray(foundProduct.images) && foundProduct.images.filter(Boolean) ? foundProduct.images : 
+                    foundProduct.url ? [foundProduct.url, foundProduct.urlHover, foundProduct.image, foundProduct.hoverImage].filter(Boolean) : 
+                    foundProduct.image ? [foundProduct.image] : 
+                    foundProduct.hoverImage ? [foundProduct.hoverImage] : [],
+            
+            url: foundProduct.url || foundProduct.image || foundProduct.images?.[0] || '',
+            stock: foundProduct.stock || 0,
+            inStock: foundProduct.inStock !== false && (foundProduct.stock || 0) > 0,
+            
+            brand: foundProduct.brand || foundProduct.marque || 'Non spécifié',
+            material: foundProduct.material || foundProduct.matiere || foundProduct.matériau || 'Non spécifié',
+            careInstructions: foundProduct.careInstructions || foundProduct.entretien || foundProduct.instructionsEntretien || 'Non spécifié',
+            categoryName: foundProduct.categoryName || foundProduct.categorie || 'Non spécifié',
+            groupName: foundProduct.groupName || foundProduct.groupe || '',
+            
+            rating: foundProduct.rating || foundProduct.note || 0,
+            reviewCount: foundProduct.reviewCount || foundProduct.nombreAvis || 0,
+            
+            slug: foundProduct.slug || '',
+            featured: foundProduct.featured || false,
+            
+            colors: normalizedColors,
+            sizes: normalizedSizes
+          };
+
+          console.log('Normalized product:', normalizedProduct);
+          setProduct(normalizedProduct);
+          
+          if (normalizedColors.length > 0) {
+            setSelectedColor(normalizedColors[0]);
+          }
+          
+          if (normalizedSizes.length > 0) {
+            setSelectedSize(normalizedSizes[0]);
+          }
+        } else {
+          setError("Produit introuvable");
+        }
+      } catch (err) {
+        console.error('Erreur lors du chargement du produit:', err);
+        setError("Erreur lors du chargement du produit");
+      } finally {
+        setLoading(false);
       }
-      // Pré-sélectionner la première taille
-      if (foundProduct.sizes && foundProduct.sizes.length > 0) {
-        setSelectedSize(foundProduct.sizes[0]);
-      }
-    }
+    };
+
+    loadProduct();
   }, [productId]);
 
-  if (!product) {
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-500">Chargement du produit...</div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 text-lg mb-4">Produit introuvable</p>
+          <p className="text-gray-500 text-lg mb-4">{error || "Produit introuvable"}</p>
           <button
             onClick={() => navigate('/')}
             className="px-6 py-2 bg-[#5E2251] text-white rounded-lg hover:bg-[#4a1a3e] transition-colors"
@@ -70,18 +157,34 @@ export default function ProductDetailPage() {
     const cartItem = {
       id: product.id,
       name: product.name || product.title,
-      price: product.price || product.realPrice || 0,
+      price: product.price || 0,
       quantity: quantity,
-      image: product.url || product.image,
+      image: product.url,
       color: selectedColor,
       size: selectedSize
     };
     addToCart(cartItem);
+    alert('Produit ajouté au panier!');
   };
 
-  const price = product.price || product.realPrice || 0;
-  const originalPrice = product.originalPrice || product.reducedPrice || null;
+  const price = product.price || 0;
+  const originalPrice = product.originalPrice;
   const hasDiscount = originalPrice && price < originalPrice;
+
+  const images = product.images && product.images.length > 0 ? product.images : [product.url].filter(Boolean);
+  const currentImage = images.length > 0 ? images[currentImageIndex] : null;
+
+  const nextImage = () => {
+    if (images.length > 1) {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (images.length > 1) {
+      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -93,7 +196,6 @@ export default function ProductDetailPage() {
         <RespNav />
       </div>
 
-      {/* Back Button */}
       <div className="max-w-7xl mx-auto px-4 py-4">
         <button
           onClick={() => navigate(-1)}
@@ -104,23 +206,74 @@ export default function ProductDetailPage() {
         </button>
       </div>
 
-      {/* Product Detail */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {/* Image Section */}
           <div className="flex flex-col gap-4">
-            <div className="aspect-square bg-gray-100 rounded-2xl overflow-hidden flex items-center justify-center">
-              <img
-                src={product.url || product.image}
-                alt={product.name || product.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            {currentImage ? (
+              <div className="relative aspect-square bg-gray-100 rounded-2xl overflow-hidden flex items-center justify-center group">
+                <img
+                  src={currentImage}
+                  alt={product.name || product.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/500?text=Image+non+disponible';
+                  }}
+                />
+                
+                {images.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <ChevronLeft size={24} className="text-gray-900" />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <ChevronRight size={24} className="text-gray-900" />
+                    </button>
+                    
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                      {currentImageIndex + 1} / {images.length}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="aspect-square bg-gray-200 rounded-2xl flex items-center justify-center">
+                <p className="text-gray-500">Pas d'image disponible</p>
+              </div>
+            )}
+
+            {images.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto">
+                {images.map((image, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all ${
+                      currentImageIndex === idx ? 'border-[#5E2251]' : 'border-gray-200'
+                    }`}
+                  >
+                    <img 
+                      src={image} 
+                      alt={`Vue ${idx + 1}`} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/80?text=Image';
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Info Section */}
           <div className="flex flex-col gap-6">
-            {/* Title and Badge */}
             <div>
               {hasDiscount && (
                 <div className="inline-block mb-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-lg">
@@ -128,12 +281,11 @@ export default function ProductDetailPage() {
                 </div>
               )}
               <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-2">
-                {product.name || product.title}
+                {product.name || product.title || 'Produit sans nom'}
               </h1>
-              <p className="text-gray-600">{product.brand}</p>
+              <p className="text-gray-600">{product.brand || 'Non spécifié'}</p>
             </div>
 
-            {/* Rating */}
             <div className="flex items-center gap-3">
               <div className="flex gap-1">
                 {[...Array(5)].map((_, i) => (
@@ -147,22 +299,27 @@ export default function ProductDetailPage() {
               <span className="text-sm text-gray-600">({product.reviewCount || 0} avis)</span>
             </div>
 
-            {/* Price */}
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-bold text-gray-900">
                 {price.toFixed(2)}€
               </span>
-              {hasDiscount && (
-                <span className="text-lg text-gray-400 line-through">
-                  {originalPrice.toFixed(2)}€
-                </span>
+              {hasDiscount && originalPrice && (
+                <>
+                  <span className="text-lg text-gray-400 line-through">
+                    {originalPrice.toFixed(2)}€
+                  </span>
+                  <span className="text-sm font-bold text-red-600">
+                    -{Math.round(((originalPrice - price) / originalPrice) * 100)}%
+                  </span>
+                </>
               )}
             </div>
 
-            {/* Description */}
-            <p className="text-gray-600 leading-relaxed">
-              {product.description}
-            </p>
+            {product.description && (
+              <p className="text-gray-600 leading-relaxed">
+                {product.description}
+              </p>
+            )}
 
             {/* Colors */}
             {product.colors && product.colors.length > 0 && (
@@ -171,16 +328,20 @@ export default function ProductDetailPage() {
                   Couleur
                 </label>
                 <div className="flex flex-wrap gap-3">
-                  {product.colors.map((color, idx) => (
+                  {product.colors.map((color) => (
                     <button
-                      key={idx}
+                      key={color.id}
                       onClick={() => setSelectedColor(color)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        selectedColor?.colorName === color.colorName
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                        selectedColor?.id === color.id
                           ? 'bg-[#5E2251] text-white shadow-lg'
                           : 'border border-gray-300 text-gray-700 hover:border-[#5E2251]'
                       }`}
                     >
+                      <div 
+                        className="w-5 h-5 rounded-full border border-gray-400"
+                        style={{ backgroundColor: color.colorHex }}
+                      ></div>
                       {color.colorName}
                     </button>
                   ))}
@@ -195,12 +356,12 @@ export default function ProductDetailPage() {
                   Taille
                 </label>
                 <div className="flex flex-wrap gap-3">
-                  {product.sizes.map((size, idx) => (
+                  {product.sizes.map((size) => (
                     <button
-                      key={idx}
+                      key={size.id}
                       onClick={() => setSelectedSize(size)}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        selectedSize?.size === size.size
+                        selectedSize?.id === size.id
                           ? 'bg-[#5E2251] text-white shadow-lg'
                           : 'border border-gray-300 text-gray-700 hover:border-[#5E2251]'
                       }`}
@@ -212,7 +373,6 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Quantity */}
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-3">
                 Quantité
@@ -222,7 +382,7 @@ export default function ProductDetailPage() {
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="px-4 py-2 text-gray-600 hover:bg-gray-100 transition-colors"
                 >
-                  -
+                  −
                 </button>
                 <span className="px-4 py-2 font-semibold">{quantity}</span>
                 <button
@@ -234,7 +394,6 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Stock Info */}
             <div className="text-sm">
               {product.inStock ? (
                 <p className="text-green-600 font-medium">✓ En stock ({product.stock} disponible)</p>
@@ -243,7 +402,6 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {/* Add to Cart Button */}
             <div className="flex gap-3">
               <button
                 onClick={handleAddToCart}
@@ -265,15 +423,38 @@ export default function ProductDetailPage() {
               </button>
             </div>
 
-            {/* Product Details */}
             <div className="border-t pt-6 mt-6">
-              <h3 className="font-bold text-gray-900 mb-3">Détails du produit</h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p><span className="font-semibold text-gray-900">Marque:</span> {product.brand}</p>
-                <p><span className="font-semibold text-gray-900">Matériau:</span> {product.material}</p>
-                <p><span className="font-semibold text-gray-900">Catégorie:</span> {product.category}</p>
-                {product.careInstructions && (
-                  <p><span className="font-semibold text-gray-900">Entretien:</span> {product.careInstructions}</p>
+              <h3 className="font-bold text-gray-900 mb-4">Détails du produit</h3>
+              <div className="space-y-3 text-sm">
+                {product.brand && product.brand !== 'Non spécifié' && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-gray-900">Marque:</span>
+                    <span className="text-gray-600">{product.brand}</span>
+                  </div>
+                )}
+                {product.material && product.material !== 'Non spécifié' && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-gray-900">Matériau:</span>
+                    <span className="text-gray-600">{product.material}</span>
+                  </div>
+                )}
+                {product.categoryName && product.categoryName !== 'Non spécifié' && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-gray-900">Catégorie:</span>
+                    <span className="text-gray-600">{product.categoryName}</span>
+                  </div>
+                )}
+                {product.groupName && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-gray-900">Groupe:</span>
+                    <span className="text-gray-600">{product.groupName}</span>
+                  </div>
+                )}
+                {product.careInstructions && product.careInstructions !== 'Non spécifié' && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-gray-900">Entretien:</span>
+                    <span className="text-gray-600">{product.careInstructions}</span>
+                  </div>
                 )}
               </div>
             </div>
@@ -281,7 +462,6 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Reviews Section */}
       <div className="bg-gray-50 py-0">
         <ReviewsSection />
       </div>
