@@ -129,51 +129,51 @@ export default function StaticCategoryPage() {
 
       {/* Discount Banner - RESPONSIVE */}
       <div className="w-full bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 md:py-6">
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-8 text-center">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 md:py-4">
+          <div className="grid grid-cols-3 gap-1 sm:gap-2 md:gap-4 text-center">
             <div>
-              <p className="text-sm sm:text-lg md:text-2xl font-bold text-gray-900">-10%</p>
-              <p className="text-[10px] sm:text-xs md:text-sm text-gray-600">dès 2 articles</p>
+              <p className="text-xs sm:text-base md:text-lg font-bold text-gray-900">-10%</p>
+              <p className="text-[8px] sm:text-[10px] md:text-xs text-gray-600">dès 2 articles</p>
             </div>
             <div>
-              <p className="text-sm sm:text-lg md:text-2xl font-bold text-gray-900">-15%</p>
-              <p className="text-[10px] sm:text-xs md:text-sm text-gray-600">dès 3 articles</p>
+              <p className="text-xs sm:text-base md:text-lg font-bold text-gray-900">-15%</p>
+              <p className="text-[8px] sm:text-[10px] md:text-xs text-gray-600">dès 3 articles</p>
             </div>
             <div>
-              <p className="text-sm sm:text-lg md:text-2xl font-bold text-gray-900">-20%</p>
-              <p className="text-[10px] sm:text-xs md:text-sm text-gray-600">dès 4 articles</p>
+              <p className="text-xs sm:text-base md:text-lg font-bold text-gray-900">-20%</p>
+              <p className="text-[8px] sm:text-[10px] md:text-xs text-gray-600">dès 4 articles</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Title Section - RESPONSIVE */}
-      <div className="w-full bg-white py-4 sm:py-6 md:py-8 px-3 sm:px-4 overflow-hidden">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 md:gap-6">
+      <div className="w-full bg-white py-3 sm:py-4 md:py-6 px-3 sm:px-4 overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center gap-2 sm:gap-3">
           {categoryInfo.image && (
             <div className="flex-shrink-0">
               <img
                 src={categoryInfo.image}
                 alt={categoryInfo.name}
-                className="w-16 sm:w-20 md:w-24 h-16 sm:h-20 md:h-24 object-cover rounded-lg border border-gray-200 shadow-sm"
+                className="w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 object-cover rounded-lg border border-gray-200 shadow-sm"
               />
             </div>
           )}
           
           <div className="flex-1">
-            <h1 className="text-xl sm:text-2xl md:text-4xl font-black text-gray-900 tracking-tight animate-slide-up">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-gray-900 tracking-tight animate-slide-up">
               {categoryInfo.name}
             </h1>
             {categoryInfo.description && (
-              <p className="text-xs sm:text-sm md:text-base text-gray-600 mt-1 sm:mt-2">{categoryInfo.description}</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">{categoryInfo.description}</p>
             )}
           </div>
         </div>
       </div>
 
       {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-4">
-        <nav className="flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-600">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-1 sm:py-2">
+        <nav className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-gray-600">
           <a href="/" className="text-[#5E2251] hover:underline">KPOP</a>
           <span>›</span>
           <span className="truncate">{categoryInfo.name}</span>
