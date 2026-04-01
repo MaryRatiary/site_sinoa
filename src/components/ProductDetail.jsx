@@ -10,6 +10,7 @@ const ProductDetail = ({ product }) => {
   const [notes, setNotes] = useState('');
   const [isAdded, setIsAdded] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [mainImage, setMainImage] = useState(product?.image || productDetails?.image || '');
 
   // Utiliser les données du produit du backend
   const productDetails = {
@@ -112,7 +113,7 @@ const ProductDetail = ({ product }) => {
           <div className="flex flex-col gap-4">
             <div className="aspect-square bg-gray-100 rounded-2xl overflow-hidden flex items-center justify-center relative group">
               <img
-                src={productDetails.image}
+                src={mainImage}
                 alt={productDetails.name}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               />
@@ -125,19 +126,25 @@ const ProductDetail = ({ product }) => {
 
             {/* Thumbnails */}
             <div className="flex gap-2">
-              <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 border-pink-500">
+              <div 
+                onClick={() => setMainImage(productDetails.image)}
+                className={`w-20 h-20 bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 ${mainImage === productDetails.image ? 'border-pink-500' : 'border-gray-300 hover:border-pink-300'}`}
+              >
                 <img
                   src={productDetails.image}
                   alt="Vue 1"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                 />
               </div>
               {productDetails.hoverImage && (
-                <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 border-gray-300 hover:border-pink-500">
+                <div 
+                  onClick={() => setMainImage(productDetails.hoverImage)}
+                  className={`w-20 h-20 bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 ${mainImage === productDetails.hoverImage ? 'border-pink-500' : 'border-gray-300 hover:border-pink-300'}`}
+                >
                   <img
                     src={productDetails.hoverImage}
                     alt="Vue 2"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                   />
                 </div>
               )}
