@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ImageDropZone } from './ImageDropZone';
-import { X } from 'lucide-react';
+import { X, Loader } from 'lucide-react';
 
 export const CategoryModal = ({ 
   show, 
@@ -14,6 +14,8 @@ export const CategoryModal = ({
   isSubcategory,
   onSave 
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   if (!show) return null;
 
   const getCategoryPath = (categoryId, allCategories) => {
@@ -34,6 +36,15 @@ export const CategoryModal = ({
     return path ? path.join(' > ') : '';
   };
 
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      await onSave();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 sm:p-4 z-50">
       <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -46,7 +57,8 @@ export const CategoryModal = ({
           </h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+            disabled={isLoading}
+            className="p-1 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <X size={24} />
           </button>
@@ -61,7 +73,8 @@ export const CategoryModal = ({
               type="text"
               value={categoryForm.name}
               onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm"
+              disabled={isLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder={isSubcategory ? 'Nom de la sous-catégorie' : 'Nom de la catégorie'}
             />
           </div>
@@ -74,7 +87,8 @@ export const CategoryModal = ({
               <select
                 value={categoryForm.parentId || ''}
                 onChange={(e) => setCategoryForm({ ...categoryForm, parentId: e.target.value ? parseInt(e.target.value) : null })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm"
+                disabled={isLoading}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <option value="">Sélectionner une catégorie parent</option>
                 {parentCategories.map((cat) => (
@@ -93,7 +107,8 @@ export const CategoryModal = ({
             <textarea
               value={categoryForm.description}
               onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm"
+              disabled={isLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder={isSubcategory ? 'Description de la sous-catégorie' : 'Description de la catégorie'}
               rows="3"
             />
@@ -113,14 +128,23 @@ export const CategoryModal = ({
 
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6">
           <button
-            onClick={onSave}
-            className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 sm:py-3 px-4 rounded-lg transition text-sm sm:text-base"
+            onClick={handleSave}
+            disabled={isLoading}
+            className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-bold py-2 sm:py-3 px-4 rounded-lg transition text-sm sm:text-base disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Enregistrer
+            {isLoading ? (
+              <>
+                <Loader size={18} className="animate-spin" />
+                Enregistrement...
+              </>
+            ) : (
+              'Enregistrer'
+            )}
           </button>
           <button
             onClick={onClose}
-            className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 sm:py-3 px-4 rounded-lg transition text-sm sm:text-base"
+            disabled={isLoading}
+            className="flex-1 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-800 font-bold py-2 sm:py-3 px-4 rounded-lg transition text-sm sm:text-base disabled:cursor-not-allowed"
           >
             Annuler
           </button>
