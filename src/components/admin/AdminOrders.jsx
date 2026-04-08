@@ -9,7 +9,6 @@ export const AdminOrders = ({ orders, onRefresh }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Charger les détails complets d'une commande
   const handleSelectOrder = async (orderId) => {
     setLoading(true);
     setError('');
@@ -24,7 +23,6 @@ export const AdminOrders = ({ orders, onRefresh }) => {
     }
   };
 
-  // Mettre à jour le statut d'une commande
   const handleUpdateOrder = async (orderId, updates) => {
     try {
       await dashboardAPI.updateOrderStatus(
@@ -64,53 +62,50 @@ export const AdminOrders = ({ orders, onRefresh }) => {
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {orders.length === 0 ? (
-          <div className="text-center py-12">
-            <AlertCircle size={48} className="mx-auto mb-4 text-gray-300" />
-            <p className="text-gray-600 text-lg">Aucune commande trouvée</p>
+          <div className="text-center py-8 sm:py-12">
+            <AlertCircle size={40} className="mx-auto mb-3 sm:mb-4 text-gray-300" />
+            <p className="text-gray-600 text-base sm:text-lg">Aucune commande trouvée</p>
           </div>
         ) : (
           orders.map((order) => (
-            <div key={order.id} className="bg-white rounded-lg shadow hover:shadow-lg transition p-4">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {/* Order ID */}
-                  <div>
-                    <p className="text-sm text-gray-600 font-semibold uppercase">Commande</p>
-                    <p className="font-bold text-[#5E2251] text-lg">#{order.id}</p>
+            <div key={order.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-3 sm:p-4">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 min-w-0">
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-gray-600 font-semibold uppercase">Commande</p>
+                    <p className="font-bold text-[#5E2251] text-base sm:text-lg">#{order.id}</p>
                   </div>
 
-                  {/* Client */}
-                  <div>
-                    <p className="text-sm text-gray-600 font-semibold uppercase">Client</p>
-                    <p className="font-semibold text-gray-900">{order.firstname} {order.lastname}</p>
-                    <p className="text-sm text-gray-600">{order.email}</p>
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-gray-600 font-semibold uppercase">Client</p>
+                    <p className="font-semibold text-gray-900 text-sm truncate">{order.firstname} {order.lastname}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 truncate">{order.email}</p>
                   </div>
 
-                  {/* Total */}
                   <div>
-                    <p className="text-sm text-gray-600 font-semibold uppercase">Montant</p>
-                    <p className="font-bold text-green-600 text-lg">{parseFloat(order.totalprice).toFixed(2)}€</p>
+                    <p className="text-xs sm:text-sm text-gray-600 font-semibold uppercase">Montant</p>
+                    <p className="font-bold text-green-600 text-base sm:text-lg">{parseFloat(order.totalprice).toFixed(2)}€</p>
                   </div>
 
-                  {/* Status */}
                   <div>
-                    <p className="text-sm text-gray-600 font-semibold uppercase">Statut</p>
-                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold ${getStatusBg(order.status)}`}>
+                    <p className="text-xs sm:text-sm text-gray-600 font-semibold uppercase">Statut</p>
+                    <div className={`inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold ${getStatusBg(order.status)}`}>
                       {getStatusIcon(order.status)}
-                      <span className="capitalize">{order.status}</span>
+                      <span className="capitalize hidden sm:inline">{order.status}</span>
+                      <span className="capitalize sm:hidden">{order.status.substring(0, 3)}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Action Button */}
                 <button
                   onClick={() => handleSelectOrder(order.id)}
                   disabled={loading}
-                  className="flex items-center gap-2 bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-2 px-6 rounded-lg transition disabled:opacity-50 w-full md:w-auto justify-center"
+                  className="flex items-center justify-center gap-2 bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-2 sm:py-3 px-3 sm:px-6 rounded-lg transition-colors disabled:opacity-50 w-full lg:w-auto text-sm sm:text-base"
                 >
-                  Voir Détails
+                  <span className="hidden sm:inline">Voir Détails</span>
+                  <span className="sm:hidden">Détails</span>
                   <ChevronRight size={18} />
                 </button>
               </div>
@@ -119,7 +114,6 @@ export const AdminOrders = ({ orders, onRefresh }) => {
         )}
       </div>
 
-      {/* Order Details Modal */}
       {orderDetails && (
         <OrderDetailsModal
           order={orderDetails}
@@ -130,11 +124,11 @@ export const AdminOrders = ({ orders, onRefresh }) => {
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4 flex items-start gap-3">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mt-4 flex items-start gap-3">
           <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
-          <div>
+          <div className="min-w-0">
             <p className="font-bold text-red-900">Erreur</p>
-            <p className="text-red-800">{error}</p>
+            <p className="text-red-800 text-sm">{error}</p>
           </div>
         </div>
       )}

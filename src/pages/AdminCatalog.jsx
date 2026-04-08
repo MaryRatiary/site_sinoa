@@ -6,6 +6,7 @@ import { CategoryTree } from '../components/admin/CategoryTree';
 import { CatalogDetailsPanel } from '../components/admin/CatalogDetailsPanel';
 import { CategoryModal } from '../components/admin/CategoryModal';
 import { ProductModal } from '../components/admin/ProductModal';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function AdminCatalog() {
   const { user, isAdmin } = useAuth();
@@ -15,50 +16,37 @@ export default function AdminCatalog() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [treeOpen, setTreeOpen] = useState(true);
 
-  // UI States
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [showProductModal, setShowProductModal] = useState(false);
-  const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
+  // ...existing code...
 
-  // Form States
-  const [categoryForm, setCategoryForm] = useState({ name: '', description: '', image: '', parentId: null });
-  const [categoryImage, setCategoryImage] = useState(null);
-  const [editingCategory, setEditingCategory] = useState(null);
-  const [isSubcategoryMode, setIsSubcategoryMode] = useState(false);
+  const fetchData = async () => {
+    try {
+      const [categoriesData, productsData] = await Promise.all([
+        categoriesAPI.getAll(),
+        productsAPI.getAll(),
+      ]);
 
-  const [productForm, setProductForm] = useState({ name: '', description: '', price: '', originalPrice: '', categoryId: '', stock: '' });
-  const [productImages, setProductImages] = useState([]);
-  const [editingProduct, setEditingProduct] = useState(null);
+      setCategories(categoriesData);
+      setProducts(productsData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Fetch data
   useEffect(() => {
     if (!isAdmin()) {
       navigate('/');
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const [categoriesData, productsData] = await Promise.all([
-          categoriesAPI.getAll(),
-          productsAPI.getAll(),
-        ]);
-
-        setCategories(categoriesData);
-        setProducts(productsData);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [isAdmin, navigate]);
 
-  // Category Handlers
+  // ...existing code...
+
   const handleAddCategory = () => {
     resetCategoryForm();
     setIsSubcategoryMode(false);
@@ -135,7 +123,8 @@ export default function AdminCatalog() {
     setEditingCategory(null);
   };
 
-  // Product Handlers
+  // ...existing code...
+
   const handleAddProduct = (categoryId) => {
     resetProductForm();
     setProductForm({ ...productForm, categoryId });
@@ -244,7 +233,6 @@ export default function AdminCatalog() {
     setEditingProduct(null);
   };
 
-  // Fonction pour récupérer toutes les catégories possibles en tant que parent
   const getAllCategoriesAsOptions = () => {
     const flattenCategories = (cats, result = []) => {
       cats.forEach(cat => {
@@ -262,30 +250,40 @@ export default function AdminCatalog() {
   const parentCategories = categories.filter(c => !c.parentid);
   const allCategoriesAsOptions = getAllCategoriesAsOptions();
 
+  // Form States
+  const [categoryForm, setCategoryForm] = useState({ name: '', description: '', image: '', parentId: null });
+  const [categoryImage, setCategoryImage] = useState(null);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [isSubcategoryMode, setIsSubcategoryMode] = useState(false);
+
+  const [productForm, setProductForm] = useState({ name: '', description: '', price: '', originalPrice: '', categoryId: '', stock: '' });
+  const [productImages, setProductImages] = useState([]);
+  const [editingProduct, setEditingProduct] = useState(null);
+
+  // UI States
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [modalMode, setModalMode] = useState('add');
+
   if (loading) {
-    return <div className="min-h-screen flex items-start justify-start text-2xl">Chargement...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-xl sm:text-2xl">Chargement...</div>;
   }
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
-      {/* Header */}
-      {/* <div className="bg-gradient-to-r from-purple-900 to-black text-white p-4">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold">Gestion du Catalogue</h1>
-          <p className="text-gray-300">Bienvenue, {user?.email}</p>
-        </div>
-      </div> */}
-
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mx-4 mt-4 rounded">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-3 sm:px-4 py-3 mx-3 sm:mx-4 mt-4 rounded text-sm sm:text-base">
           {error}
         </div>
       )}
 
-      {/* Main Layout */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar - Category Tree */}
-        <div className="w-200 bg-gray-50 border-r border-gray-300 overflow-hidden">
+      {/* Main Layout - Responsive */}
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden gap-0 lg:gap-0">
+        {/* Sidebar - Category Tree (Responsive) */}
+        <div className={`${
+          treeOpen ? 'block' : 'hidden'
+        } lg:block lg:w-64 xl:w-80 bg-gray-50 border-r border-gray-300 overflow-hidden transition-all duration-300 h-screen lg:h-auto`}>
           <CategoryTree
             categories={categories}
             selectedItem={selectedItem}
@@ -296,27 +294,38 @@ export default function AdminCatalog() {
           />
         </div>
 
-        {/* Main Panel - Details */}
-        <CatalogDetailsPanel
-          selectedItem={selectedItem}
-          categories={categories}
-          products={products}
-          onAddProduct={handleAddProduct}
-          onEditItem={(item) => {
-            if (item.type === 'product' || item.price !== undefined) {
-              handleEditProduct(item);
-            } else {
-              handleEditCategory(item);
-            }
-          }}
-          onDeleteItem={(id) => {
-            if (selectedItem?.type === 'product' || selectedItem?.price !== undefined) {
-              handleDeleteProduct(id);
-            } else {
-              handleDeleteCategory(id);
-            }
-          }}
-        />
+        {/* Toggle Button for Mobile */}
+        <button
+          onClick={() => setTreeOpen(!treeOpen)}
+          className="lg:hidden fixed bottom-6 right-6 z-50 bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-full shadow-lg transition-colors"
+          title={treeOpen ? 'Masquer le catalogue' : 'Afficher le catalogue'}
+        >
+          {treeOpen ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
+        </button>
+
+        {/* Main Panel - Details (Responsive) */}
+        <div className="flex-1 overflow-y-auto">
+          <CatalogDetailsPanel
+            selectedItem={selectedItem}
+            categories={categories}
+            products={products}
+            onAddProduct={handleAddProduct}
+            onEditItem={(item) => {
+              if (item.type === 'product' || item.price !== undefined) {
+                handleEditProduct(item);
+              } else {
+                handleEditCategory(item);
+              }
+            }}
+            onDeleteItem={(id) => {
+              if (selectedItem?.type === 'product' || selectedItem?.price !== undefined) {
+                handleDeleteProduct(id);
+              } else {
+                handleDeleteCategory(id);
+              }
+            }}
+          />
+        </div>
       </div>
 
       {/* Modals */}

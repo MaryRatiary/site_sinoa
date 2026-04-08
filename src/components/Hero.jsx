@@ -32,7 +32,7 @@ export default function Hero() {
 
       {/* BAS GAUCHE : Hunt Or Be Hunted (Animation GAUCHE -> DROITE avec délai) */}
       <div className="absolute bottom-24 left-6 md:bottom-28 md:left-12 z-20 animate-slide-right delay-200">
-        <h2 className="text-5xl sm:text-7xl md:text-[9rem] font-black text-white leading-[0.8] uppercase tracking-[-0.05em]">
+        <h2 className="text-4xl sm:text-4xl md:text-6xl lg:text-[9rem] font-black text-white leading-[0.8] uppercase tracking-[-0.05em]">
           HUNT <span style={{ color: '#8318b3' }}>OR</span> <br/> 
           BE <span className="text-transparent" style={{ WebkitTextStroke: '1.5px white' }}>HUNTED</span>
         </h2>

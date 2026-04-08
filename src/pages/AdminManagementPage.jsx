@@ -8,6 +8,7 @@ import AdminCatalog from './AdminCatalog';
 
 export default function AdminManagementPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -25,12 +26,22 @@ export default function AdminManagementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 w-full overflow-x-hidden">
       {/* Sidebar fixed */}
-      <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <AdminSidebar 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab}
+        mobileOpen={sidebarOpen}
+        onMobileClose={() => setSidebarOpen(false)}
+      />
 
       {/* Layout avec contenu */}
-      <AdminLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+      <AdminLayout 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      >
         {renderContent()}
       </AdminLayout>
     </div>
