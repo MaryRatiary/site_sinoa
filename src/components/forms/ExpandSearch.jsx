@@ -21,7 +21,7 @@ export default function ExpandSearch() {
 
   return (
     <div className={`transition-all duration-300 ${isExpanded ? "flex-1 mx-2" : ""}`}>
-      <div className={`relative flex items-center h-10 ${isExpanded ? "w-full" : ""}`}>
+      <div className={`relative flex items-center h-10 ${isExpanded ? "w-[260px]" : ""}`}>
         {/* Icon — rotates on hover when collapsed, becomes inline icon when expanded */}
         <button
           onClick={handleIconClick}
