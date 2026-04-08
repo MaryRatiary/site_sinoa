@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 export default function ExpandSearch() {
   const [focused, setFocused] = useState(false);
@@ -14,9 +14,14 @@ export default function ExpandSearch() {
     }
   };
 
+  const handleClear = () => {
+    setValue("");
+    inputRef.current?.blur();
+  };
+
   return (
-    <div className="">
-      <div className="relative flex items-center h-10">
+    <div className={`transition-all duration-300 ${isExpanded ? "flex-1 mx-2" : ""}`}>
+      <div className={`relative flex items-center h-10 ${isExpanded ? "w-full" : ""}`}>
         {/* Icon — rotates on hover when collapsed, becomes inline icon when expanded */}
         <button
           onClick={handleIconClick}
@@ -48,11 +53,22 @@ export default function ExpandSearch() {
             text-gray-700 placeholder-gray-400
             transition-all duration-500 ease-in-out
             ${isExpanded
-              ? "w-72 pl-10 pr-4  border-gray-600 cursor-text"
+              ? "w-full pl-10 pr-10 border-gray-600 cursor-text"
               : "w-10 pl-10 pr-0 bg-transparent border-transparent cursor-pointer"
             }
           `}
         />
+
+        {/* Clear button — appears when expanded */}
+        {isExpanded && (
+          <button
+            onClick={handleClear}
+            tabIndex={-1}
+            className="absolute right-2 top-0 z-10 h-10 w-10 flex items-center justify-center text-gray-500 hover:text-gray-800 transition-colors"
+          >
+            <X size={18} strokeWidth={2} />
+          </button>
+        )}
       </div>
     </div>
   );
