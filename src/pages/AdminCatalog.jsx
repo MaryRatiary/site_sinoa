@@ -341,12 +341,12 @@ export default function AdminCatalog() {
                 handleEditCategory(item);
               }
             }}
-            onDeleteItem={(id) => {
-              // Utiliser selectedItem pour déterminer le type
-              if (selectedItem?.price !== undefined || selectedItem?.categoryId !== undefined) {
-                handleDeleteProduct(id);
+            onDeleteItem={(item) => {
+              // Vérifier si c'est un produit en regardant l'item lui-même, pas selectedItem
+              if (item?.price !== undefined || item?.categoryId !== undefined) {
+                handleDeleteProduct(item.id);
               } else {
-                handleDeleteCategory(id);
+                handleDeleteCategory(item.id);
               }
             }}
           />

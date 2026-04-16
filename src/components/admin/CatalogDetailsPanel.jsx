@@ -105,7 +105,7 @@ export const CatalogDetailsPanel = ({
                 <Edit2 size={18} />
               </button>
               <button
-                onClick={() => onDeleteItem(selectedItem.id)}
+                onClick={() => onDeleteItem(selectedItem)}
                 className="p-2 hover:bg-red-200 text-red-600 rounded-lg transition-colors"
               >
                 <Trash2 size={18} />
@@ -180,7 +180,7 @@ export const CatalogDetailsPanel = ({
                           Éditer
                         </button>
                         <button
-                          onClick={() => onDeleteItem(product.id)}
+                          onClick={() => onDeleteItem(product)}
                           className="flex-1 px-2 sm:px-3 py-1 sm:py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs sm:text-sm transition-colors font-bold"
                         >
                           Supprimer
