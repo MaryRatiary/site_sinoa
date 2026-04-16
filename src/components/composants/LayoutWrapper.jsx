@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from './Header';
-import RespNav from './resp/RespNav';
+import RespNav from '../resp/RespNav';
 
 /**
  * LayoutWrapper - Composant qui affiche automatiquement :

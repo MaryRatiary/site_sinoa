@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from 'react';
-import Navbar from '../Header';
-import Hero from '../Hero';
+import Navbar from '../composants/Header';
+import Hero from '../composants/Hero';
 import GroupSection from '../section/home/GroupeSection';
 import BlogSection from '../section/home/BlogSection';
-import Footer from '../Footer';
+import Footer from '../composants/Footer';
 import { RevealText } from '../text/RevealText';
 import PercentageReduction from '../card/PercentageReduction';
 import BestSellerSection from '../section/home/BestSellerSection';
@@ -17,7 +17,7 @@ import { FilterBar } from '../Button/FilterBar';
 import fashion from '../../data/k-fashion';
 import beauty from '../../data/k-beauty';
 import RespNav from '../resp/RespNav';
-import HeaderBanners from '../HeaderBanners';
+import HeaderBanners from '../composants/HeaderBanners';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../../context/CartContext';
 import { Heart, Share2, ShoppingCart, Check, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { productsAPI } from '../services/api';
+import { productsAPI } from '../../services/api';
 
 const ProductDetailModal = ({ product, onClose }) => {
   const { addToCart } = useCart();
@@ -242,11 +242,6 @@ const ProductDetailModal = ({ product, onClose }) => {
                     )}
                   </div>
 
-                  {productDetails.description && (
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      {productDetails.description}
-                    </p>
-                  )}
 
                   {productDetails.sizes && productDetails.sizes.length > 0 && (
                     <div>
@@ -423,6 +418,14 @@ const ProductDetailModal = ({ product, onClose }) => {
                           </div>
                         )}
                       </div>
+                    </div>
+                  )}
+
+                  {productDetails.description && (
+                    <div className="border-t pt-3 mt-3">
+                      <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">
+                        {productDetails.description}
+                      </p>
                     </div>
                   )}
                 </div>

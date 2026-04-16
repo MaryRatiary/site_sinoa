@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ShoppingCart, Heart, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Heart, Star, ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { useCart } from "../context/CartContext";
-import ReviewsSection from "../components/ReviewsSection";
-import Navbar from "../components/Header";
+import ReviewsSection from "../components/composants/ReviewsSection";
+import Navbar from "../components/composants/Header";
+import { ProductDescriptionRenderer } from '../components/ProductDescriptionRenderer';
 import RespNav from "../components/resp/RespNav";
-import Footer from '../components/Footer';
+import Footer from '../components/composants/Footer';
 import lightStickData from '../data/lightStick';
 import huntrixData from '../data/huntrixProducts';
 import bestSellersData from '../data/bestSellers';
@@ -91,10 +92,10 @@ export default function ProductDetailPage() {
             stock: foundProduct.stock || 0,
             inStock: foundProduct.inStock !== false && (foundProduct.stock || 0) > 0,
             
-            brand: foundProduct.brand || foundProduct.marque || 'Non spécifié',
-            material: foundProduct.material || foundProduct.matiere || foundProduct.matériau || 'Non spécifié',
-            careInstructions: foundProduct.careInstructions || foundProduct.entretien || foundProduct.instructionsEntretien || 'Non spécifié',
-            categoryName: foundProduct.categoryName || foundProduct.categorie || 'Non spécifié',
+            brand: foundProduct.brand || foundProduct.marque || ' ',
+            material: foundProduct.material || foundProduct.matiere || foundProduct.matériau || '.....',
+            careInstructions: foundProduct.careInstructions || foundProduct.entretien || foundProduct.instructionsEntretien || '.....',
+            categoryName: foundProduct.categoryName || foundProduct.categorie || '.....',
             groupName: foundProduct.groupName || foundProduct.groupe || '',
             
             rating: foundProduct.rating || foundProduct.note || 0,
@@ -198,6 +199,49 @@ export default function ProductDetailPage() {
         <RespNav />
       </div>
 
+      {/* Discount Banner - RESPONSIVE */}
+      <div className="w-full bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 md:py-4">
+          <div className="grid grid-cols-3 gap-1 sm:gap-2 md:gap-4 text-center">
+            <div>
+              <p className="text-xs sm:text-base md:text-lg font-bold text-gray-900">-10%</p>
+              <p className="text-[8px] sm:text-[10px] md:text-xs text-gray-600">dès 2 articles</p>
+            </div>
+            <div>
+              <p className="text-xs sm:text-base md:text-lg font-bold text-gray-900">-15%</p>
+              <p className="text-[8px] sm:text-[10px] md:text-xs text-gray-600">dès 3 articles</p>
+            </div>
+            <div>
+              <p className="text-xs sm:text-base md:text-lg font-bold text-gray-900">-20%</p>
+              <p className="text-[8px] sm:text-[10px] md:text-xs text-gray-600">dès 4 articles</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Title Section - RESPONSIVE */}
+      <div className="w-full bg-white py-3 sm:py-4 md:py-6 px-3 sm:px-4 overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center gap-2 sm:gap-3">
+          <div className="flex-1">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-gray-900 tracking-tight animate-slide-up">
+              {product.categoryName || product.groupName || 'Produit'}
+            </h1>
+            {product.name && (
+              <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">{product.name}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Breadcrumb */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-1 sm:py-2">
+        <nav className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-gray-600">
+          <a href="/" className="text-[#5E2251] hover:underline">KPOP</a>
+          <span>›</span>
+          <span className="truncate">{product.categoryName || product.groupName || 'Produit'}</span>
+        </nav>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 py-4">
         <button
           onClick={() => navigate(-1)}
@@ -211,13 +255,13 @@ export default function ProductDetailPage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {/* Image Section */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 md:sticky md:top-8 md:h-fit">
             {currentImage ? (
               <div className="relative aspect-square bg-gray-100 rounded-2xl overflow-hidden flex items-center justify-center group">
                 <img
                   src={currentImage}
                   alt={product.name || product.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/500?text=Image+non+disponible';
                   }}
@@ -285,7 +329,7 @@ export default function ProductDetailPage() {
               <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-2">
                 {product.name || product.title || 'Produit sans nom'}
               </h1>
-              <p className="text-gray-600">{product.brand || 'Non spécifié'}</p>
+              <p className="text-gray-600">{product.brand || '.....'}</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -317,11 +361,7 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {product.description && (
-              <p className="text-gray-600 leading-relaxed">
-                {product.description}
-              </p>
-            )}
+
 
             {/* Colors */}
             {product.colors && product.colors.length > 0 && (
@@ -428,19 +468,19 @@ export default function ProductDetailPage() {
             <div className="border-t pt-6 mt-6">
               <h3 className="font-bold text-gray-900 mb-4">Détails du produit</h3>
               <div className="space-y-3 text-sm">
-                {product.brand && product.brand !== 'Non spécifié' && (
+                {product.brand && product.brand !== '.....' && (
                   <div className="flex justify-between">
                     <span className="font-semibold text-gray-900">Marque:</span>
                     <span className="text-gray-600">{product.brand}</span>
                   </div>
                 )}
-                {product.material && product.material !== 'Non spécifié' && (
+                {product.material && product.material !== '.....' && (
                   <div className="flex justify-between">
                     <span className="font-semibold text-gray-900">Matériau:</span>
                     <span className="text-gray-600">{product.material}</span>
                   </div>
                 )}
-                {product.categoryName && product.categoryName !== 'Non spécifié' && (
+                {product.categoryName && product.categoryName !== '.....' && (
                   <div className="flex justify-between">
                     <span className="font-semibold text-gray-900">Catégorie:</span>
                     <span className="text-gray-600">{product.categoryName}</span>
@@ -452,7 +492,7 @@ export default function ProductDetailPage() {
                     <span className="text-gray-600">{product.groupName}</span>
                   </div>
                 )}
-                {product.careInstructions && product.careInstructions !== 'Non spécifié' && (
+                {product.careInstructions && product.careInstructions !== '.....' && (
                   <div className="flex justify-between">
                     <span className="font-semibold text-gray-900">Entretien:</span>
                     <span className="text-gray-600">{product.careInstructions}</span>
@@ -460,6 +500,15 @@ export default function ProductDetailPage() {
                 )}
               </div>
             </div>
+
+            {product.description && (
+              <div className="border-t pt-6 mt-6">
+                <h3 className="font-bold text-gray-900 mb-4">Description du produit</h3>
+                <div className="text-gray-700 leading-relaxed">
+                  <ProductDescriptionRenderer description={product.description} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

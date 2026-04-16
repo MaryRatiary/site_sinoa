@@ -7,8 +7,8 @@ import {
   Calendar, DollarSign, MapPin, Phone, Mail, User, Home, Globe, 
   Copy, Download, ArrowRight
 } from 'lucide-react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '../components/composants/Header';
+import Footer from '../components/composants/Footer';
 
 // Footer Component
 // const Footer = () => {

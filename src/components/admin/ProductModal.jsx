@@ -1,3 +1,4 @@
+import { RichDescriptionEditor } from './RichDescriptionEditor';
 import React, { useState } from 'react';
 import { MultiImageUpload } from './MultiImageUpload';
 import { X, Plus } from 'lucide-react';
@@ -120,15 +121,10 @@ export const ProductModal = ({
           </div>
 
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-              Description
-            </label>
-            <textarea
+            <RichDescriptionEditor
               value={productForm.description}
-              onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm"
-              placeholder="Description du produit"
-              rows="3"
+              onChange={(desc) => setProductForm({ ...productForm, description: desc })}
+              placeholder="Décrivez votre produit avec style... (Markdown supporté)"
             />
           </div>
 

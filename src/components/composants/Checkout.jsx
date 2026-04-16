@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useCart } from '../store/CartContext';
+import { useCart } from '../../store/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { Check, ChevronRight, Lock, Truck, Gift } from 'lucide-react';
 

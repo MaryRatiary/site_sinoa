@@ -68,10 +68,10 @@ export default function AdminCatalog() {
       name: category.name,
       description: category.description || '',
       image: category.image || '',
-      parentId: category.parentid || null
+      parentId: category.parentId || null
     });
     setCategoryImage(null);
-    setIsSubcategoryMode(!!category.parentid);
+    setIsSubcategoryMode(!!category.parentId);
     setModalMode('edit');
     setShowCategoryModal(true);
   };
@@ -134,20 +134,43 @@ export default function AdminCatalog() {
 
   const handleEditProduct = (product) => {
     setEditingProduct(product);
+    
+    // Normaliser les tailles - extraire juste les noms si ce sont des objets
+    const normalizedSizes = Array.isArray(product.sizes) 
+      ? product.sizes.map(s => typeof s === 'string' ? s : s.size)
+      : [];
+    
+    // Normaliser les couleurs - garder la structure {name, hex}
+    const normalizedColors = Array.isArray(product.colors)
+      ? product.colors.map(c => ({
+          name: c.colorName || c.name || '',
+          hex: c.colorHex || c.hex || '#000000'
+        }))
+      : [];
+    
+    // Charger les images existantes du produit
+    const existingImages = Array.isArray(product.images)
+      ? product.images.map(img => ({
+          url: img,
+          isMainImage: img === product.image,
+          isHoverImage: img === product.hoverImage,
+        }))
+      : [];
+    
     setProductForm({
       name: product.name,
       description: product.description || '',
       price: product.price,
-      originalPrice: product.originalprice || '',
-      categoryId: product.categoryid || '',
+      originalPrice: product.originalPrice || '',
+      categoryId: product.categoryId || '',
       stock: product.stock || '',
       brand: product.brand || '',
       material: product.material || '',
-      careInstructions: product.careinstructions || '',
-      sizes: product.sizes || [],
-      colors: product.colors || []
+      careInstructions: product.careInstructions || '',
+      sizes: normalizedSizes,
+      colors: normalizedColors
     });
-    setProductImages([]);
+    setProductImages(existingImages);
     setModalMode('edit');
     setShowProductModal(true);
   };
@@ -247,7 +270,7 @@ export default function AdminCatalog() {
     return flattenCategories(categories);
   };
 
-  const parentCategories = categories.filter(c => !c.parentid);
+  const parentCategories = categories.filter(c => !c.parentId);
   const allCategoriesAsOptions = getAllCategoriesAsOptions();
 
   // Form States
@@ -311,14 +334,16 @@ export default function AdminCatalog() {
             products={products}
             onAddProduct={handleAddProduct}
             onEditItem={(item) => {
-              if (item.type === 'product' || item.price !== undefined) {
+              // Vérifier si c'est un produit : les produits ont 'price', 'categoryId', etc.
+              if (item.price !== undefined || item.categoryId !== undefined) {
                 handleEditProduct(item);
               } else {
                 handleEditCategory(item);
               }
             }}
             onDeleteItem={(id) => {
-              if (selectedItem?.type === 'product' || selectedItem?.price !== undefined) {
+              // Utiliser selectedItem pour déterminer le type
+              if (selectedItem?.price !== undefined || selectedItem?.categoryId !== undefined) {
                 handleDeleteProduct(id);
               } else {
                 handleDeleteCategory(id);

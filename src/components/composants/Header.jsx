@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, ShoppingBag, ChevronDown, LogOut, LayoutDashboard, Package } from 'lucide-react';
-import { useCart } from '../store/CartContext';
-import { useAuth } from '../context/AuthContext';
-import { useCategories } from '../hooks/useCategories';
-import ExpandSearch from './forms/ExpandSearch';
+import { useCart } from '../../store/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { useCategories } from '../../hooks/useCategories';
+import ExpandSearch from '../forms/ExpandSearch';
 import AnimatedBanner from './AnimatedBanner';
 
 const Navbar = () => {

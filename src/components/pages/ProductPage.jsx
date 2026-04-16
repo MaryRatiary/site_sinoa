@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import { ChevronRight, Filter, X, ShoppingBag, Star } from "lucide-react";
 import { productsAPI, categoriesAPI } from "../../services/api";
 import { ProductCard2 } from "../card/ProductCard2";
-import Navbar from "../Header";
+import Navbar from "../composants/Header";
 import RespNav from "../resp/RespNav";
-import Footer from '../Footer';
+import Footer from '../composants/Footer';
 import '../../assets/animatedButton.css';
 
 const SORT_OPTIONS = [

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useCartStore } from '../store/cartStore'
+import { useCartStore } from '../../store/cartStore'
 
 export default function ShopifyProducts() {
   const [products, setProducts] = useState([])

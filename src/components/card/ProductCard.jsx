@@ -8,13 +8,13 @@ export function ProductCard({ image, hoverImage, name, price, reducedPrice, isEs
 
   return (
     <div 
-      className={`group ${className} flex flex-col w-full cursor-pointer bg-white rounded-2xl p-2 md:p-3 shadow-sm border border-gray-50 hover:shadow-md transition-all duration-300`} 
+      className={`group ${className} flex flex-col w-full cursor-pointer bg-white rounded-2xl p-2 md:p-3 shadow-sm hover:shadow-md transition-all duration-300`} 
       onClick={() => id && navigate(`/product/${id}`)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* IMAGE CONTAINER : Ratio adaptatif pour s'adapter à tous les types d'images */}
-      <div className="relative w-full aspect-auto overflow-hidden bg-[#F9F9F9] rounded-xl min-h-[180px]  min-w-[140px]">
+      <div className="relative w-full aspect-square overflow-hidden bg-[#F9F9F9] rounded-xl ">
         {isOnSale && (
           <div className="absolute top-2 left-2 z-20 bg-red-600 text-white text-[9px] md:text-xs font-bold px-2 py-1 rounded-lg uppercase tracking-wider">
             Soldes
@@ -24,7 +24,7 @@ export function ProductCard({ image, hoverImage, name, price, reducedPrice, isEs
         <img
           src={image}
           alt={name}
-          className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${
+          className={`absolute inset-0 w-full h-full object-contain transition-all duration-700 ${
             hovered && hoverImage ? "scale-110 opacity-0" : "scale-100 opacity-100"
           }`}
         />
@@ -33,7 +33,7 @@ export function ProductCard({ image, hoverImage, name, price, reducedPrice, isEs
           <img
             src={hoverImage}
             alt={name}
-            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${
+            className={`absolute inset-0 w-full h-full object-contain transition-all duration-700 ${
               hovered ? "scale-105 opacity-100" : "scale-100 opacity-0"
             }`}
           />

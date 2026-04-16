@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heart, ShoppingBag, Star } from "lucide-react";
-import ProductDetailModal from "../ProductDetailModal";
+import ProductDetailModal from "../composants/ProductDetailModal";
 
 function Stars({ rating }) {
   if (!rating) return null;
@@ -86,7 +86,7 @@ export function ProductCard2({ product, className = "" }) {
         
         {/* Image container */}
         <div
-          className="relative w-full h-70 aspect-[3/4] overflow-hidden bg-gray-50 rounded-2xl"
+          className="relative w-full h-70 aspect-[4/4] overflow-hidden bg-gray-50 rounded-2xl"
           onMouseEnter={() => hasHoverImage && setHovered(true)}
           onMouseLeave={() => hasHoverImage && setHovered(false)}
         >
@@ -94,7 +94,7 @@ export function ProductCard2({ product, className = "" }) {
           <img
             src={image}
             alt={name}
-            className={`absolute p-4 inset-0 w-full h-auto object-cover transition-all duration-700 ${
+            className={`absolute p-2 inset-0 w-full h-auto object-cover transition-all duration-700 rounded-3xl ${
               hasHoverImage && hovered
                 ? "opacity-0 scale-105"
                 : "opacity-100 scale-100"

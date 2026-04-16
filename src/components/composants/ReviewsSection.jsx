@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Star, ThumbsUp, MessageCircle, ChevronRight, X } from "lucide-react";
-import { getRandomReviews } from "../data/reviews";
+import { getRandomReviews } from "../../data/reviews";
 
-export default function ReviewsSection() {
+export default function comReviewsSection() {
   const [displayedReviews, setDisplayedReviews] = useState([]);
   const [allReviews, setAllReviews] = useState([]);
   const [selectedReview, setSelectedReview] = useState(null);
