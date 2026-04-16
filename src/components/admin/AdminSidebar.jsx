@@ -54,6 +54,12 @@ export default function AdminSidebar({ activeTab, setActiveTab, mobileOpen, onMo
     onMobileClose?.();
   };
 
+  // Mettre à jour une variable CSS globale quand le sidebar se collapse
+  React.useEffect(() => {
+    const sidebarWidth = isCollapsed ? '80px' : '256px';
+    document.documentElement.style.setProperty('--sidebar-width', sidebarWidth);
+  }, [isCollapsed]);
+
   return (
     <>
       {/* Sidebar Desktop (toujours visible) */}

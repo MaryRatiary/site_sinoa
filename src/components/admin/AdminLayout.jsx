@@ -3,7 +3,12 @@ import { Menu, X } from 'lucide-react';
 
 export default function AdminLayout({ activeTab, setActiveTab, children, sidebarOpen, setSidebarOpen }) {
   return (
-    <div className="flex-1 flex flex-col min-h-screen w-full overflow-x-hidden">
+    <div 
+      className="flex-1 flex flex-col min-h-screen w-full overflow-x-hidden"
+      style={{
+        marginLeft: 'var(--sidebar-width, 256px)',
+      }}
+    >
       {/* Overlay Mobile */}
       {sidebarOpen && (
         <div

@@ -118,6 +118,11 @@ const AppRoutes = () => {
 };
 
 const App = () => {
+  React.useEffect(() => {
+    // Initialiser la variable CSS pour le sidebar
+    document.documentElement.style.setProperty('--sidebar-width', '256px');
+  }, []);
+
   return (
     <Router>
       <AuthProvider>
