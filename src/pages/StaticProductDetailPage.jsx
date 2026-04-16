@@ -1,38 +1,48 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ShoppingCart, Heart, Star, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Heart, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "../context/CartContext";
-import ReviewsSection from "../components/composants/ReviewsSection";
-import Navbar from "../components/composants/Header";
 import { ProductDescriptionRenderer } from '../components/ProductDescriptionRenderer';
+import Navbar from "../components/composants/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from '../components/composants/Footer';
-import lightStickData from '../data/lightStick';
-import huntrixData from '../data/huntrixProducts';
-import bestSellersData from '../data/bestSellers';
-import groupesData from '../data/groupes';
+import fashionData from '../data/k-fashion';
+import beautyData from '../data/k-beauty';
 import '../assets/animatedButton.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
-function findProductInStaticData(productId) {
-  const allProducts = [
-    ...lightStickData,
-    ...huntrixData,
-    ...bestSellersData,
-    ...groupesData
-  ];
-  return allProducts.find(p => p.id === parseInt(productId) || p.id === productId);
+function getProductsByType(type) {
+  switch(type) {
+    case 'fashion':
+      return fashionData;
+    case 'beauty':
+      return beautyData;
+    default:
+      return [];
+  }
 }
 
-export default function ProductDetailPage() {
-  const { productId } = useParams();
+function getCategoryInfo(type) {
+  const info = {
+    fashion: {
+      name: 'K-Fashion',
+      description: 'Découvrez notre collection de vêtements et accessoires inspirés de la mode coréenne.',
+      image: '/fashion/k-fashion.png'
+    },
+    beauty: {
+      name: 'Korean Beauty',
+      description: 'Explorez les meilleurs produits de skincare et beauté de Corée du Sud.',
+      image: '/k_beauty_kpop_girl.webp'
+    }
+  };
+  return info[type] || { name: 'Produits', description: '', image: '' };
+}
+
+export default function StaticProductDetailPage() {
+  const { productType, productId } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   
   const [product, setProduct] = useState(null);
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [isFavorited, setIsFavorited] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -45,79 +55,37 @@ export default function ProductDetailPage() {
         setLoading(true);
         setError(null);
 
-        let foundProduct = findProductInStaticData(productId);
-
-        if (!foundProduct) {
-          const response = await fetch(`${API_BASE_URL}/products/${productId}`);
-          if (response.ok) {
-            const data = await response.json();
-            console.log('Product from API:', data);
-            foundProduct = data;
-          }
-        }
+        const allProducts = getProductsByType(productType);
+        const foundProduct = allProducts.find(p => p.id === productId || p.id === parseInt(productId));
 
         if (foundProduct) {
-          // Normaliser les couleurs - accepter minuscules de PostgreSQL
-          const normalizedColors = foundProduct.colors && Array.isArray(foundProduct.colors)
-            ? foundProduct.colors.map(color => ({
-                id: color.id,
-                colorName: color.colorName || color.colorname || 'Couleur',
-                colorHex: color.colorHex || color.colorhex || '#808080',
-                stock: color.stock || 0
-              }))
-            : [];
-
-          // Normaliser les tailles - accepter minuscules de PostgreSQL
-          const normalizedSizes = foundProduct.sizes && Array.isArray(foundProduct.sizes)
-            ? foundProduct.sizes.map(size => ({
-                id: size.id,
-                size: size.size || size.name || 'Taille',
-                stock: size.stock || 0
-              }))
-            : [];
-
           const normalizedProduct = {
             ...foundProduct,
-            price: parseFloat(foundProduct.price || foundProduct.realPrice || foundProduct.prixActuel || 0),
-            originalPrice: foundProduct.originalPrice ? parseFloat(foundProduct.originalPrice) : 
-                          foundProduct.reducedPrice ? parseFloat(foundProduct.reducedPrice) : 
-                          foundProduct.prixOriginal ? parseFloat(foundProduct.prixOriginal) : null,
+            price: parseFloat(foundProduct.price || 0),
+            originalPrice: foundProduct.originalPrice ? parseFloat(foundProduct.originalPrice) : null,
             
-            images: foundProduct.images && Array.isArray(foundProduct.images) && foundProduct.images.filter(Boolean) ? foundProduct.images : 
-                    foundProduct.url ? [foundProduct.url, foundProduct.urlHover, foundProduct.image, foundProduct.hoverImage].filter(Boolean) : 
-                    foundProduct.image ? [foundProduct.image] : 
-                    foundProduct.hoverImage ? [foundProduct.hoverImage] : [],
+            images: foundProduct.images && Array.isArray(foundProduct.images) && foundProduct.images.filter(Boolean) ? 
+                    foundProduct.images : 
+                    foundProduct.url ? [foundProduct.url, foundProduct.urlHover].filter(Boolean) : 
+                    foundProduct.image ? [foundProduct.image] : [],
             
-            url: foundProduct.url || foundProduct.image || foundProduct.images?.[0] || '',
+            url: foundProduct.url || foundProduct.image || '',
             stock: foundProduct.stock || 0,
             inStock: foundProduct.inStock !== false && (foundProduct.stock || 0) > 0,
             
-            brand: foundProduct.brand || foundProduct.marque || ' ',
-            material: foundProduct.material || foundProduct.matiere || foundProduct.matériau || '.....',
-            careInstructions: foundProduct.careInstructions || foundProduct.entretien || foundProduct.instructionsEntretien || '.....',
-            categoryName: foundProduct.categoryName || foundProduct.categorie || '.....',
-            groupName: foundProduct.groupName || foundProduct.groupe || '',
+            brand: foundProduct.brand || '',
+            material: foundProduct.material || '',
+            careInstructions: foundProduct.careInstructions || '',
+            category: foundProduct.category || foundProduct.categoryName || '',
             
-            rating: foundProduct.rating || foundProduct.note || 0,
-            reviewCount: foundProduct.reviewCount || foundProduct.nombreAvis || 0,
+            rating: foundProduct.rating || 0,
+            reviewCount: foundProduct.reviewCount || 0,
             
-            slug: foundProduct.slug || '',
-            featured: foundProduct.featured || false,
-            
-            colors: normalizedColors,
-            sizes: normalizedSizes
+            title: foundProduct.title || foundProduct.name || 'Produit',
+            description: foundProduct.description || ''
           };
 
-          console.log('Normalized product:', normalizedProduct);
           setProduct(normalizedProduct);
-          
-          if (normalizedColors.length > 0) {
-            setSelectedColor(normalizedColors[0]);
-          }
-          
-          if (normalizedSizes.length > 0) {
-            setSelectedSize(normalizedSizes[0]);
-          }
         } else {
           setError("Produit introuvable");
         }
@@ -130,7 +98,7 @@ export default function ProductDetailPage() {
     };
 
     loadProduct();
-  }, [productId]);
+  }, [productType, productId]);
 
   if (loading) {
     return (
@@ -146,10 +114,10 @@ export default function ProductDetailPage() {
         <div className="text-center">
           <p className="text-gray-500 text-lg mb-4">{error || "Produit introuvable"}</p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(`/static/${productType}`)}
             className="px-6 py-2 bg-[#5E2251] text-white rounded-lg hover:bg-[#4a1a3e] transition-colors"
           >
-            Retour à l'accueil
+            Retour à la catégorie
           </button>
         </div>
       </div>
@@ -159,12 +127,10 @@ export default function ProductDetailPage() {
   const handleAddToCart = () => {
     const cartItem = {
       id: product.id,
-      name: product.name || product.title,
+      name: product.title,
       price: product.price || 0,
       quantity: quantity,
       image: product.url,
-      color: selectedColor,
-      size: selectedSize
     };
     addToCart(cartItem);
     alert('Produit ajouté au panier!');
@@ -188,6 +154,8 @@ export default function ProductDetailPage() {
       setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
     }
   };
+
+  const categoryInfo = getCategoryInfo(productType);
 
   return (
     <div className="min-h-screen bg-white">
@@ -224,10 +192,10 @@ export default function ProductDetailPage() {
         <div className="max-w-7xl mx-auto flex flex-col items-center text-center gap-2 sm:gap-3">
           <div className="flex-1">
             <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-gray-900 tracking-tight animate-slide-up">
-              {product.categoryName || product.groupName || 'Produit'}
+              {categoryInfo.name}
             </h1>
-            {product.name && (
-              <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">{product.name}</p>
+            {categoryInfo.description && (
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">{categoryInfo.description}</p>
             )}
           </div>
         </div>
@@ -238,17 +206,19 @@ export default function ProductDetailPage() {
         <nav className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-gray-600">
           <a href="/" className="text-[#5E2251] hover:underline">KPOP</a>
           <span>›</span>
-          <span className="truncate">{product.categoryName || product.groupName || 'Produit'}</span>
+          <a href={`/static/${productType}`} className="text-[#5E2251] hover:underline">{categoryInfo.name}</a>
+          <span>›</span>
+          <span className="truncate">{product.title}</span>
         </nav>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-4">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(`/static/${productType}`)}
           className="flex items-center gap-2 text-[#5E2251] hover:text-[#4a1a3e] transition-colors font-medium"
         >
           <ArrowLeft size={20} />
-          Retour
+          Retour à la catégorie
         </button>
       </div>
 
@@ -260,7 +230,7 @@ export default function ProductDetailPage() {
               <div className="relative aspect-square bg-gray-100 rounded-2xl overflow-hidden flex items-center justify-center group">
                 <img
                   src={currentImage}
-                  alt={product.name || product.title}
+                  alt={product.title}
                   className="w-full h-full object-contain"
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/500?text=Image+non+disponible';
@@ -327,9 +297,11 @@ export default function ProductDetailPage() {
                 </div>
               )}
               <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-2">
-                {product.name || product.title || 'Produit sans nom'}
+                {product.title}
               </h1>
-              <p className="text-gray-600">{product.brand || '.....'}</p>
+              {product.brand && (
+                <p className="text-gray-600">{product.brand}</p>
+              )}
             </div>
 
             <div className="flex items-center gap-3">
@@ -342,7 +314,7 @@ export default function ProductDetailPage() {
                   />
                 ))}
               </div>
-              <span className="text-sm text-gray-600">({product.reviewCount || 0} avis)</span>
+              <span className="text-sm text-gray-600">({product.reviewCount} avis)</span>
             </div>
 
             <div className="flex items-baseline gap-3">
@@ -360,60 +332,6 @@ export default function ProductDetailPage() {
                 </>
               )}
             </div>
-
-
-
-            {/* Colors */}
-            {product.colors && product.colors.length > 0 && (
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  Couleur
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  {product.colors.map((color) => (
-                    <button
-                      key={color.id}
-                      onClick={() => setSelectedColor(color)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                        selectedColor?.id === color.id
-                          ? 'bg-[#5E2251] text-white shadow-lg'
-                          : 'border border-gray-300 text-gray-700 hover:border-[#5E2251]'
-                      }`}
-                    >
-                      <div 
-                        className="w-5 h-5 rounded-full border border-gray-400"
-                        style={{ backgroundColor: color.colorHex }}
-                      ></div>
-                      {color.colorName}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Sizes */}
-            {product.sizes && product.sizes.length > 0 && (
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  Taille
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  {product.sizes.map((size) => (
-                    <button
-                      key={size.id}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        selectedSize?.id === size.id
-                          ? 'bg-[#5E2251] text-white shadow-lg'
-                          : 'border border-gray-300 text-gray-700 hover:border-[#5E2251]'
-                      }`}
-                    >
-                      {size.size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-3">
@@ -468,31 +386,25 @@ export default function ProductDetailPage() {
             <div className="border-t pt-6 mt-6">
               <h3 className="font-bold text-gray-900 mb-4">Détails du produit</h3>
               <div className="space-y-3 text-sm">
-                {product.brand && product.brand !== '.....' && (
+                {product.category && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-gray-900">Catégorie:</span>
+                    <span className="text-gray-600">{product.category}</span>
+                  </div>
+                )}
+                {product.brand && (
                   <div className="flex justify-between">
                     <span className="font-semibold text-gray-900">Marque:</span>
                     <span className="text-gray-600">{product.brand}</span>
                   </div>
                 )}
-                {product.material && product.material !== '.....' && (
+                {product.material && (
                   <div className="flex justify-between">
                     <span className="font-semibold text-gray-900">Matériau:</span>
                     <span className="text-gray-600">{product.material}</span>
                   </div>
                 )}
-                {product.categoryName && product.categoryName !== '.....' && (
-                  <div className="flex justify-between">
-                    <span className="font-semibold text-gray-900">Catégorie:</span>
-                    <span className="text-gray-600">{product.categoryName}</span>
-                  </div>
-                )}
-                {product.groupName && (
-                  <div className="flex justify-between">
-                    <span className="font-semibold text-gray-900">Groupe:</span>
-                    <span className="text-gray-600">{product.groupName}</span>
-                  </div>
-                )}
-                {product.careInstructions && product.careInstructions !== '.....' && (
+                {product.careInstructions && (
                   <div className="flex justify-between">
                     <span className="font-semibold text-gray-900">Entretien:</span>
                     <span className="text-gray-600">{product.careInstructions}</span>
@@ -504,17 +416,13 @@ export default function ProductDetailPage() {
             {product.description && (
               <div className="border-t pt-6 mt-6">
                 <h3 className="font-bold text-gray-900 mb-4">Description du produit</h3>
-                <div className="text-gray-700 leading-relaxed">
+                <div className="text-gray-700 leading-relaxed prose prose-sm max-w-none">
                   <ProductDescriptionRenderer description={product.description} />
                 </div>
               </div>
             )}
           </div>
         </div>
-      </div>
-
-      <div className="bg-gray-50 py-0">
-        <ReviewsSection productId={productId} />
       </div>
 
       <Footer />

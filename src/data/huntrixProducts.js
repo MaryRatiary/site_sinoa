@@ -6,7 +6,33 @@ const huntrixProducts = [
     originalPrice: 54.90,
     url: "/figurines/figurine1.png",
     urlHover: "/figurines/figurine2.png",
-    description: "T-shirt officiel Huntrix Demon Hunter avec logo brodé. Confortable et tendance pour tous les fans.",
+    description: `# T-Shirt Huntrix Demon Hunter
+
+## ★★★★★ 4.6 Avis
+
+**EXPRIMEZ VOTRE PASSION K-POP AVEC CES T-SHIRTS HUNTRIX**
+
+Notre collection officielle Huntrix Demon Hunters sont des pièces uniques qui mettent en avant les emblèmes iconiques de Huntrix. Avec leur design moderne et leur coupe confortable, elles vont parfaitement afficher votre passion pour les personnages de Demon Hunters.
+
+## POURQUOI TU VAS ADORER
+
+💜 Design exclusif Huntrix Demon Hunters  
+🎭 Broderie haute qualité et durable  
+✨ Coupe confortable et agréable à porter  
+👕 Disponible en plusieurs tailles et couleurs  
+🌟 Parfait comme cadeau pour un fan K-pop
+
+## L'ESPRIT HUNTRIX
+
+Huntrix, c'est une vibration, un état d'esprit. Une esthétique qui marie puissance et douceur. Porter ce t-shirt, c'est afficher son allégeance à la communauté K-pop.
+
+## DÉTAILS & LIVRAISON
+
+Matière : 100% Coton Premium  
+Livraison gratuite et rapide  
+Suivi en temps réel  
+Retour sous 14 jours  
+Quantité limitée pour les vrais fans`,
     category: "Vêtements",
     brand: "Huntrix Official",
     material: "100% Coton Premium",
@@ -37,7 +63,33 @@ const huntrixProducts = [
     originalPrice: 89.90,
     url: "/figurines/figurine3.png",
     urlHover: "/figurines/figurine4.png",
-    description: "Sweatshirt premium Huntrix avec design exclusif et détails brodés. Parfait pour l'hiver.",
+    description: `# Sweat Huntrix Premium
+
+## ★★★★★ 4.8 Avis
+
+**CONFORT ULTIME AVEC LE STYLE HUNTRIX**
+
+Le sweatshirt premium Huntrix combine confort exceptionnel et design exclusif. Parfait pour l'automne et l'hiver, ce sweat offre une qualité textile irréprochable avec des détails brodés premium.
+
+## POURQUOI TU VAS ADORER
+
+💜 Matière premium blend ultra-confortable  
+🎭 Design brodé exclusif Huntrix  
+✨ Parfait pour l'automne/hiver  
+👚 Affiche votre passion discrètement  
+🌟 Coupe ajustée et flatteuse
+
+## L'ESPRIT HUNTRIX
+
+Huntrix représente la fusion entre force et élégance. Ce sweatshirt incarne cette dualité parfaitement.
+
+## DÉTAILS & LIVRAISON
+
+Matière : 80% Coton, 20% Polyester  
+Livraison gratuite  
+Suivi en temps réel  
+Retour sous 14 jours  
+Stock limité`,
     category: "Vêtements",
     brand: "Huntrix Premium",
     material: "80% Coton, 20% Polyester",
@@ -67,7 +119,34 @@ const huntrixProducts = [
     originalPrice: 74.90,
     url: "/figurines/figurine5.webp",
     urlHover: "/figurines/figurine6.png",
-    description: "Figurine articulée collector Huntrix haute qualité. Détails impeccables et posables à volonté.",
+    description: `# Figurine Huntrix Articulée Collector
+
+## ★★★★★ 4.9 Avis
+
+**LA FIGURINE COLLECTOR QUE TOUT FAN RÊVE D'AVOIR**
+
+Cette figurine Huntrix articulée est un chef-d'œuvre collector. Avec ses détails impeccables et ses articulations lisses, elle permet des poses infinies.
+
+## POURQUOI TU VAS ADORER
+
+💜 Détails gravés impeccables  
+🎭 Articulations fluides pour poses infinies  
+✨ PVC haute qualité extrêmement durable  
+📸 Idéale pour les photos Instagram  
+🌟 Parfait pour débuter une collection
+
+## L'ESPRIT HUNTRIX
+
+Huntrix c'est une vibration, un état d'esprit. Cette figurine capture l'essence même du mouvement Demon Hunters.
+
+## DÉTAILS & LIVRAISON
+
+Hauteur : environ 15 cm  
+Matière : PVC premium résistant  
+Livraison gratuite et sécurisée  
+Packaging collector inclus  
+Retour sous 14 jours  
+Quantité très limitée`,
     category: "Figurines",
     brand: "Huntrix Collectibles",
     material: "PVC haute qualité",
@@ -89,7 +168,34 @@ const huntrixProducts = [
     originalPrice: 109.90,
     url: "/figurines/figurine7.png",
     urlHover: "/figurines/figurine8.png",
-    description: "Sac à dos officiel Huntrix avec design ergonomique et plusieurs compartiments. Pratique et stylé.",
+    description: `# Sac à Dos Huntrix Officiel
+
+## ★★★★★ 4.7 Avis
+
+**LE SAC À DOS OFFICIEL POUR LES VRAIS FANS**
+
+Transportez votre passion partout avec vous ! Ce sac à dos Huntrix combine style et fonctionnalité. Parfait pour l'école, le travail ou les déplacements.
+
+## POURQUOI TU VAS ADORER
+
+💜 Design ergonomique et confortable  
+🎭 Multiples compartiments organisés  
+✨ Matière polyester haute résistance  
+👜 Sangle de poitrine pour stabilité  
+🌟 Imprimé officiel Huntrix
+
+## L'ESPRIT HUNTRIX
+
+Un accessoire qui reflète votre identité de fan. Porter ce sac, c'est afficher votre passion K-pop au quotidien.
+
+## DÉTAILS & LIVRAISON
+
+Capacité : 25L  
+Matière : Polyester haute densité  
+Livraison gratuite  
+Suivi en temps réel  
+Retour sous 14 jours  
+En stock limité`,
     category: "Accessoires",
     brand: "Huntrix Official",
     material: "Polyester haute densité",
@@ -112,7 +218,33 @@ const huntrixProducts = [
     originalPrice: 24.90,
     url: "/figurines/figurine9.png",
     urlHover: "/figurines/figurine10.png",
-    description: "Poster collector limited edition Huntrix. Format A2 avec finition brillante premium.",
+    description: `# Poster Huntrix Limited Edition
+
+## ★★★★★ 4.5 Avis
+
+**L'AFFICHE COLLECTOR QUI ILLUMINE VOS MURS**
+
+Transformez votre espace avec ce poster limited edition Huntrix. Format A2 avec finition brillante premium.
+
+## POURQUOI TU VAS ADORER
+
+💜 Format A2 premium  
+🎭 Finition brillante luxueuse  
+✨ Design exclusif limité  
+📐 Parfait pour cadrer  
+🌟 Impression haute qualité
+
+## L'ESPRIT HUNTRIX
+
+Chaque poster est une fenêtre sur l'univers Huntrix. Une déclaration d'amour pour le K-pop.
+
+## DÉTAILS & LIVRAISON
+
+Format : A2 (42 x 59.4 cm)  
+Papier : 300g brillant premium  
+Livraison gratuite et protégée  
+Emballage rouleau  
+Édition limitée`,
     category: "Posters",
     brand: "Huntrix Official",
     material: "Papier brillant 300g",
@@ -134,7 +266,34 @@ const huntrixProducts = [
     originalPrice: 19.90,
     url: "/figurines/figurine11.png",
     urlHover: "/figurines/figurine12.png",
-    description: "Mug collector Huntrix avec design exclusif. Parfait pour prendre le café en tant que fan.",
+    description: `# Mug Huntrix Collector
+
+## ★★★★★ 4.6 Avis
+
+**VOTRE TASSE K-POP QUOTIDIENNE**
+
+Commencez votre journée avec ce mug collector Huntrix ! Parfait pour le café, le thé ou toute autre boisson préférée.
+
+## POURQUOI TU VAS ADORER
+
+💜 Design exclusif Huntrix  
+🎭 Céramique premium résistante  
+✨ Capacité 350ml généreuse  
+☕ Idéal pour chaque café  
+🌟 Parfait comme cadeau
+
+## L'ESPRIT HUNTRIX
+
+Un objet du quotidien qui célèbre votre passion. Chaque gorgée devient un moment de connexion avec la communauté K-pop.
+
+## DÉTAILS & LIVRAISON
+
+Capacité : 350ml  
+Matière : Céramique premium  
+Livraison gratuite  
+Emballage écologique  
+Retour sous 14 jours  
+Stock limité`,
     category: "Accessoires",
     brand: "Huntrix Official",
     material: "Céramique premium",
@@ -157,7 +316,34 @@ const huntrixProducts = [
     originalPrice: 49.90,
     url: "/figurines/figurine13.png",
     urlHover: "/figurines/figurine14.png",
-    description: "Casquette officielle Huntrix avec broderie premium. Ajustable et confortable pour tous.",
+    description: `# Casquette Huntrix Officielle
+
+## ★★★★★ 4.7 Avis
+
+**AFFIRMEZ VOTRE STYLE AVEC LA CASQUETTE OFFICIELLE**
+
+Cette casquette Huntrix avec broderie premium est l'accessoire parfait pour affirmer votre passion au quotidien. Ajustable et extrêmement confortable.
+
+## POURQUOI TU VAS ADORER
+
+�� Broderie officielle premium  
+🎭 Coton 100% respirant  
+✨ Ajustable pour toutes les têtes  
+🧢 Style street-wear K-pop  
+🌟 Parfait pour les festivals
+
+## L'ESPRIT HUNTRIX
+
+Porter cette casquette, c'est affirmer son identité au sein de la communauté mondiale des fans Huntrix.
+
+## DÉTAILS & LIVRAISON
+
+Taille : One Size (ajustable)  
+Matière : Coton 100%  
+Livraison gratuite  
+Emballage premium  
+Retour sous 14 jours  
+Stock limité`,
     category: "Accessoires",
     brand: "Huntrix Official",
     material: "Coton 100%",
@@ -182,7 +368,34 @@ const huntrixProducts = [
     originalPrice: 39.90,
     url: "/figurines/figurine15.jpg",
     urlHover: "/figurines/figurine16.jpg",
-    description: "Album officiel Huntrix Demon Hunters avec photobook, CD et photocards collector.",
+    description: `# Album Huntrix Demon Hunters
+
+## ★★★★★ 4.9 Avis
+
+**L'ALBUM OFFICIEL QUE TOUS LES FANS ATTENDAIENT**
+
+Complétez votre collection avec l'album officiel Huntrix Demon Hunters. Édition CD avec photobook collector, CD audio et photocards exclusives.
+
+## POURQUOI TU VAS ADORER
+
+💜 Album CD complet  
+🎭 Photobook 40+ pages  
+✨ Cartes photo collector exclusives  
+🎵 Qualité audio CD lossless  
+🌟 Emballage coque rigide premium
+
+## L'ESPRIT HUNTRIX
+
+Cet album est bien plus qu'une simple musique. C'est une célébration de la passion, de la créativité et de la communauté Huntrix.
+
+## DÉTAILS & LIVRAISON
+
+Contenu : CD + Photobook + Photocards  
+Format : Coque rigide premium  
+Livraison gratuite et sécurisée  
+Suivi en temps réel  
+Retour sous 14 jours  
+Édition limitée`,
     category: "Musique",
     brand: "Huntrix Records",
     material: "Coque rigide premium",

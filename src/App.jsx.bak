@@ -51,7 +51,6 @@ const AppRoutes = () => {
       
       {/* Routes pour les produits statiques - AVANT les routes dynamiques */}
       <Route path="/static/:productType" element={<StaticProductPage />} />
-      <Route path="/static/:productType/:productId" element={<StaticProductDetailPage />} />
       <Route path="/staticcategory/:categoryType" element={<StaticCategoryPage />} />
       
       {/* Route pour les produits individuels (lightstick, huntrix, groupes, bestsellers) */}

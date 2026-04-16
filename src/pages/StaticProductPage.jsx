@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Filter } from "lucide-react";
 import { useCart } from "../context/CartContext";
-import ProductDetail from "../components/composants/ProductDetail";
 import Navbar from "../components/composants/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from '../components/composants/Footer';
@@ -77,7 +76,6 @@ export default function StaticProductPage() {
   const { addToCart } = useCart();
   
   const [sortBy, setSortBy] = useState('vedette');
-  const [selectedProduct, setSelectedProduct] = useState(null);
   
   // Récupérer les produits selon le type
   const allProducts = getProductsByType(productType);
@@ -91,6 +89,10 @@ export default function StaticProductPage() {
       </div>
     );
   }
+
+  const handleProductClick = (product) => {
+    navigate(`/static/${productType}/${product.id}`);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -189,80 +191,68 @@ export default function StaticProductPage() {
         <p className="text-gray-600 text-sm">{sortedProducts.length} produits</p>
       </div>
 
-      {/* Product Detail or Grid */}
+      {/* Product Grid */}
       <div className="max-w-7xl mx-auto px-4 pb-16">
-        {selectedProduct ? (
-          <div className="mt-8">
-            <button
-              onClick={() => setSelectedProduct(null)}
-              className="mb-6 px-4 py-2 text-[#5E2251] hover:bg-[#f5f0f2] rounded-lg transition-colors"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {sortedProducts.map((product) => (
+            <div 
+              key={product.id} 
+              className="flex flex-col group cursor-pointer"
+              onClick={() => handleProductClick(product)}
             >
-              ← Retour à la liste
-            </button>
-            <ProductDetail product={selectedProduct} />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sortedProducts.map((product) => (
-              <div 
-                key={product.id} 
-                className="flex flex-col group cursor-pointer"
-                onClick={() => setSelectedProduct(product)}
-              >
-                <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 hover:shadow-lg transition-all duration-300 p-4">
-                  <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden mb-4">
-                    <img
-                      src={product.url}
-                      alt={product.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    {product.originalPrice && product.price < product.originalPrice && (
-                      <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-lg">
-                        Soldes
-                      </div>
-                    )}
-                  </div>
-                  
-                  <h3 className="text-base font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-pink-600 transition-colors">
-                    {product.title}
-                  </h3>
-                  
-                  <div className="flex items-center gap-1 mb-3">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className={`text-sm ${i < Math.floor(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}>
-                        ★
-                      </span>
-                    ))}
-                    <span className="text-xs text-gray-600 ml-2">({product.reviewCount})</span>
-                  </div>
+              <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 hover:shadow-lg transition-all duration-300 p-4">
+                <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden mb-4">
+                  <img
+                    src={product.url}
+                    alt={product.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  {product.originalPrice && product.price < product.originalPrice && (
+                    <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                      Soldes
+                    </div>
+                  )}
+                </div>
+                
+                <h3 className="text-base font-semibold text-gray-800 line-clamp-2 mb-2 group-hover:text-pink-600 transition-colors">
+                  {product.title}
+                </h3>
+                
+                <div className="flex items-center gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className={`text-sm ${i < Math.floor(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}>
+                      ★
+                    </span>
+                  ))}
+                  <span className="text-xs text-gray-600 ml-2">({product.reviewCount})</span>
+                </div>
 
-                  <div className="flex items-baseline gap-2">
-                    {product.originalPrice && product.price < product.originalPrice ? (
-                      <>
-                        <span className="text-lg font-bold text-red-600">
-                          {product.price.toFixed(2)}€
-                        </span>
-                        <span className="text-sm text-gray-400 line-through">
-                          {product.originalPrice.toFixed(2)}€
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-lg font-bold text-gray-900">
+                <div className="flex items-baseline gap-2">
+                  {product.originalPrice && product.price < product.originalPrice ? (
+                    <>
+                      <span className="text-lg font-bold text-red-600">
                         {product.price.toFixed(2)}€
                       </span>
-                    )}
-                  </div>
+                      <span className="text-sm text-gray-400 line-through">
+                        {product.originalPrice.toFixed(2)}€
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-lg font-bold text-gray-900">
+                      {product.price.toFixed(2)}€
+                    </span>
+                  )}
+                </div>
 
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <p className="text-xs text-gray-600">
-                      {product.stock > 0 ? `${product.stock} en stock` : 'Indisponible'}
-                    </p>
-                  </div>
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <p className="text-xs text-gray-600">
+                    {product.stock > 0 ? `${product.stock} en stock` : 'Indisponible'}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </div>
 
       <Footer />
