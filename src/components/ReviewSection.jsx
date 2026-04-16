@@ -1,6 +1,8 @@
 import { Star, MessageCircle, ThumbsUp, Heart } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 export default function ReviewSection({ categoryId }) {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +16,7 @@ export default function ReviewSection({ categoryId }) {
     try {
       setLoading(true);
       // Appel API pour récupérer les avis de la catégorie
-      const response = await fetch(`http://localhost:5000/api/reviews/category/${categoryId}`);
+      const response = await fetch(`${API_BASE_URL}/reviews/category/${categoryId}`);
       
       // Vérifier si la réponse est OK et si c'est du JSON
       if (response.ok) {

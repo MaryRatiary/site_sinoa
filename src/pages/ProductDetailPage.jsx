@@ -12,6 +12,8 @@ import bestSellersData from '../data/bestSellers';
 import groupesData from '../data/groupes';
 import '../assets/animatedButton.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 function findProductInStaticData(productId) {
   const allProducts = [
     ...lightStickData,
@@ -45,7 +47,7 @@ export default function ProductDetailPage() {
         let foundProduct = findProductInStaticData(productId);
 
         if (!foundProduct) {
-          const response = await fetch(`http://localhost:5000/api/products/${productId}`);
+          const response = await fetch(`${API_BASE_URL}/products/${productId}`);
           if (response.ok) {
             const data = await response.json();
             console.log('Product from API:', data);
