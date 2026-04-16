@@ -3,7 +3,7 @@
   publish = "dist"
 
 [build.environment]
-  # URL du backend Render
+  # URL du backend Render (production)
   VITE_API_URL = "https://backend-kpop-9wn7.onrender.com/api"
   NODE_ENV = "production"
 
@@ -22,12 +22,6 @@
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
-
-# Headers CORS pour communiquer avec le backend
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "https://backend-kpop-9wn7.onrender.com"
 
 # Cache pour assets statiques
 [[headers]]
