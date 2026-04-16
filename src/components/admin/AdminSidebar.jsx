@@ -8,7 +8,8 @@ import {
   ChevronRight,
   LogOut,
   Home,
-  X
+  X,
+  ShoppingCart
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -23,6 +24,12 @@ export default function AdminSidebar({ activeTab, setActiveTab, mobileOpen, onMo
       label: 'Dashboard',
       icon: BarChart3,
       description: 'Statistiques et aperçu',
+    },
+    {
+      id: 'orders',
+      label: 'Commandes',
+      icon: ShoppingCart,
+      description: 'Gérer les commandes',
     },
     {
       id: 'catalogue',

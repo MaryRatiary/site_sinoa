@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { dashboardAPI } from '../services/api';
 import { AdminStats } from '../components/admin/AdminStats';
-import { AdminOrders } from '../components/admin/AdminOrders';
+import { AdminOrdersEnhanced } from '../components/admin/AdminOrdersEnhanced';
 import { AdminStock } from '../components/admin/AdminStock';
-import { TrendingUp, Package, AlertCircle, Clock } from 'lucide-react';
+import { TrendingUp, Package, AlertCircle, Clock, RefreshCw } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { user, isAdmin } = useAuth();
@@ -15,51 +15,45 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState([]);
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
 
-  // Modal states
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [orderStatus, setOrderStatus] = useState('pending');
-
   // Fetch data
+  const fetchData = async () => {
+    try {
+      const [dashData, ordersData, statsData] = await Promise.all([
+        dashboardAPI.getDashboard(),
+        dashboardAPI.getAllOrders(),
+        dashboardAPI.getStats('7days'),
+      ]);
+
+      setDashboard(dashData.dashboard);
+      setOrders(ordersData);
+      setStats(statsData.stats);
+      setError('');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   useEffect(() => {
     if (!isAdmin()) {
       navigate('/');
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const [dashData, ordersData, statsData] = await Promise.all([
-          dashboardAPI.getDashboard(),
-          dashboardAPI.getAllOrders(),
-          dashboardAPI.getStats('7days'),
-        ]);
-
-        setDashboard(dashData.dashboard);
-        setOrders(ordersData);
-        setStats(statsData.stats);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+    const loadData = async () => {
+      await fetchData();
+      setLoading(false);
     };
 
-    fetchData();
+    loadData();
   }, [isAdmin, navigate]);
 
-  // Order handlers
-  const handleUpdateOrder = async (orderId) => {
-    try {
-      await dashboardAPI.updateOrderStatus(orderId, orderStatus, 'paid', '');
-      const updatedOrders = await dashboardAPI.getAllOrders();
-      setOrders(updatedOrders);
-      setSelectedOrder(null);
-      setOrderStatus('pending');
-    } catch (err) {
-      setError(err.message);
-    }
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
   };
 
   if (loading) {
@@ -141,7 +135,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex gap-2 border-b border-gray-300 overflow-x-auto bg-white rounded-t-lg px-6">
+      <div className="flex gap-2 border-b border-gray-300 overflow-x-auto bg-white rounded-t-lg px-6 items-center">
         {[
           { id: 'stats', label: 'Statistiques', icon: TrendingUp },
           { id: 'orders', label: `Commandes (${orders.length})`, icon: Package },
@@ -163,6 +157,16 @@ export default function AdminDashboard() {
             </button>
           );
         })}
+        
+        {/* Bouton Rafraîchir */}
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="ml-auto p-2 hover:bg-gray-100 rounded-lg transition text-gray-600 hover:text-gray-900 disabled:opacity-50"
+          title="Rafraîchir les données"
+        >
+          <RefreshCw size={18} className={refreshing ? 'animate-spin' : ''} />
+        </button>
       </div>
 
       {/* Content Sections */}
@@ -172,13 +176,9 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'orders' && (
-          <AdminOrders 
+          <AdminOrdersEnhanced 
             orders={orders}
-            selectedOrder={selectedOrder}
-            setSelectedOrder={setSelectedOrder}
-            orderStatus={orderStatus}
-            setOrderStatus={setOrderStatus}
-            onUpdateOrder={handleUpdateOrder}
+            onRefresh={handleRefresh}
           />
         )}
 

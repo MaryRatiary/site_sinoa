@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 
 export default function AdminLayout({ activeTab, setActiveTab, children, sidebarOpen, setSidebarOpen }) {
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div 
       className="flex-1 flex flex-col min-h-screen w-full overflow-x-hidden"
       style={{
-        marginLeft: 'var(--sidebar-width, 256px)',
+        marginLeft: isDesktop ? 'var(--sidebar-width, 256px)' : '0',
+        transition: 'margin-left 0.3s ease'
       }}
     >
       {/* Overlay Mobile */}
@@ -18,7 +30,7 @@ export default function AdminLayout({ activeTab, setActiveTab, children, sidebar
       )}
 
       {/* Header */}
-      <div className="bg-gray-700 text-white shadow-lg sticky top-0 z-30 w-full">
+      <div className="bg-gray-900 text-white shadow-lg sticky top-0 z-30 w-full">
         <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-3 sm:gap-4">
             {/* Bouton hamburger à GAUCHE */}
