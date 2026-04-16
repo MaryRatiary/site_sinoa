@@ -202,7 +202,7 @@ const LandingPage = () => {
             <div className="flex flex-col lg:flex-row gap-10 items-center">
               <div className="w-full lg:w-[45%]">
                 <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary-200/50 border-8 border-white">
-                  <img src="/val.jpeg" alt="K-Fashion" className="w-full h-[350px] md:h-[400px] object-cover" />
+                  <img src="/fashion/k-fashion.png" alt="K-Fashion" className="w-full h-[350px] md:h-[400px] object-cover" />
                 </div>
               </div>
 
