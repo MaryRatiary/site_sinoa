@@ -1,5 +1,4 @@
 [build]
-  base = "site_kpop"
   command = "npm install && npm run build"
   publish = "dist"
 
