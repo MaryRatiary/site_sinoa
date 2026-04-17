@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Navbar from "../components/composants/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from "../components/composants/Footer";
@@ -13,19 +13,8 @@ import bestSellers from "../data/bestSellers";
 import huntrix from "../data/huntrixProducts";
 import lightStick from "../data/lightStick";
 
-// Image placeholder externe
-const PLACEHOLDER_IMAGE = "https://via.placeholder.com/500?text=Image+non+disponible";
-
-function findProductInStaticData(slug) {
-  const allProducts = [
-    ...fashion,
-    ...beauty,
-    ...bestSellers,
-    ...huntrix,
-    ...lightStick
-  ];
-  return allProducts.find(p => p.slug === slug);
-}
+// Image placeholder SVG en data URI - Aucune requête HTTP, pas d'erreur 404
+const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect width='400' height='400' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='45%25' font-size='16' fill='%23999' text-anchor='middle' font-family='Arial'%3EImage non%3C/text%3E%3Ctext x='50%25' y='55%25' font-size='16' fill='%23999' text-anchor='middle' font-family='Arial'%3Edisponible%3C/text%3E%3C/svg%3E";
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -35,7 +24,6 @@ export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Hook pour récupérer le produit par slug de la base de données
   const { product: dbProduct, loading: dbLoading } = useProductBySlug(slug);
@@ -44,55 +32,40 @@ export default function ProductDetailPage() {
     setLoading(true);
 
     // Chercher d'abord dans les données statiques
-    let foundProduct = findProductInStaticData(slug);
+    const allStaticProducts = [
+      ...fashion,
+      ...beauty,
+      ...bestSellers,
+      ...huntrix,
+      ...lightStick
+    ];
 
-    if (foundProduct) {
-      // Normaliser les images pour produits statiques
-      const normalizedProduct = {
-        ...foundProduct,
-        images: foundProduct.images && Array.isArray(foundProduct.images) && foundProduct.images.filter(Boolean) 
-          ? foundProduct.images 
-          : foundProduct.url 
-            ? [foundProduct.url, foundProduct.urlHover, foundProduct.image, foundProduct.hoverImage].filter(Boolean) 
-            : foundProduct.image 
-              ? [foundProduct.image] 
-              : foundProduct.hoverImage 
-                ? [foundProduct.hoverImage] 
-                : [],
-      };
-      setProduct(normalizedProduct);
+    const staticProduct = allStaticProducts.find(p => p.slug === slug);
+
+    if (staticProduct) {
+      // Produit trouvé dans les données statiques
+      setProduct(staticProduct);
       setLoading(false);
-
-      if (normalizedProduct.sizes && normalizedProduct.sizes.length > 0) {
-        setSelectedSize(normalizedProduct.sizes[0].size || normalizedProduct.sizes[0]);
+      // Initialiser la première taille et couleur disponibles
+      if (staticProduct.sizes && staticProduct.sizes.length > 0) {
+        setSelectedSize(staticProduct.sizes[0].size);
       }
-      if (normalizedProduct.colors && normalizedProduct.colors.length > 0) {
-        setSelectedColor(normalizedProduct.colors[0].colorName || normalizedProduct.colors[0]);
+      if (staticProduct.colors && staticProduct.colors.length > 0) {
+        setSelectedColor(staticProduct.colors[0].colorName);
       }
     } else if (dbProduct) {
-      // Normaliser les images pour produits dynamiques
-      const normalizedProduct = {
-        ...dbProduct,
-        images: dbProduct.images && Array.isArray(dbProduct.images) && dbProduct.images.filter(Boolean) 
-          ? dbProduct.images 
-          : dbProduct.imageUrl 
-            ? [dbProduct.imageUrl] 
-            : dbProduct.image 
-              ? [dbProduct.image] 
-              : dbProduct.url 
-                ? [dbProduct.url] 
-                : [],
-      };
-      setProduct(normalizedProduct);
+      // Produit trouvé dans la base de données
+      setProduct(dbProduct);
       setLoading(false);
-
-      if (normalizedProduct.sizes && normalizedProduct.sizes.length > 0) {
-        setSelectedSize(normalizedProduct.sizes[0].size || normalizedProduct.sizes[0]);
+      // Initialiser la première taille et couleur disponibles
+      if (dbProduct.sizes && dbProduct.sizes.length > 0) {
+        setSelectedSize(dbProduct.sizes[0].size);
       }
-      if (normalizedProduct.colors && normalizedProduct.colors.length > 0) {
-        setSelectedColor(normalizedProduct.colors[0].colorName || normalizedProduct.colors[0]);
+      if (dbProduct.colors && dbProduct.colors.length > 0) {
+        setSelectedColor(dbProduct.colors[0].colorName);
       }
     } else if (!dbLoading) {
+      // Produit non trouvé ni dans les données statiques ni dans la BD
       setLoading(false);
     }
   }, [slug, dbProduct, dbLoading]);
@@ -127,30 +100,18 @@ export default function ProductDetailPage() {
     );
   }
 
-  // Images array avec gestion intelligente
-  const images = product.images && product.images.length > 0 
-    ? product.images.filter(Boolean)
-    : [];
-  
-  const currentImage = images.length > 0 ? images[currentImageIndex] : PLACEHOLDER_IMAGE;
-
-  const nextImage = () => {
-    if (images.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
-    }
-  };
-
-  const prevImage = () => {
-    if (images.length > 1) {
-      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-    }
-  };
+  const mainImage = product.image || product.url || product.imageUrl || PLACEHOLDER_IMAGE;
+  const hoverImage = product.hoverImage || product.urlHover || mainImage;
+  const images = (product.images && product.images.length > 0) 
+    ? product.images 
+    : (mainImage !== PLACEHOLDER_IMAGE ? [mainImage] : []);
 
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
       alert("Veuillez sélectionner une taille et une couleur");
       return;
     }
+    // TODO: Ajouter au panier
     console.log("Ajouter au panier:", {
       productId: product.id,
       productSlug: product.slug,
@@ -211,53 +172,24 @@ export default function ProductDetailPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-8 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
-          {/* Images Section */}
+          {/* Images */}
           <div className="flex flex-col gap-4">
-            {/* Main Image */}
-            <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden group">
+            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
               <img
-                src={currentImage}
-                alt={product.name || product.title}
-                className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
+                src={images}
+                alt={product.name}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                 onError={(e) => {
                   e.target.src = PLACEHOLDER_IMAGE;
                 }}
               />
-
-              {/* Image Navigation Arrows */}
-              {images.length > 1 && (
-                <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <ChevronLeft size={24} className="text-gray-900" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <ChevronRight size={24} className="text-gray-900" />
-                  </button>
-
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                    {currentImageIndex + 1} / {images.length}
-                  </div>
-                </>
-              )}
             </div>
 
             {/* Thumbnails */}
             {images.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
                 {images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentImageIndex(idx)}
-                    className={`aspect-square bg-gray-100 rounded border-2 border-transparent hover:border-[#5E2251] cursor-pointer overflow-hidden transition-all ${
-                      currentImageIndex === idx ? "border-[#5E2251]" : ""
-                    }`}
-                  >
+                  <div key={idx} className="aspect-square bg-gray-100 rounded border-2 border-transparent hover:border-[#5E2251] cursor-pointer overflow-hidden">
                     <img
                       src={img}
                       alt={`${product.name} ${idx}`}
@@ -266,7 +198,7 @@ export default function ProductDetailPage() {
                         e.target.src = PLACEHOLDER_IMAGE;
                       }}
                     />
-                  </button>
+                  </div>
                 ))}
               </div>
             )}
@@ -276,7 +208,7 @@ export default function ProductDetailPage() {
           <div className="flex flex-col gap-6">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {product.name || product.title}
+                {product.name}
               </h1>
 
               <div className="flex items-center gap-4 mb-4">
@@ -331,22 +263,21 @@ export default function ProductDetailPage() {
                   Taille
                 </label>
                 <div className="grid grid-cols-4 md:grid-cols-5 gap-2">
-                  {product.sizes.map((size) => {
-                    const sizeValue = typeof size === "string" ? size : size.size;
-                    return (
-                      <button
-                        key={sizeValue}
-                        onClick={() => setSelectedSize(sizeValue)}
-                        className={`py-2 px-3 border-2 rounded font-semibold text-sm transition ${
-                          selectedSize === sizeValue
-                            ? "border-[#5E2251] bg-[#5E2251] text-white"
-                            : "border-gray-300 text-gray-700 hover:border-[#5E2251]"
-                        }`}
-                      >
-                        {sizeValue}
-                      </button>
-                    );
-                  })}
+                  {product.sizes.map((size) => (
+                    <button
+                      key={typeof size === "string" ? size : size.size}
+                      onClick={() =>
+                        setSelectedSize(typeof size === "string" ? size : size.size)
+                      }
+                      className={`py-2 px-3 border-2 rounded font-semibold text-sm transition ${
+                        selectedSize === (typeof size === "string" ? size : size.size)
+                          ? "border-[#5E2251] bg-[#5E2251] text-white"
+                          : "border-gray-300 text-gray-700 hover:border-[#5E2251]"
+                      }`}
+                    >
+                      {typeof size === "string" ? size : size.size}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}

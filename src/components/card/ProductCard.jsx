@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export function ProductCard({ image, hoverImage, name, price, reducedPrice, isEstimated, id, className = "" }) {
+export function ProductCard({ image, hoverImage, name, price, originalPrice, isEstimated, id, className = "" }) {
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
-  const isOnSale = reducedPrice !== undefined && reducedPrice !== null;
+  const isOnSale = originalPrice !== undefined && originalPrice !== null;
 
   return (
     <div 
@@ -51,16 +51,16 @@ export function ProductCard({ image, hoverImage, name, price, reducedPrice, isEs
             <>
               <span className="text-sm md:text-lg font-bold text-red-600">
                 {isEstimated && <span className="text-[10px] font-normal italic text-gray-400">Dès </span>}
-                {reducedPrice.toFixed(2)}€
+                {price ? price.toFixed(2) : "N/A"}€
               </span>
               <span className="text-[10px] md:text-sm text-gray-400 line-through">
-                {price.toFixed(2)}€
+                {originalPrice ? originalPrice.toFixed(2) : "N/A"}€
               </span>
             </>
           ) : (
             <span className="text-sm md:text-lg font-bold text-gray-900">
               {isEstimated && <span className="text-[10px] font-normal italic text-gray-400">Dès </span>}
-              {price.toFixed(2)}€
+              {price ? price.toFixed(2) : "N/A"}€
             </span>
           )}
         </div>

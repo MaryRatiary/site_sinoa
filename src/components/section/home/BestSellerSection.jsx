@@ -74,8 +74,8 @@ const BestSellerSection = () => {
                       image={b.url}
                       hoverImage={b.urlHover}
                       name={b.name}
-                      price={b.realPrice}
-                      reducedPrice={b.reducedPrice}
+                      price={b.price}
+                      originalPrice={b.originalPrice}
                       isEstimated={b.isEstimated}
                     />
                   </div>
