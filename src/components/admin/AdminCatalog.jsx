@@ -6,6 +6,7 @@ import { CategoryTree } from './CategoryTree';
 import { CatalogDetailsPanel } from './CatalogDetailsPanel';
 import { CategoryModal } from './CategoryModal';
 import { ProductModal } from './ProductModal';
+import CategoryDeleteModal from '../CategoryDeleteModal';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function AdminCatalog() {
@@ -18,7 +19,28 @@ export default function AdminCatalog() {
   const [error, setError] = useState('');
   const [treeOpen, setTreeOpen] = useState(true);
 
-  // ...existing code...
+  // ✅ NOUVEAU: État pour la modale de suppression sécurisée
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    categoryId: null,
+    categoryName: null
+  });
+
+  // Form States
+  const [categoryForm, setCategoryForm] = useState({ name: '', description: '', image: '', parentId: null });
+  const [categoryImage, setCategoryImage] = useState(null);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [isSubcategoryMode, setIsSubcategoryMode] = useState(false);
+
+  const [productForm, setProductForm] = useState({ name: '', description: '', price: '', originalPrice: '', categoryId: '', stock: '' });
+  const [productImages, setProductImages] = useState([]);
+  const [editingProduct, setEditingProduct] = useState(null);
+
+  // UI States
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [modalMode, setModalMode] = useState('add');
 
   const fetchData = async () => {
     try {
@@ -44,8 +66,6 @@ export default function AdminCatalog() {
 
     fetchData();
   }, [isAdmin, navigate]);
-
-  // ...existing code...
 
   const handleAddCategory = () => {
     resetCategoryForm();
@@ -104,16 +124,27 @@ export default function AdminCatalog() {
     }
   };
 
-  const handleDeleteCategory = async (id) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
-      try {
-        await categoriesAPI.delete(id);
-        const updatedCategories = await categoriesAPI.getAll();
-        setCategories(updatedCategories);
-        setSelectedItem(null);
-      } catch (err) {
-        setError(err.message);
-      }
+  // ✅ MODIFIÉ: handleDeleteCategory ouvre maintenant la modale sécurisée
+  const handleDeleteCategory = (category) => {
+    setDeleteModal({
+      isOpen: true,
+      categoryId: category.id,
+      categoryName: category.name
+    });
+  };
+
+  // ✅ NOUVEAU: Confirmation de suppression avec texte exact
+  const handleConfirmDeleteCategory = async () => {
+    try {
+      await categoriesAPI.delete(deleteModal.categoryId);
+      const updatedCategories = await categoriesAPI.getAll();
+      setCategories(updatedCategories);
+      setSelectedItem(null);
+      setDeleteModal({ isOpen: false, categoryId: null, categoryName: null });
+      setError('');
+    } catch (err) {
+      setError(err.message);
+      setDeleteModal({ isOpen: false, categoryId: null, categoryName: null });
     }
   };
 
@@ -122,8 +153,6 @@ export default function AdminCatalog() {
     setCategoryImage(null);
     setEditingCategory(null);
   };
-
-  // ...existing code...
 
   const handleAddProduct = (categoryId) => {
     resetProductForm();
@@ -135,12 +164,10 @@ export default function AdminCatalog() {
   const handleEditProduct = (product) => {
     setEditingProduct(product);
     
-    // Normaliser les tailles - extraire juste les noms si ce sont des objets
     const normalizedSizes = Array.isArray(product.sizes) 
       ? product.sizes.map(s => typeof s === 'string' ? s : s.size)
       : [];
     
-    // Normaliser les couleurs - garder la structure {name, hex}
     const normalizedColors = Array.isArray(product.colors)
       ? product.colors.map(c => ({
           name: c.colorName || c.name || '',
@@ -148,7 +175,6 @@ export default function AdminCatalog() {
         }))
       : [];
     
-    // Charger les images existantes du produit
     const existingImages = Array.isArray(product.images)
       ? product.images.map(img => ({
           url: img,
@@ -273,22 +299,6 @@ export default function AdminCatalog() {
   const parentCategories = categories.filter(c => !c.parentId);
   const allCategoriesAsOptions = getAllCategoriesAsOptions();
 
-  // Form States
-  const [categoryForm, setCategoryForm] = useState({ name: '', description: '', image: '', parentId: null });
-  const [categoryImage, setCategoryImage] = useState(null);
-  const [editingCategory, setEditingCategory] = useState(null);
-  const [isSubcategoryMode, setIsSubcategoryMode] = useState(false);
-
-  const [productForm, setProductForm] = useState({ name: '', description: '', price: '', originalPrice: '', categoryId: '', stock: '' });
-  const [productImages, setProductImages] = useState([]);
-  const [editingProduct, setEditingProduct] = useState(null);
-
-  // UI States
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [showProductModal, setShowProductModal] = useState(false);
-  const [modalMode, setModalMode] = useState('add');
-
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-xl sm:text-2xl">Chargement...</div>;
   }
@@ -301,9 +311,7 @@ export default function AdminCatalog() {
         </div>
       )}
 
-      {/* Main Layout - Responsive */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden gap-0 lg:gap-0">
-        {/* Sidebar - Category Tree (Responsive) */}
         <div className={`${
           treeOpen ? 'block' : 'hidden'
         } lg:block lg:w-64 xl:w-80 bg-gray-50 border-r border-gray-300 overflow-hidden transition-all duration-300 h-screen lg:h-auto`}>
@@ -317,7 +325,6 @@ export default function AdminCatalog() {
           />
         </div>
 
-        {/* Toggle Button for Mobile */}
         <button
           onClick={() => setTreeOpen(!treeOpen)}
           className="lg:hidden fixed bottom-6 right-6 z-50 bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-full shadow-lg transition-colors"
@@ -326,7 +333,6 @@ export default function AdminCatalog() {
           {treeOpen ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
         </button>
 
-        {/* Main Panel - Details (Responsive) */}
         <div className="flex-1 overflow-y-auto">
           <CatalogDetailsPanel
             selectedItem={selectedItem}
@@ -334,7 +340,6 @@ export default function AdminCatalog() {
             products={products}
             onAddProduct={handleAddProduct}
             onEditItem={(item) => {
-              // Vérifier si c'est un produit : les produits ont 'price', 'categoryId', etc.
               if (item.price !== undefined || item.categoryId !== undefined) {
                 handleEditProduct(item);
               } else {
@@ -342,18 +347,16 @@ export default function AdminCatalog() {
               }
             }}
             onDeleteItem={(item) => {
-              // Vérifier si c'est un produit en regardant l'item lui-même, pas selectedItem
               if (item?.price !== undefined || item?.categoryId !== undefined) {
                 handleDeleteProduct(item.id);
               } else {
-                handleDeleteCategory(item.id);
+                handleDeleteCategory(item);
               }
             }}
           />
         </div>
       </div>
 
-      {/* Modals */}
       <CategoryModal
         show={showCategoryModal}
         onClose={() => {
@@ -383,6 +386,15 @@ export default function AdminCatalog() {
         setProductImages={setProductImages}
         categories={categories}
         onSave={handleSaveProduct}
+      />
+
+      {/* ✅ NOUVEAU: Modal de suppression sécurisée */}
+      <CategoryDeleteModal
+        categoryId={deleteModal.categoryId}
+        categoryName={deleteModal.categoryName}
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, categoryId: null, categoryName: null })}
+        onConfirm={handleConfirmDeleteCategory}
       />
     </div>
   );

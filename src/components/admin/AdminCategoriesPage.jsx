@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, ChevronRight, ChevronDown, AlertCircle, Info } from 'lucide-react';
 import MarkdownEditor from '../composants/MarkdownEditor';
+import CategoryDeleteModal from '../CategoryDeleteModal';
 import { categoriesAPI } from '../../services/api';
 
 export default function AdminCategoriesPage() {
@@ -13,6 +14,14 @@ export default function AdminCategoriesPage() {
   const [dragOverId, setDragOverId] = useState(null);
   const [dragPosition, setDragPosition] = useState(null);
   const [reordering, setReordering] = useState(false);
+  
+  // ✅ NOUVEAU: État pour la modale de suppression sécurisée
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    categoryId: null,
+    categoryName: null
+  });
+  
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -66,15 +75,25 @@ export default function AdminCategoriesPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette catégorie?')) {
-      try {
-        await categoriesAPI.delete(id);
-        alert('Catégorie supprimée!');
-        fetchCategories();
-      } catch (err) {
-        alert('Erreur: ' + err.message);
-      }
+  // ✅ NOUVEAU: Ouvrir la modale de suppression sécurisée
+  const handleDelete = (category) => {
+    setDeleteModal({
+      isOpen: true,
+      categoryId: category.id,
+      categoryName: category.name
+    });
+  };
+
+  // ✅ NOUVEAU: Callback après confirmation de suppression
+  const handleConfirmDelete = async () => {
+    try {
+      await categoriesAPI.delete(deleteModal.categoryId);
+      // Rafraîchir la liste
+      fetchCategories();
+      // Fermer la modale
+      setDeleteModal({ isOpen: false, categoryId: null, categoryName: null });
+    } catch (err) {
+      alert('Erreur: ' + err.message);
     }
   };
 
@@ -216,8 +235,9 @@ export default function AdminCategoriesPage() {
             >
               <Edit2 size={18} />
             </button>
+            {/* ✅ MODIFIÉ: Utiliser handleDelete avec l'objet category complet */}
             <button
-              onClick={() => handleDelete(category.id)}
+              onClick={() => handleDelete(category)}
               className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors opacity-0 group-hover:opacity-100"
               title="Supprimer"
             >
@@ -364,6 +384,15 @@ export default function AdminCategoriesPage() {
           </form>
         </div>
       )}
+
+      {/* ✅ NOUVEAU: Modale de suppression sécurisée */}
+      <CategoryDeleteModal
+        categoryId={deleteModal.categoryId}
+        categoryName={deleteModal.categoryName}
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, categoryId: null, categoryName: null })}
+        onConfirm={handleConfirmDelete}
+      />
 
       {/* Info Box */}
       <div className="bg-blue-50 border border-blue-300 rounded-lg p-4 flex items-start gap-3">

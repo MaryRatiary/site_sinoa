@@ -59,6 +59,9 @@ export const categoriesAPI = {
 
   getChildren: (parentId) => apiCall(`/categories/${parentId}/children`),
 
+  // ✅ NOUVEAU: Vérifier ce qui sera supprimé avant suppression
+  preDeleteCheck: (id) => apiCall(`/categories/${id}/delete-check`),
+
   create: (data) =>
     apiCall('/categories', {
       method: 'POST',
@@ -71,9 +74,10 @@ export const categoriesAPI = {
       body: JSON.stringify(data),
     }),
 
-  delete: (id) =>
+  delete: (id, confirmationText = null) =>
     apiCall(`/categories/${id}`, {
       method: 'DELETE',
+      body: confirmationText ? JSON.stringify({ confirmationText }) : undefined,
     }),
 
   reorder: (categoryId, targetCategoryId) =>
