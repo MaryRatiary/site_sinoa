@@ -1,7 +1,11 @@
+import { useNavigate } from 'react-router-dom';
+
 export default function Hero() {
+  const navigate = useNavigate();
+
   return (
     <div className="relative w-full h-[40vh] md:h-[80vh] overflow-hidden bg-black">
-      {/* IMAGE : Focus équipe à droite */}
+      {/* IMAGE */}
       <img 
         src="/kpoporiginal.jpg" 
         alt="Kpop Demon Team" 
@@ -10,9 +14,7 @@ export default function Hero() {
 
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
 
-      {/* --- TEXTES --- */}
-      
-      {/* HAUT GAUCHE : Badge (Animation GAUCHE -> DROITE) */}
+      {/* HAUT GAUCHE */}
       <div className="absolute top-8 left-6 md:top-12 md:left-12 z-20 animate-slide-right">
         <div className="flex flex-col">
           <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.5em] text-white/70 italic">Official Merch</span>
@@ -22,7 +24,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* CENTRE : Titre Fantôme (Animation FADE IN) */}
+      {/* CENTRE */}
       <div className="absolute inset-0 flex items-center justify-center z-15 pointer-events-none">
         <h1 className="text-[10rem] md:text-[22rem] font-black uppercase opacity-5 select-none animate-fade-in"
             style={{ WebkitTextStroke: '2px white', color: 'transparent' }}>
@@ -30,7 +32,7 @@ export default function Hero() {
         </h1>
       </div>
 
-      {/* BAS GAUCHE : Hunt Or Be Hunted (Animation GAUCHE -> DROITE avec délai) */}
+      {/* BAS GAUCHE */}
       <div className="absolute bottom-24 left-6 md:bottom-28 md:left-12 z-20 animate-slide-right delay-200">
         <h2 className="text-4xl sm:text-4xl md:text-6xl lg:text-[9rem] font-black text-white leading-[0.8] uppercase tracking-[-0.05em]">
           HUNT <span style={{ color: '#8318b3' }}>OR</span> <br/> 
@@ -39,9 +41,12 @@ export default function Hero() {
         <div className="h-2 w-24 mt-4 animate-grow-width" style={{ backgroundColor: '#b35fc2' }}></div>
       </div>
 
-      {/* BAS DROITE : Bouton Shop Now (Animation DROITE -> GAUCHE) */}
+      {/* BAS DROITE — Shop Now */}
       <div className="absolute bottom-10 right-6 md:bottom-12 md:right-12 z-20 animate-slide-left">
-        <button className="group relative flex items-center gap-4 bg-white/5 backdrop-blur-xl border border-white/20 pl-6 pr-2 py-2 rounded-full transition-all hover:pr-6 hover:border-[#b35fc2] hover:bg-white/10">
+        <button
+          onClick={() => navigate('/shop')}
+          className="group relative flex items-center gap-4 bg-white/5 backdrop-blur-xl border border-white/20 pl-6 pr-2 py-2 rounded-full transition-all hover:pr-6 hover:border-[#b35fc2] hover:bg-white/10"
+        >
           <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-white">
             Shop Now
           </span>
@@ -54,13 +59,7 @@ export default function Hero() {
         </button>
       </div>
 
-      {/* SCROLL INDICATOR (Animation FADE UP) */}
-      <div className="absolute bottom-4 left-6 z-20 flex items-center gap-3 animate-bounce-subtle">
-        <span className="text-[8px] uppercase tracking-[0.4em] text-white/40 rotate-90 origin-left">Scroll</span>
-        <div className="w-12 h-[1px] bg-white/20"></div>
-      </div>
 
-      {/* --- STYLES ANIMATIONS --- */}
       <style jsx>{`
         @keyframes slideRight {
           from { opacity: 0; transform: translateX(-50px); }
@@ -82,14 +81,12 @@ export default function Hero() {
           from { transform: scale(1); }
           to { transform: scale(1.1); }
         }
-
         .animate-slide-right { animation: slideRight 0.8s ease-out forwards; }
         .animate-slide-left { animation: slideLeft 0.8s ease-out forwards; }
         .animate-fade-in { animation: fadeIn 1.5s ease-out forwards; }
-        .animate-grow-width { animation: growWidth 1s ease-out forwards; delay: 0.5s; }
+        .animate-grow-width { animation: growWidth 1s ease-out forwards; }
         .animate-slow-zoom { animation: slowZoom 10s linear infinite alternate; }
         .animate-bounce-subtle { animation: bounce 2s infinite; }
-        
         .delay-200 { animation-delay: 0.2s; }
       `}</style>
     </div>

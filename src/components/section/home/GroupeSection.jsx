@@ -76,7 +76,7 @@ const GroupSection = () => {
             {groupes.map((group) => (
               <div 
               key={group.id} 
-              onClick={() => navigate(`/staticcategory/groupes?product=${group.id}`)}
+              onClick={() => navigate(`/product/${group.id}`)}
               className="flex-none w-[160px] sm:w-[200px] md:w-[220px] group flex flex-col gap-3 cursor-pointer transform transition-all duration-300 hover:scale-105 snap-start"
             >
                 {/* Image Container */}

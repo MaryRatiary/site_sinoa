@@ -80,7 +80,6 @@ const LandingPage = () => {
       <div className="hidden lg:block">
         <Navbar />
       </div>
-
       <div className="lg:hidden">
         <RespNav />
       </div>

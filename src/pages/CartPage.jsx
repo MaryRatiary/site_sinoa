@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../store/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { checkoutAPI } from '../services/api';
 import { Trash2, Plus, Minus, CheckCircle, AlertCircle, Package, CreditCard, Truck, Lock, MapPin, Phone, Mail, Shield } from 'lucide-react';
@@ -8,6 +8,7 @@ import { FaPaypal, FaApple, FaCcVisa } from 'react-icons/fa';
 import LayoutWrapper from '../components/composants/LayoutWrapper';
 import AddressSelector from '../components/composants/AddressSelector';
 import Footer from '../components/composants/Footer';
+
 
 // Success Modal Component
 const SuccessModal = ({ orderId, onClose }) => {

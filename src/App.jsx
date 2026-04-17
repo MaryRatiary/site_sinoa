@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 
+
 // Pages existantes
 import LandingPage from './components/pages/LandingPage'
 
 // Nouvelles pages
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ShopPage from './pages/ShopPage'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import OrdersPage from './pages/OrdersPage'
@@ -17,8 +19,7 @@ import AdminDashboard from './components/admin/AdminDashboard'
 import AdminCatalog from './components/admin/AdminCatalog'
 import AdminManagementPage from './components/admin/AdminManagementPage'
 import DynamicProductPage from './pages/DynamicProductPage'
-import StaticProductPage from './pages/StaticProductPage'
-import StaticProductDetailPage from './pages/StaticProductDetailPage'
+
 import StaticCategoryPage from './pages/StaticCategoryPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 
@@ -47,11 +48,10 @@ const AppRoutes = () => {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/shop" element={<ShopPage />} />
       <Route path="/cart" element={<CartPage />} />
       
       {/* Routes pour les produits statiques - AVANT les routes dynamiques */}
-      <Route path="/static/:productType" element={<StaticProductPage />} />
-      <Route path="/static/:productType/:productId" element={<StaticProductDetailPage />} />
       <Route path="/staticcategory/:categoryType" element={<StaticCategoryPage />} />
       
       {/* Route pour les produits individuels (lightstick, huntrix, groupes, bestsellers) */}

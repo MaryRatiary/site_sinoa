@@ -28,18 +28,9 @@ export default function SmoothSlider({ cards = [], className = "", productType =
   };
 
   const handleCardClick = (card) => {
-    if (productType) {
-      // Redirection vers la page statique
-      navigate(`/static/${productType}?product=${card.id}`);
-    } else if (card.slug) {
-      // Redirection vers la page produit avec slug
-      navigate(`/product/${card.slug}`);
-    } else if (card.id) {
-      // Fallback vers id si slug n'existe pas
-      navigate(`/product/${card.id}`);
-    }
+    const target = card.slug || card.id;
+    if (target) navigate(`/product/${target}`);
   };
-
   const cardWidth = `calc((100% - ${(Math.ceil(visibleCards) - 1) * GAP}px) / ${visibleCards})`;
   const translateX = `calc(${offset} * -1 * (${cardWidth} + ${GAP}px))`;
 
