@@ -1,0 +1,10 @@
+--- a/api.js
++++ b/api.js
+@@ -48,6 +48,8 @@ export const authAPI = {
+ // ============ CATEGORIES ============
+ export const categoriesAPI = {
+   getAll: () => apiCall('/categories'),
++  
++  getAllFlat: () => apiCall('/categories/flat/all'),
+ 
+   getById: (id) => apiCall(`/categories/${id}`),

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Search, Filter, TrendingUp } from 'lucide-react';
-import { productsAPI, categoriesAPI } from '../services/api';
-import ProductFormModal from '../components/admin/ProductFormModal';
+import { productsAPI, categoriesAPI } from '../../services/api';
+import ProductFormModal from './ProductFormModal';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);

@@ -104,7 +104,7 @@ export default function StaticCategoryPage() {
     if (productId && allProducts.length > 0) {
       const product = allProducts.find(p => p.id === productId);
       if (product) {
-        navigate(`/product/${product.slug}`);
+        setSelectedProduct(product);
       }
     }
   }, [searchParams, allProducts]);
@@ -242,7 +242,7 @@ export default function StaticCategoryPage() {
                   <div 
                     key={product.id} 
                     className="flex flex-col group cursor-pointer"
-                    onClick={() => navigate(`/product/${product.slug}`)}
+                    onClick={() => setSelectedProduct(product)}
                   >
                     <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-sm border border-gray-50 hover:shadow-lg transition-all duration-300 p-2.5 sm:p-3 md:p-4">
                       <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2.5 sm:mb-3 md:mb-4">

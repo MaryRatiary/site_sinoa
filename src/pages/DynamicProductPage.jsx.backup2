@@ -61,7 +61,7 @@ export default function DynamicProductPage() {
   const sortedProducts = applySort(products, sortBy);
 
   const handleViewDetails = (product) => {
-    navigate(`/product/${product.slug}`);
+    navigate(`/product/${product.id}`);
   };
 
   if (categoryLoading || productsLoading) {

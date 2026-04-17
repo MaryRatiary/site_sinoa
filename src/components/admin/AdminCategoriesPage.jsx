@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, ChevronRight, ChevronDown, AlertCircle, Info } from 'lucide-react';
-import MarkdownEditor from '../components/composants/MarkdownEditor';
-import { categoriesAPI } from '../services/api';
+import MarkdownEditor from '../composants/MarkdownEditor';
+import { categoriesAPI } from '../../services/api';
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState([]);

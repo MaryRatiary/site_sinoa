@@ -1,33 +1,29 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Filter } from "lucide-react";
-import { useCart } from "../context/CartContext";
-import ProductDetail from "../components/composants/ProductDetail";
-import ReviewsSection from "../components/composants/ReviewsSection";
+import { useParams, useNavigate } from "react-router-dom";
+import { Filter, ArrowLeft } from "lucide-react";
 import Navbar from "../components/composants/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from '../components/composants/Footer';
-import bestSellersData from '../data/bestSellers';
-import groupesData from '../data/groupes';
-import huntrixData from '../data/huntrixProducts';
-import lightStickData from '../data/lightStick';
-import '../assets/animatedButton.css';
+import ProductDetail from "../components/composants/ProductDetail";
+import ReviewsSection from "../components/composants/ReviewsSection";
+import { categoriesAPI } from "../services/api";
+import { productsAPI } from "../services/api";
 
 const SORT_OPTIONS = [
-  { value: 'vedette', label: 'En vedette' },
-  { value: 'best-sellers', label: 'Meilleur vente' },
-  { value: 'price-desc', label: 'Prix: élevés → bas' },
+  { value: 'featured', label: 'En vedette' },
+  { value: 'newest', label: 'Nouveautés' },
   { value: 'price-asc', label: 'Prix: bas → élevés' },
+  { value: 'price-desc', label: 'Prix: élevés → bas' },
 ];
 
 function applySort(products, sortType) {
   const sorted = [...products];
   
   switch(sortType) {
-    case 'vedette':
+    case 'featured':
       return sorted.sort((a, b) => (b.featured || 0) - (a.featured || 0));
-    case 'best-sellers':
-      return sorted.sort((a, b) => (b.sales || 0) - (a.sales || 0));
+    case 'newest':
+      return sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     case 'price-asc':
       return sorted.sort((a, b) => {
         const priceA = parseFloat(a.price) || 0;
@@ -45,73 +41,99 @@ function applySort(products, sortType) {
   }
 }
 
-function getProductsByType(type) {
-  switch(type) {
-    case 'bestsellers':
-      return bestSellersData;
-    case 'groupes':
-      return groupesData;
-    case 'huntrix':
-      return huntrixData;
-    case 'lightsticks':
-      return lightStickData;
-    default:
-      return [];
-  }
-}
-
-function getCategoryInfo(type) {
-  const info = {
-    bestsellers: {
-      name: 'Best Sellers du Moment',
-      description: 'Nos produits les plus populaires et les plus vendus. Découvrez les favoris des fans KPOP.',
-      image: '/boxes/box1.png'
-    },
-    groupes: {
-      name: 'Nos Groupes KPOP',
-      description: 'Explorez la collection complète de vos groupes K-pop préférés.',
-      image: '/menu/groups/blackpink.jpg'
-    },
-    huntrix: {
-      name: 'Huntrix - K-pop Demon Hunter',
-      description: 'Collection exclusive Huntrix avec des produits uniques pour les vrais fans.',
-      image: '/figurines/figurine1.png'
-    },
-    lightsticks: {
-      name: 'K-pop Merch & Goodies',
-      description: 'Light sticks officiels et merchandises des groupes KPOP les plus populaires.',
-      image: '/lightstick/lightstick1.png'
-    }
-  };
-  return info[type] || { name: 'Produits', description: '', image: '' };
-}
-
-export default function StaticCategoryPage() {
-  const { categoryType } = useParams();
+export default function CategoryPage() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { addToCart } = useCart();
   
-  const [sortBy, setSortBy] = useState('vedette');
+  const [category, setCategory] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('featured');
   const [selectedProduct, setSelectedProduct] = useState(null);
-  
-  const allProducts = getProductsByType(categoryType);
-  const categoryInfo = getCategoryInfo(categoryType);
-  const sortedProducts = applySort(allProducts, sortBy);
 
+  // Charger les données de la catégorie et les produits
   useEffect(() => {
-    const productId = searchParams.get('product');
-    if (productId && allProducts.length > 0) {
-      const product = allProducts.find(p => p.id === productId);
-      if (product) {
-        navigate(`/product/${product.slug}`);
-      }
-    }
-  }, [searchParams, allProducts]);
+    const loadCategoryAndProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  if (!allProducts || allProducts.length === 0) {
+        // Charger les informations de la catégorie
+        const categoryResponse = await fetch(`/api/categories/${id}`);
+        if (!categoryResponse.ok) {
+          throw new Error('Catégorie non trouvée');
+        }
+        const categoryData = await categoryResponse.json();
+        setCategory(categoryData);
+
+        // Charger tous les produits
+        const allProductsResponse = await fetch(`/api/products?limit=50000`);
+        if (!allProductsResponse.ok) {
+          throw new Error('Erreur lors du chargement des produits');
+        }
+        const allProductsData = await allProductsResponse.json();
+
+        // Filtrer les produits pour cette catégorie ET toutes ses sous-catégories
+        const filteredProducts = filterProductsByCategory(allProductsData, categoryData, categoryData);
+        setProducts(filteredProducts);
+      } catch (err) {
+        console.error('Erreur:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      loadCategoryAndProducts();
+    }
+  }, [id]);
+
+  // Fonction pour filtrer les produits de manière récursive
+  const filterProductsByCategory = (allProducts, category, parentCategory) => {
+    const categoryIds = [category.id];
+
+    // Ajouter tous les IDs des sous-catégories
+    const getAllSubcategoryIds = (cat) => {
+      if (cat.children && cat.children.length > 0) {
+        cat.children.forEach(child => {
+          categoryIds.push(child.id);
+          getAllSubcategoryIds(child);
+        });
+      }
+    };
+
+    getAllSubcategoryIds(parentCategory);
+
+    // Filtrer les produits
+    return allProducts.filter(product => categoryIds.includes(product.categoryId));
+  };
+
+  const sortedProducts = applySort(products, sortBy);
+
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-400 font-sans">
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5E2251] mx-auto mb-4"></div>
+          <p className="text-gray-600">Chargement de la catégorie...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-600">
+        Erreur: {error}
+      </div>
+    );
+  }
+
+  if (!category) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-400">
         Catégorie introuvable
       </div>
     );
@@ -127,7 +149,7 @@ export default function StaticCategoryPage() {
         <RespNav />
       </div>
 
-      {/* Discount Banner - RESPONSIVE */}
+      {/* Discount Banner */}
       <div className="w-full bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 md:py-4">
           <div className="grid grid-cols-3 gap-1 sm:gap-2 md:gap-4 text-center">
@@ -147,25 +169,25 @@ export default function StaticCategoryPage() {
         </div>
       </div>
 
-      {/* Title Section - RESPONSIVE */}
+      {/* Title Section */}
       <div className="w-full bg-white py-3 sm:py-4 md:py-6 px-3 sm:px-4 overflow-hidden">
         <div className="max-w-7xl mx-auto flex flex-col items-center text-center gap-2 sm:gap-3">
-          {categoryInfo.image && (
+          {category.image && (
             <div className="flex-shrink-0">
               <img
-                src={categoryInfo.image}
-                alt={categoryInfo.name}
+                src={category.image}
+                alt={category.name}
                 className="w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 object-cover rounded-lg border border-gray-200 shadow-sm"
               />
             </div>
           )}
           
           <div className="flex-1">
-            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-gray-900 tracking-tight animate-slide-up">
-              {categoryInfo.name}
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-gray-900 tracking-tight">
+              {category.name}
             </h1>
-            {categoryInfo.description && (
-              <p className="text-xs sm:text-sm text-gray-600 mt-1">{categoryInfo.description}</p>
+            {category.description && (
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">{category.description}</p>
             )}
           </div>
         </div>
@@ -173,14 +195,19 @@ export default function StaticCategoryPage() {
 
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-1 sm:py-2">
-        <nav className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-gray-600">
-          <a href="/" className="text-[#5E2251] hover:underline">KPOP</a>
+        <nav className="flex items-center gap-2 text-[10px] sm:text-xs text-gray-600">
+          <button 
+            onClick={() => navigate('/')}
+            className="text-[#5E2251] hover:underline"
+          >
+            KPOP
+          </button>
           <span>›</span>
-          <span className="truncate">{categoryInfo.name}</span>
+          <span className="truncate">{category.name}</span>
         </nav>
       </div>
 
-      {/* Filter & Sort Bar - RESPONSIVE */}
+      {/* Filter & Sort Bar */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 border-b border-gray-200">
         <div className="flex flex-col gap-3 sm:gap-4">
           <button className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-gray-300 hover:border-[#5E2251] hover:bg-[#f5f0f2] transition-all duration-300 text-gray-700 hover:text-[#5E2251] font-medium text-xs sm:text-sm w-fit">
@@ -211,7 +238,9 @@ export default function StaticCategoryPage() {
 
       {/* Products Count */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-4">
-        <p className="text-gray-600 text-xs sm:text-sm">{sortedProducts.length} produits</p>
+        <p className="text-gray-600 text-xs sm:text-sm">
+          {sortedProducts.length} produit{sortedProducts.length > 1 ? 's' : ''}
+        </p>
       </div>
 
       {/* Product Detail or Grid */}
@@ -220,9 +249,10 @@ export default function StaticCategoryPage() {
           <div className="mt-6 sm:mt-8">
             <button
               onClick={() => setSelectedProduct(null)}
-              className="mb-4 sm:mb-6 px-3 sm:px-4 py-1.5 sm:py-2 text-[#5E2251] hover:bg-[#f5f0f2] rounded-lg transition-colors text-xs sm:text-sm font-medium"
+              className="mb-4 sm:mb-6 flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 text-[#5E2251] hover:bg-[#f5f0f2] rounded-lg transition-colors text-xs sm:text-sm font-medium"
             >
-              ← Retour à la liste
+              <ArrowLeft size={16} />
+              Retour à la liste
             </button>
             <ProductDetail product={selectedProduct} />
             
@@ -231,25 +261,29 @@ export default function StaticCategoryPage() {
               <ReviewsSection />
             </div>
           </div>
-        ) : (
+        ) : sortedProducts.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {sortedProducts.map((product) => {
                 const price = product.price || 0;
                 const originalPrice = product.originalPrice || null;
+                const imageUrl = product.image || product.images?.[0] || '/placeholder.png';
                 
                 return (
                   <div 
                     key={product.id} 
                     className="flex flex-col group cursor-pointer"
-                    onClick={() => navigate(`/product/${product.slug}`)}
+                    onClick={() => setSelectedProduct(product)}
                   >
                     <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-sm border border-gray-50 hover:shadow-lg transition-all duration-300 p-2.5 sm:p-3 md:p-4">
                       <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2.5 sm:mb-3 md:mb-4">
                         <img
-                          src={product.url || '/placeholder.png'}
+                          src={imageUrl}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.src = '/placeholder.png';
+                          }}
                         />
                         {originalPrice && price < originalPrice && (
                           <div className="absolute top-2 left-2 bg-red-600 text-white text-[9px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
@@ -301,19 +335,19 @@ export default function StaticCategoryPage() {
               })}
             </div>
 
-            {/* Reviews Section - Affichée sur la page de liste */}
+            {/* Reviews Section */}
             <div className="w-full bg-gray-50 -mx-3 sm:-mx-4 -mb-10 mt-8 sm:mt-12 md:mt-16 px-3 sm:px-4 py-6 sm:py-8 md:py-10">
               <ReviewsSection />
             </div>
           </>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-sm">Aucun produit disponible dans cette catégorie.</p>
+          </div>
         )}
       </div>
 
       <Footer />
-      
-      {/* <footer className="bg-black text-white py-6 sm:py-8 md:py-10 text-center text-[10px] sm:text-xs md:text-sm">
-        <p>© 2026 K-POP BOUTIQUE. Made with Passion.</p>
-      </footer> */}
     </div>
   );
 }

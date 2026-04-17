@@ -1,7 +1,6 @@
 const beauty = [
   {
     id: 'beauty-1',
-    slug: 'serum-vitamine-c-k-beauty',
     url: "/beauty/serum.webp",
     urlHover: "/beauty/serum.webp",
     title: "Sérum Vitamine C K-Beauty",
@@ -57,7 +56,6 @@ Durée : 1-2 mois d'utilisation`,
   },
   {
     id: 'beauty-2',
-    slug: 'masque-tissu-hydratant-k-beauty',
     url: "/beauty/essence.webp",
     urlHover: "/beauty/essence.webp",
     title: "Masque Tissu Hydratant K-Beauty",
@@ -113,7 +111,6 @@ Retour sous 14 jours
   },
   {
     id: 'beauty-3',
-    slug: 'nettoyant-double-cleanse-k-beauty',
     url: "/beauty/oil.webp",
     urlHover: "/beauty/oil.webp",
     title: "Nettoyant Double Cleanse K-Beauty",
@@ -169,7 +166,6 @@ Convient à tous les types`,
   },
   {
     id: 'beauty-4',
-    slug: 'toner-hydratant-k-beauty',
     url: "/beauty/toner.webp",
     urlHover: "/beauty/toner.webp",
     title: "Toner Hydratant K-Beauty",
@@ -225,7 +221,6 @@ Appliquer avec coton ou mains`,
   },
   {
     id: 'beauty-5',
-    slug: 'creme-de-nuit-reparatrice-k-beauty',
     url: "/beauty/cream.webp",
     urlHover: "/beauty/cream.webp",
     title: "Crème de Nuit Réparatrice K-Beauty",

@@ -112,3 +112,38 @@ export const useCategoryWithDetails = (categoryId) => {
     error,
   };
 };
+/**
+ * Hook pour récupérer une catégorie par slug
+ */
+export const useCategoryBySlug = (slug) => {
+  const [category, setCategory] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        setLoading(true);
+        const data = await categoriesAPI.getBySlug(slug);
+        setCategory(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching category by slug:', err);
+        setError(err.message);
+        setCategory(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) {
+      fetchCategory();
+    }
+  }, [slug]);
+
+  return {
+    category,
+    loading,
+    error,
+  };
+};

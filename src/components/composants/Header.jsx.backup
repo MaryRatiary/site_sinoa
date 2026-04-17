@@ -179,13 +179,7 @@ const Navbar = () => {
               }}
               onMouseLeave={() => close()}
             >
-              <button 
-                onClick={() => {
-                  closeNow();
-                  navigate(`/category/${category.slug}`);
-                }}
-                className="flex items-center gap-1 text-gray-700 hover:text-[#5E2251] py-2"
-              >
+              <button className="flex items-center gap-1 text-gray-700 hover:text-[#5E2251] py-2">
                 {category.name}
                 <ChevronDown size={14} className="hover:rotate-180 transition-all duration-500" />
               </button>
@@ -218,7 +212,7 @@ const Navbar = () => {
                         key={subcategory.id}
                         onClick={() => {
                           closeNow();
-                          navigate(`/category/${subcategory.slug}`);
+                          navigate(`/category/${subcategory.id}`);
                         }}
                         className="flex flex-col items-center group text-center"
                       >
@@ -239,29 +233,6 @@ const Navbar = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-4 gap-12">
-                    <div className="space-y-4">
-                      <button
-                        onClick={() => {
-                          closeNow();
-                          navigate(`/category/${category.slug}`);
-                        }}
-                        className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#5E2251] w-full hover:opacity-80 transition-opacity"
-                      >
-                        {category.image && (
-                          <img
-                            src={category.image}
-                            alt={category.name}
-                            className="w-12 h-12 object-cover rounded-lg"
-                          />
-                        )}
-                        <div className="text-left">
-                          <h4 className="text-sm font-bold text-[#5E2251] uppercase">
-                            {category.name}
-                          </h4>
-                          <p className="text-xs text-gray-500">Voir tous les produits</p>
-                        </div>
-                      </button>
-                    </div>
                     {category.children.map((subcategory) => (
                       <div key={subcategory.id} className="space-y-4">
                         <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-gray-100">
@@ -284,7 +255,7 @@ const Navbar = () => {
                                 <button
                                   onClick={() => {
                                     closeNow();
-                                    navigate(`/category/${child.slug}`);
+                                    navigate(`/category/${child.id}`);
                                   }}
                                   className="flex items-center gap-3 text-sm text-gray-700 hover:text-[#5E2251]"
                                 >
@@ -304,7 +275,7 @@ const Navbar = () => {
                           <button
                             onClick={() => {
                               closeNow();
-                              navigate(`/category/${subcategory.slug}`);
+                              navigate(`/category/${subcategory.id}`);
                             }}
                             className="text-sm hover:text-[#5E2251]"
                           >

@@ -182,7 +182,7 @@ const Navbar = () => {
               <button 
                 onClick={() => {
                   closeNow();
-                  navigate(`/category/${category.slug}`);
+                  navigate(`/category/${category.id}`);
                 }}
                 className="flex items-center gap-1 text-gray-700 hover:text-[#5E2251] py-2"
               >
@@ -218,7 +218,7 @@ const Navbar = () => {
                         key={subcategory.id}
                         onClick={() => {
                           closeNow();
-                          navigate(`/category/${subcategory.slug}`);
+                          navigate(`/category/${subcategory.id}`);
                         }}
                         className="flex flex-col items-center group text-center"
                       >
@@ -243,7 +243,7 @@ const Navbar = () => {
                       <button
                         onClick={() => {
                           closeNow();
-                          navigate(`/category/${category.slug}`);
+                          navigate(`/category/${category.id}`);
                         }}
                         className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#5E2251] w-full hover:opacity-80 transition-opacity"
                       >
@@ -284,7 +284,7 @@ const Navbar = () => {
                                 <button
                                   onClick={() => {
                                     closeNow();
-                                    navigate(`/category/${child.slug}`);
+                                    navigate(`/category/${child.id}`);
                                   }}
                                   className="flex items-center gap-3 text-sm text-gray-700 hover:text-[#5E2251]"
                                 >
@@ -304,7 +304,7 @@ const Navbar = () => {
                           <button
                             onClick={() => {
                               closeNow();
-                              navigate(`/category/${subcategory.slug}`);
+                              navigate(`/category/${subcategory.id}`);
                             }}
                             className="text-sm hover:text-[#5E2251]"
                           >

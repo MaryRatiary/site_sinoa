@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { dashboardAPI } from '../services/api';
-import { AdminStats } from '../components/admin/AdminStats';
-import { AdminOrdersEnhanced } from '../components/admin/AdminOrdersEnhanced';
-import { AdminStock } from '../components/admin/AdminStock';
+import { useAuth } from '../../context/AuthContext';
+import { dashboardAPI } from '../../services/api';
+import { AdminStats } from './AdminStats';
+import { AdminOrdersEnhanced } from './AdminOrdersEnhanced';
+import { AdminStock } from './AdminStock';
 import { TrendingUp, Package, AlertCircle, Clock, RefreshCw } from 'lucide-react';
 
 export default function AdminDashboard() {

@@ -4,7 +4,7 @@ import { Filter, Star, BookOpen, Sparkles, Layers, ArrowLeft } from "lucide-reac
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useProductsByCategory } from "../hooks/useProducts";
-import { useCategoryBySlug } from "../hooks/useCategories";
+import { useCategoryWithDetails } from "../hooks/useCategories";
 import { ProductCard2 } from "../components/card/ProductCard2";
 import ProductDetail from "../components/composants/ProductDetail";
 import ReviewSection from "../components/composants/ReviewSection";
@@ -46,22 +46,20 @@ function applySort(products, sortType) {
 }
 
 export default function DynamicProductPage() {
-  const { slug } = useParams();
+  const { categoryId } = useParams();
   const navigate = useNavigate();
   
   const [sortBy, setSortBy] = useState('vedette');
   const [selectedProduct, setSelectedProduct] = useState(null);
   
-  // ✅ Récupérer la catégorie par slug au lieu de par ID
-  const { category, loading: categoryLoading } = useCategoryBySlug(slug);
-  
-  // ✅ Récupérer les produits en utilisant l'ID de la catégorie
-  const { products, loading: productsLoading } = useProductsByCategory(category?.id);
+  // Récupérer les produits et la catégorie
+  const { products, loading: productsLoading } = useProductsByCategory(categoryId);
+  const { category, loading: categoryLoading } = useCategoryWithDetails(categoryId);
 
   const sortedProducts = applySort(products, sortBy);
 
   const handleViewDetails = (product) => {
-    navigate(`/product/${product.slug}`);
+    navigate(`/product/${product.id}`);
   };
 
   if (categoryLoading || productsLoading) {
@@ -215,7 +213,7 @@ export default function DynamicProductPage() {
                 <div 
                   key={subcat.id}
                   className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all cursor-pointer"
-                  onClick={() => navigate(`/category/${subcat.slug}`)}
+                  onClick={() => navigate(`/category/${subcat.id}`)}
                 >
                   {subcat.image && (
                     <img 
@@ -239,7 +237,7 @@ export default function DynamicProductPage() {
       )}
 
       {/* Review Section */}
-      <ReviewSection categoryId={category.id} />
+      <ReviewSection categoryId={categoryId} />
 
       {/* Category Description Section */}
       {category.description && category.description.trim().length > 0 && (

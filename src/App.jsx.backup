@@ -13,9 +13,9 @@ import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import OrdersPage from './pages/OrdersPage'
 import OrderDetailPage from './pages/OrderDetailPage'
-import AdminDashboard from './components/admin/AdminDashboard'
-import AdminCatalog from './components/admin/AdminCatalog'
-import AdminManagementPage from './components/admin/AdminManagementPage'
+import AdminDashboard from './pages/AdminDashboard'
+import AdminCatalog from './pages/AdminCatalog'
+import AdminManagementPage from './pages/AdminManagementPage'
 import DynamicProductPage from './pages/DynamicProductPage'
 import StaticProductPage from './pages/StaticProductPage'
 import StaticProductDetailPage from './pages/StaticProductDetailPage'
@@ -55,10 +55,10 @@ const AppRoutes = () => {
       <Route path="/staticcategory/:categoryType" element={<StaticCategoryPage />} />
       
       {/* Route pour les produits individuels (lightstick, huntrix, groupes, bestsellers) */}
-      <Route path="/product/:slug" element={<ProductDetailPage />} />
+      <Route path="/product/:productId" element={<ProductDetailPage />} />
       
       {/* Route dynamique pour les catégories */}
-      <Route path="/category/:slug" element={<DynamicProductPage />} />
+      <Route path="/category/:categoryId" element={<DynamicProductPage />} />
       
       {/* Routes protégées (authentification requise) */}
       <Route 

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { dashboardAPI, categoriesAPI, productsAPI } from '../services/api';
-import { CategoryTree } from '../components/admin/CategoryTree';
-import { CatalogDetailsPanel } from '../components/admin/CatalogDetailsPanel';
-import { CategoryModal } from '../components/admin/CategoryModal';
-import { ProductModal } from '../components/admin/ProductModal';
+import { useAuth } from '../../context/AuthContext';
+import { dashboardAPI, categoriesAPI, productsAPI } from '../../services/api';
+import { CategoryTree } from './CategoryTree';
+import { CatalogDetailsPanel } from './CatalogDetailsPanel';
+import { CategoryModal } from './CategoryModal';
+import { ProductModal } from './ProductModal';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function AdminCatalog() {

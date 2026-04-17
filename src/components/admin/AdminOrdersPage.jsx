@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, AlertCircle } from 'lucide-react';
-import { AdminOrdersEnhanced } from '../components/admin/AdminOrdersEnhanced';
+import { AdminOrdersEnhanced } from './AdminOrdersEnhanced';
 
 export default function AdminOrdersPage({ orders, loading, onRefresh }) {
   const [error, setError] = useState('');

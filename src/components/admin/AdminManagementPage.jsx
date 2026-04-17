@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { dashboardAPI } from '../services/api';
-import AdminSidebar from '../components/admin/AdminSidebar';
-import AdminLayout from '../components/admin/AdminLayout';
+import { dashboardAPI } from '../../services/api';
+import AdminSidebar from './AdminSidebar';
+import AdminLayout from './AdminLayout';
 import AdminDashboard from './AdminDashboard';
 import AdminCategoriesPage from './AdminCategoriesPage';
 import AdminProductsPage from './AdminProductsPage';

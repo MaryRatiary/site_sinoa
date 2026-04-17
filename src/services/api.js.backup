@@ -51,10 +51,6 @@ export const authAPI = {
 export const categoriesAPI = {
   getAll: () => apiCall('/categories'),
 
-  getAllFlat: () => apiCall('/categories/flat/all'),
-
-  getBySlug: (slug) => apiCall(`/categories/slug/${slug}`),
-
   getById: (id) => apiCall(`/categories/${id}`),
 
   getChildren: (parentId) => apiCall(`/categories/${parentId}/children`),
@@ -88,8 +84,6 @@ export const productsAPI = {
   getAll: (query = '') => apiCall(`/products${query}`),
 
   getById: (id) => apiCall(`/products/${id}`),
-
-  getBySlug: (slug) => apiCall(`/products/slug/${slug}`),
 
   create: (data) =>
     apiCall('/products', {
