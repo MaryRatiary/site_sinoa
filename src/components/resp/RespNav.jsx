@@ -152,7 +152,7 @@ export default function RespNav() {
 
                 <Link to="/" className="flex flex-col items-center text-center flex-1">
                     <h1 className="text-sm font-bold tracking-tighter">프랑스</h1>
-                    <h1 className="text-lg font-black tracking-[0.2em] mt-[-4px]">KPOP</h1>
+                    <h1 className="text-lg font-black tracking-[0.2em] mt-[-4px]">HUNTRIX</h1>
                 </Link>
 
                 <div className="flex items-center gap-2">

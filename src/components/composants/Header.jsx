@@ -94,7 +94,7 @@ const Navbar = () => {
 
         <Link to="/" className="flex-col items-center text-center">
           <h1 className="text-2xl font-bold tracking-tighter">프랑스</h1>
-          <h1 className="text-3xl font-black tracking-[0.2em] mt-[-8px]">KPOP</h1>
+          <h1 className="text-2xl font-black tracking-[0.2em] mt-[-8px]">HUNTRIX</h1>
           <p className="text-[10px] tracking-[0.3em] text-gray-500 uppercase">Boutique</p>
         </Link>
 

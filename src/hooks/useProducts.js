@@ -3,7 +3,7 @@ import { productsAPI } from '../services/api';
 
 /**
  * Hook pour récupérer tous les produits
- * @param {string} query - Paramètres de requête (ex: ?limit=20&offset=0)
+ * @param {string} query - Paramètres de requête (ex: ?limit=500&offset=0)
  * @returns {Object} {products, loading, error}
  */
 export const useProducts = (query = '') => {
@@ -15,7 +15,9 @@ export const useProducts = (query = '') => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const data = await productsAPI.getAll(query);
+        // ✅ CORRIGÉ: limit=50000 par défaut si aucun query fourni
+        const finalQuery = query || '?limit=50000';
+        const data = await productsAPI.getAll(finalQuery);
         setProducts(data);
       } catch (err) {
         setError(err.message);
@@ -77,7 +79,8 @@ export const useProductsByCategory = (categoryId) => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const data = await productsAPI.getAll(`?categoryId=${categoryId}&limit=100`);
+        // ✅ CORRIGÉ: limit=50000 pour récupérer tous les produits de la catégorie
+        const data = await productsAPI.getAll(`?categoryId=${categoryId}&limit=50000`);
         setProducts(data);
       } catch (err) {
         setError(err.message);

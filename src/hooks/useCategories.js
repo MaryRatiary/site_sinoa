@@ -24,10 +24,12 @@ export const useCategories = () => {
     fetchCategories();
   }, []);
 
-  const getCategoryById = (id) => categories.find(cat => cat.id === id);
+  const getCategoryById = (id) =>
+    categories.find(cat => cat.id === parseInt(id)); // ✅ CORRIGÉ: parseInt pour cohérence
 
-  const getChildCategories = (parentId) => 
-    categories.filter(cat => cat.parentid === parentId);
+  // ✅ CORRIGÉ: parseInt ajouté pour éviter le bug string vs number
+  const getChildCategories = (parentId) =>
+    categories.filter(cat => cat.parentid === parseInt(parentId));
 
   return {
     categories,
@@ -50,10 +52,9 @@ export const useChildCategories = (parentId) => {
     const fetchChildren = async () => {
       try {
         setLoading(true);
-        // Récupère toutes les catégories et filtre par parentId
-        const data = await categoriesAPI.getAll();
-        const childCategories = data.filter(cat => cat.parentid === parseInt(parentId));
-        setChildren(childCategories);
+        // ✅ Utilise l'endpoint dédié au lieu de tout récupérer et filtrer côté client
+        const data = await categoriesAPI.getChildren(parentId);
+        setChildren(data);
         setError(null);
       } catch (err) {
         console.error('Error fetching child categories:', err);
