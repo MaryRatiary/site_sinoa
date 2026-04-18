@@ -30,8 +30,8 @@ function Stars({ rating }) {
  * Expects a product object with:
  *   id            {string|number}
  *   name          {string}
- *   price         {number}
- *   originalPrice {number|null}
+ *   price         {number}        ← Prix RÉDUIT (affiché en couleur)
+ *   originalPrice {number|null}   ← Prix ORIGINAL (affiché barré si solde)
  *   isEstimated   {boolean}
  *   image         {string}
  *   hoverImage    {string|null}
@@ -59,11 +59,12 @@ export function ProductCard2({ product, className = "" }) {
     isNew,
   } = product;
 
-  // Convertir les prix en nombres
+  // ✅ CORRIGÉ: Convertir les prix en nombres
   const numPrice = parseFloat(price) || 0;
   const numOriginalPrice = parseFloat(originalPrice) || null;
 
-  const isOnSale = numOriginalPrice !== null && numOriginalPrice !== undefined;
+  // ✅ CORRIGÉ: originalPrice > price = c'est une solde
+  const isOnSale = numOriginalPrice !== null && numOriginalPrice > numPrice;
   const hasHoverImage = hoverImage && hoverImage.trim() !== "";
   const discountPercent = isOnSale 
     ? Math.round(((numOriginalPrice - numPrice) / numOriginalPrice) * 100)
@@ -230,7 +231,8 @@ export function ProductCard2({ product, className = "" }) {
           </p>
 
           {/* Price Section */}
-          <div className="flex items-center gap-2.5 pt-1">
+          <div className="flex items-center gap-2.5 pt-1 flex-wrap">
+            {/* ✅ PRIX RÉDUIT - Toujours affiché en gras et en couleur */}
             <span className={`font-bold text-base sm:text-lg transition-colors ${
               isOnSale ? "text-red-500" : "text-[#5E2251]"
             }`}>
@@ -242,6 +244,7 @@ export function ProductCard2({ product, className = "" }) {
               {numPrice.toFixed(2).replace(".", ",")}€
             </span>
 
+            {/* ✅ PRIX ORIGINAL BARRÉ - Uniquement si solde */}
             {isOnSale && (
               <span className="text-gray-400 line-through text-xs sm:text-sm font-medium">
                 {numOriginalPrice.toFixed(2).replace(".", ",")}€

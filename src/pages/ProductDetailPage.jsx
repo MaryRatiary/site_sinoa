@@ -109,8 +109,13 @@ export default function ProductDetailPage() {
   // ── Ici product est garanti non-null ──
   const images = product.images?.filter(Boolean) || [];
   const currentImage = images.length > 0 ? images[currentImageIndex] : PLACEHOLDER_IMAGE;
-  const discount = product.originalPrice && product.price
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  
+  // ✅ CORRIGÉ: price est le prix réduit, originalPrice est l'ancien prix
+  const numPrice = parseFloat(product.price) || 0;
+  const numOriginalPrice = parseFloat(product.originalPrice) || null;
+  const isOnSale = numOriginalPrice !== null && numOriginalPrice > numPrice;
+  const discount = isOnSale
+    ? Math.round(((numOriginalPrice - numPrice) / numOriginalPrice) * 100)
     : null;
 
   const nextImage = () => images.length > 1 && setCurrentImageIndex(p => (p + 1) % images.length);
@@ -201,6 +206,34 @@ export default function ProductDetailPage() {
         .nav-arrow { transition: all 0.2s ease; opacity: 0; }
         .img-zoom:hover .nav-arrow { opacity: 1; }
         .nav-arrow:hover { background: #5E2251; color: white; transform: translateY(-50%) scale(1.1); }
+        
+        /* ✅ NOUVEAU: Styles pour les tailles avec scroll horizontal et wrapping smart */
+        .size-options-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          width: 100%;
+          align-items: center;
+          justify-content: flex-start;
+        }
+        
+        /* Sur mobile: grille 2-3 colonnes */
+        @media (max-width: 640px) {
+          .size-options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 0.5rem;
+          }
+        }
+        
+        /* Sur tablet/desktop: flex normal avec wrapping */
+        @media (min-width: 641px) {
+          .size-options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+          }
+        }
       `}</style>
 
       <div className="pdp-root">
@@ -331,18 +364,18 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              {/* Price */}
+              {/* ✅ PRIX CORRIGÉ */}
               <div className={`flex items-end gap-4 ${visible ? 'anim-2' : ''}`}>
                 <div>
                   <span className="text-5xl font-black text-gray-900 tracking-tight">
-                    {product.price?.toFixed(2)}
+                    {numPrice.toFixed(2).replace(".", ",")}
                   </span>
                   <span className="text-2xl font-black text-gray-900">€</span>
                 </div>
-                {product.originalPrice && (
+                {isOnSale && (
                   <div className="flex flex-col pb-1">
                     <span className="text-base text-gray-400 line-through">
-                      {product.originalPrice.toFixed(2)}€
+                      {numOriginalPrice.toFixed(2).replace(".", ",")}€
                     </span>
                     {discount && (
                       <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-center">
@@ -377,19 +410,27 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              {/* Sizes */}
+              {/* ✅ Sizes - NOUVEAU LAYOUT RESPONSIVE */}
               {product.sizes?.length > 0 && (
                 <div className={visible ? 'anim-3' : ''}>
                   <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400 mb-3">
-                    Taille — <span className="text-gray-800 normal-case tracking-normal font-semibold">{selectedSize}</span>
+                    Taille — <span className="text-gray-800 normal-case tracking-normal font-semibold text-[11px] break-words">{selectedSize}</span>
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="size-options-container">
                     {product.sizes.map((size) => {
                       const val = typeof size === "string" ? size : size.size;
                       const isActive = selectedSize === val;
                       return (
-                        <button key={val} onClick={() => setSelectedSize(val)}
-                          className={`size-btn w-12 h-12 rounded-2xl border-2 font-bold text-sm ${isActive ? 'active' : 'border-gray-200 text-gray-600 bg-white'}`}>
+                        <button 
+                          key={val} 
+                          onClick={() => setSelectedSize(val)}
+                          className={`size-btn py-2.5 px-3 rounded-xl border-2 font-semibold text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
+                            isActive 
+                              ? 'active' 
+                              : 'border-gray-200 text-gray-600 bg-white'
+                          }`}
+                          title={val}
+                        >
                           {val}
                         </button>
                       );
