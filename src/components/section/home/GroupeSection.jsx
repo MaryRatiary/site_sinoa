@@ -1,27 +1,27 @@
 import { useRef, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useProducts } from "../../../hooks/useProducts";
 
-import fashion from "../../../data/k-fashion";
-import beauty from "../../../data/k-beauty";
-import bestSellers from "../../../data/bestSellers";
-import huntrix from "../../../data/huntrixProducts";
-import lightStick from "../../../data/lightStick";
+const ACCENT_COLOR = "#b35fc2";
 
 const GroupSection = () => {
   const scrollContainerRef = useRef(null);
-  const headerRef = useRef(null);
-  const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const [discountedProducts, setDiscountedProducts] = useState([]);
   const [autoScroll, setAutoScroll] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [hoveredIdx, setHoveredIdx] = useState(null);
 
   const navigate = useNavigate();
+  const { products } = useProducts('?limit=50000');
 
-  // Récupérer tous les produits et filtrer ceux avec +20% de réduction
   useEffect(() => {
-    const allProducts = [...fashion, ...beauty, ...bestSellers, ...huntrix, ...lightStick];
+    if (!products || products.length === 0) {
+      setLoading(true);
+      return;
+    }
     
-    const withDiscount = allProducts
+    const withDiscount = products
       .map(p => {
         const price = parseFloat(p.price) || 0;
         const originalPrice = parseFloat(p.originalPrice) || null;
@@ -39,17 +39,12 @@ const GroupSection = () => {
       })
       .filter(Boolean)
       .sort(() => Math.random() - 0.5)
-      .slice(0, 10);
+      .slice(0, 12);
 
     setDiscountedProducts(withDiscount);
-  }, []);
+    setLoading(false);
+  }, [products]);
 
-  // Rendre le header visible immédiatement
-  useEffect(() => {
-    setIsHeaderVisible(true);
-  }, []);
-
-  // Auto-scroll
   useEffect(() => {
     if (!autoScroll || discountedProducts.length === 0) return;
 
@@ -59,10 +54,10 @@ const GroupSection = () => {
         if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 100) {
           container.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
-          container.scrollBy({ left: 260, behavior: 'smooth' });
+          container.scrollBy({ left: 280, behavior: 'smooth' });
         }
       }
-    }, 5000);
+    }, 6000);
 
     return () => clearInterval(interval);
   }, [autoScroll, discountedProducts.length]);
@@ -70,140 +65,44 @@ const GroupSection = () => {
   const scroll = (direction) => {
     const container = scrollContainerRef.current;
     if (container) {
-      const scrollAmount = direction === 'left' ? -260 : 260;
+      const scrollAmount = direction === 'left' ? -280 : 280;
       container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
       setAutoScroll(false);
-      setTimeout(() => setAutoScroll(true), 6000);
+      setTimeout(() => setAutoScroll(true), 7000);
     }
   };
+
+  if (loading) {
+    return (
+      <section className="w-full py-8 md:py-10 px-4 bg-white">
+        <div className="flex items-center justify-center min-h-40">
+          <div className="text-xs tracking-[0.3em] text-gray-400 uppercase font-light">
+            • Loading offers...
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (discountedProducts.length === 0) {
     return null;
   }
 
   return (
-    <section className="py-8 sm:py-10 md:py-12 px-4 sm:px-6 lg:px-8 bg-white max-h-[400px] flex flex-col overflow-hidden">
-      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-6 md:gap-8 items-start h-full">
-        
-        {/* Header - Left Side like HuntrixSection with Hunter style */}
-        <div 
-          ref={headerRef}
-          className="w-full lg:w-auto flex-shrink-0 lg:sticky lg:top-0"
-        >
-          <div className="flex items-center gap-4 md:gap-6 group">
-            {/* Ligne de couleur */}
-            <div className="h-8 md:h-12 w-1 md:w-1.5 bg-gray-900 shadow-[0_0_15px_rgba(0,0,0,0.1)]"></div>
-            
-            <div className="flex flex-col gap-1">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase text-gray-900 leading-none tracking-tighter">
-                Les Meilleures <span className="text-gray-500">OFFRES</span>
-              </h2>
-              <span className="text-[8px] md:text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase">
-                Flash Deals Active
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Carousel Container - Right Side like HuntrixSection */}
-        <div className="w-full flex-1 flex flex-nowrap overflow-x-auto gap-3 pb-2 snap-x snap-mandatory scrollbar-hide focus:outline-none relative group/carousel">
-          
-          {/* Left Arrow */}
-          <button
-            onClick={() => scroll('left')}
-            className="hidden lg:flex absolute -left-14 top-24 z-20 w-10 h-10 rounded-full bg-gray-900 text-white items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 group-hover/carousel:opacity-100 opacity-0"
-            aria-label="Produit précédent"
-          >
-            <ChevronLeft size={20} />
-          </button>
-
-          {/* Scrollable Products */}
-          <div
-            ref={scrollContainerRef}
-            className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            onMouseEnter={() => setAutoScroll(false)}
-            onMouseLeave={() => setAutoScroll(true)}
-          >
-            {discountedProducts.map((product, idx) => (
-              <div
-                key={`${product.id}-${idx}`}
-                onClick={() => navigate(`/product/${product.slug}`)}
-                className="flex-shrink-0 w-[45vw] sm:w-[40vw] md:w-[30vw] lg:w-[200px] snap-start cursor-pointer group"
-              >
-                {/* Image Container */}
-                <div className="relative aspect-[3/4] overflow-hidden rounded-lg shadow-sm border border-gray-100 bg-gray-50">
-                  <img
-                    src={product.image || product.url}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
-
-                  {/* Dark Overlay */}
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2">
-                    <button className="w-full bg-white text-gray-900 font-bold py-1.5 rounded text-[10px] hover:bg-gray-100 transition-colors">
-                      Voir
-                    </button>
-                  </div>
-
-                  {/* Discount Badge */}
-                  <div className="absolute top-2 right-2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-gray-900 text-white font-black text-xs shadow-md">
-                    -{product.discountPercent}%
-                  </div>
-                </div>
-
-                {/* Product Info */}
-                <div className="mt-2 flex flex-col gap-0.5">
-                  <h3 className="font-semibold text-gray-900 text-[11px] sm:text-xs line-clamp-2">
-                    {product.name}
-                  </h3>
-                  
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="font-black text-xs sm:text-sm text-gray-900">
-                      {product.price?.toFixed(2).replace('.', ',')}€
-                    </span>
-                    {product.originalPrice && (
-                      <span className="text-[9px] sm:text-xs text-gray-400 line-through">
-                        {product.originalPrice?.toFixed(2).replace('.', ',')}€
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Right Arrow */}
-          <button
-            onClick={() => scroll('right')}
-            className="hidden lg:flex absolute -right-14 top-24 z-20 w-10 h-10 rounded-full bg-gray-900 text-white items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 group-hover/carousel:opacity-100 opacity-0"
-            aria-label="Produit suivant"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="flex lg:hidden items-center justify-center gap-2 w-full mt-2">
-          <button
-            onClick={() => scroll('left')}
-            className="p-2 rounded-lg bg-gray-900 text-white shadow-md hover:shadow-lg active:scale-95 transition-all"
-            aria-label="Produit précédent"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <button
-            onClick={() => scroll('right')}
-            className="p-2 rounded-lg bg-gray-900 text-white shadow-md hover:shadow-lg active:scale-95 transition-all"
-            aria-label="Produit suivant"
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
-      </div>
-
+    <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Orbitron:wght@400;700;900&display=swap');
+
+        @keyframes float-in {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slide-down {
+          from { width: 0; opacity: 0; }
+          to { width: 40px; opacity: 1; }
+        }
+
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
@@ -211,8 +110,254 @@ const GroupSection = () => {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
+
+        .float-in {
+          animation: float-in 0.8s ease-out;
+        }
+
+        .title-line {
+          animation: slide-down 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+          width: 0;
+          height: 2px;
+          background: ${ACCENT_COLOR};
+        }
+
+        .product-image {
+          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .product-card:hover .product-image {
+          transform: scale(1.06);
+        }
+
+        .discount-badge {
+          transition: all 0.3s ease;
+          background: ${ACCENT_COLOR};
+          box-shadow: 0 4px 12px rgba(179, 95, 194, 0.3);
+        }
+
+        .product-card:hover .discount-badge {
+          transform: scale(1.12);
+          box-shadow: 0 6px 20px rgba(179, 95, 194, 0.5);
+        }
+
+        .product-card:hover {
+          border-color: ${ACCENT_COLOR};
+          box-shadow: 0 8px 20px rgba(179, 95, 194, 0.15);
+        }
+
+        .nav-button {
+          background: #ffffff;
+          border: 1px solid #e5e5e5;
+          transition: all 0.25s ease;
+        }
+
+        .nav-button:hover:not(:disabled) {
+          background: ${ACCENT_COLOR};
+          border-color: ${ACCENT_COLOR};
+          color: #ffffff;
+          transform: scale(1.08);
+          box-shadow: 0 4px 12px rgba(179, 95, 194, 0.3);
+        }
+
+        .nav-button:active:not(:disabled) {
+          transform: scale(0.96);
+        }
+
+        .nav-button:disabled {
+          opacity: 0;
+          pointer-events: none;
+        }
       `}</style>
-    </section>
+
+      <section className="w-full py-8 md:py-10 px-4 md:px-8 bg-white relative overflow-hidden border-t border-gray-100">
+        
+        {/* Subtle background element */}
+        <div className="absolute inset-0 opacity-100">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto">
+          
+          {/* Header */}
+          <div className="text-center mb-6 md:mb-8">
+            <div className="float-in inline-block mb-2">
+              <span className="text-xs md:text-sm font-bold tracking-[0.4em] uppercase"
+                    style={{ color: ACCENT_COLOR }}>
+                ⚡ Flash Deals
+              </span>
+            </div>
+
+            <div className="relative mb-4">
+              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-black" 
+                  style={{ fontFamily: "'Orbitron', sans-serif" }}>
+                Les Meilleures <span style={{ color: ACCENT_COLOR }}>OFFRES</span>
+              </h2>
+              <div className="title-line mx-auto mt-3"></div>
+            </div>
+
+            <p className="text-xs md:text-sm tracking-widest text-gray-500 uppercase font-light"
+               style={{ fontFamily: "'Space Mono', monospace" }}>
+              Jusqu'à -70% sélectionnés
+            </p>
+          </div>
+
+          {/* Carousel */}
+          <div className="relative group/carousel">
+            
+            {/* Left Arrow */}
+            <button
+              onClick={() => scroll('left')}
+              className="hidden md:flex absolute -left-6 lg:-left-16 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white text-black items-center justify-center border border-gray-300 transition-all duration-300 group-hover/carousel:opacity-100 opacity-0 shadow-sm hover:shadow-md"
+              style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = ACCENT_COLOR;
+                e.currentTarget.style.color = '#ffffff';
+                e.currentTarget.style.boxShadow = `0 4px 12px rgba(179, 95, 194, 0.3)`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#ffffff';
+                e.currentTarget.style.color = ACCENT_COLOR;
+                e.currentTarget.style.boxShadow = '0 0 0 1px rgba(0,0,0,0.1)';
+              }}
+              aria-label="Produit précédent"
+            >
+              <ChevronLeft size={20} strokeWidth={2.5} />
+            </button>
+
+            {/* Products Container */}
+            <div
+              ref={scrollContainerRef}
+              className="flex gap-3 md:gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-1 pb-2"
+              style={{ scrollBehavior: 'smooth' }}
+              onMouseEnter={() => setAutoScroll(false)}
+              onMouseLeave={() => setAutoScroll(true)}
+            >
+              {discountedProducts.map((product, idx) => (
+                <div
+                  key={`${product.id}-${idx}`}
+                  className="flex-shrink-0 w-[140px] md:w-[170px] snap-start float-in"
+                  style={{ animationDelay: `${idx * 0.05}s` }}
+                  onMouseEnter={() => setHoveredIdx(idx)}
+                  onMouseLeave={() => setHoveredIdx(null)}
+                >
+                  {/* Product Card */}
+                  <div
+                    onClick={() => navigate(`/product/${product.slug}`)}
+                    className="product-card cursor-pointer group h-full flex flex-col rounded-lg overflow-hidden border border-gray-200 transition-all duration-300 bg-white"
+                  >
+                    {/* Image Container */}
+                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                      <img
+                        src={product.image || product.url}
+                        alt={product.name}
+                        className="product-image w-full h-full object-cover"
+                        loading="lazy"
+                      />
+
+                      {/* Overlay on Hover */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2.5">
+                        <button 
+                          className="w-full font-bold py-1.5 rounded text-xs hover:shadow-md transition-all duration-300 uppercase tracking-widest text-[10px] text-white"
+                          style={{ background: ACCENT_COLOR }}
+                        >
+                          Voir
+                        </button>
+                      </div>
+
+                      {/* Discount Badge */}
+                      <div className="absolute top-2 right-2 z-10">
+                        <div className="discount-badge flex items-center justify-center w-12 h-12 rounded-full text-white font-black text-xs" 
+                             style={{ textShadow: '0 0 4px rgba(0,0,0,0.5)' }}>
+                          -{product.discountPercent}%
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="flex-1 p-2.5 md:p-3 flex flex-col justify-between bg-white">
+                      <h3 className="font-semibold text-gray-900 text-[11px] md:text-xs line-clamp-2 leading-tight mb-1.5"
+                          style={{ fontFamily: "'Space Mono', monospace" }}>
+                        {product.name}
+                      </h3>
+                      
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="font-black text-xs md:text-sm"
+                              style={{ fontFamily: "'Space Mono', monospace", color: ACCENT_COLOR }}>
+                          {product.price?.toFixed(2).replace('.', ',')}€
+                        </span>
+                        {product.originalPrice && (
+                          <span className="text-[10px] text-gray-400 line-through">
+                            {product.originalPrice?.toFixed(2).replace('.', ',')}€
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Right Arrow */}
+            <button
+              onClick={() => scroll('right')}
+              className="hidden md:flex absolute -right-6 lg:-right-16 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white text-black items-center justify-center border border-gray-300 transition-all duration-300 group-hover/carousel:opacity-100 opacity-0 shadow-sm hover:shadow-md"
+              style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = ACCENT_COLOR;
+                e.currentTarget.style.color = '#ffffff';
+                e.currentTarget.style.boxShadow = `0 4px 12px rgba(179, 95, 194, 0.3)`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#ffffff';
+                e.currentTarget.style.color = ACCENT_COLOR;
+                e.currentTarget.style.boxShadow = '0 0 0 1px rgba(0,0,0,0.1)';
+              }}
+              aria-label="Produit suivant"
+            >
+              <ChevronRight size={20} strokeWidth={2.5} />
+            </button>
+          </div>
+
+          {/* Mobile Navigation */}
+          <div className="flex md:hidden items-center justify-center gap-3 w-full mt-6">
+            <button
+              onClick={() => scroll('left')}
+              className="p-2 rounded-lg bg-white text-black border border-gray-300 active:scale-95 transition-all"
+              style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = ACCENT_COLOR;
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#ffffff';
+                e.currentTarget.style.color = ACCENT_COLOR;
+              }}
+              aria-label="Produit précédent"
+            >
+              <ChevronLeft size={18} strokeWidth={2.5} />
+            </button>
+            <span className="text-xs text-gray-500 tracking-widest uppercase">Scroll</span>
+            <button
+              onClick={() => scroll('right')}
+              className="p-2 rounded-lg bg-white text-black border border-gray-300 active:scale-95 transition-all"
+              style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = ACCENT_COLOR;
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#ffffff';
+                e.currentTarget.style.color = ACCENT_COLOR;
+              }}
+              aria-label="Produit suivant"
+            >
+              <ChevronRight size={18} strokeWidth={2.5} />
+            </button>
+          </div>
+        </div>
+      </section>
+    </>
   );
 };
 

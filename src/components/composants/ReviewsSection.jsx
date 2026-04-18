@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Star, ThumbsUp, MessageCircle, ChevronRight, X } from "lucide-react";
 import { ReviewFormModal } from "./ReviewFormModal";
+import reviews from "../../data/reviews"; // ✅ Importer les données statiques
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -12,91 +13,164 @@ const anonymizeName = (name) => {
   return `${firstLetter}${asterisks}${lastLetter}`;
 };
 
+// 🔀 Fonction pour obtenir des avis aléatoires
+const getRandomReviews = (allReviews, count) => {
+  const shuffled = [...allReviews].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+};
+
+// 📊 Composant Jauge d'étoiles COMPACT
+const RatingGauge = ({ reviews, averageRating }) => {
+  const totalReviews = reviews.length;
+  
+  // Compter les avis par nombre d'étoiles
+  const ratingCounts = {
+    5: reviews.filter(r => r.rating === 5).length,
+    4: reviews.filter(r => r.rating === 4).length,
+    3: reviews.filter(r => r.rating === 3).length,
+    2: reviews.filter(r => r.rating === 2).length,
+    1: reviews.filter(r => r.rating === 1).length,
+  };
+
+  return (
+    <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 mb-3 sm:mb-4">
+      <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200 shadow-sm overflow-hidden h-[100px] sm:h-[100px] flex items-center">
+        
+        {/* LEFT - Moyenne */}
+        <div className="flex-shrink-0 px-3 sm:px-4 py-2 sm:py-3 border-r border-gray-100 flex flex-col items-center justify-center h-full min-w-[80px] sm:min-w-[100px] bg-gradient-to-br from-yellow-50 to-white">
+          <div className="text-2xl sm:text-3xl font-black text-gray-900">
+            {averageRating.toFixed(1)}
+          </div>
+          <div className="flex gap-0.5 mt-1">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                size={11}
+                className={i < Math.round(averageRating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
+              />
+            ))}
+          </div>
+          <p className="text-[8px] font-medium text-gray-500 mt-1">
+            {totalReviews}
+          </p>
+        </div>
+
+        {/* RIGHT - Distribution compacte */}
+        <div className="flex-1 px-3 sm:px-4 py-2 sm:py-3 h-full flex flex-col justify-center space-y-1.5">
+          {[5, 4, 3].map((stars) => {
+            const count = ratingCounts[stars];
+            const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
+            
+            return (
+              <div key={stars} className="flex items-center gap-2">
+                {/* Label */}
+                <div className="flex items-center gap-0.5 w-10 sm:w-12 flex-shrink-0">
+                  <span className="text-[8px] sm:text-[9px] font-semibold text-gray-700">{stars}</span>
+                  <Star size={9} className="fill-yellow-400 text-yellow-400" />
+                </div>
+
+                {/* Bar */}
+                <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-full transition-all duration-500"
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+
+                {/* Count */}
+                <div className="text-[8px] sm:text-[9px] font-semibold text-gray-600 w-5 sm:w-6 text-right flex-shrink-0">
+                  {count}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function ReviewsSection({ productId }) {
-  const [reviews, setReviews] = useState([]);
   const [displayedReviews, setDisplayedReviews] = useState([]);
   const [selectedReview, setSelectedReview] = useState(null);
   const [showFormModal, setShowFormModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [averageRating, setAverageRating] = useState(0);
   const [itemsPerPage] = useState(4);
+  const [allReviews, setAllReviews] = useState([]);
 
   useEffect(() => {
-    if (!productId) return;
-
-    const loadReviews = async () => {
+    // ✅ Utiliser les données statiques au lieu d'un appel API
+    const loadReviews = () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `${API_BASE_URL}/reviews/product/${productId}?limit=20&sortBy=recent`
-        );
         
-        if (!response.ok) throw new Error('Erreur lors du chargement des avis');
+        // Utiliser les reviews statiques
+        const loadedReviews = [...reviews];
         
-        const data = await response.json();
-        setReviews(data.reviews || []);
-        setDisplayedReviews((data.reviews || []).slice(0, itemsPerPage));
-        setAverageRating(data.average || 0);
+        // Calculer la moyenne des notes
+        const avgRating = loadedReviews.length > 0
+          ? loadedReviews.reduce((sum, r) => sum + r.rating, 0) / loadedReviews.length
+          : 0;
+        
+        setAllReviews(loadedReviews);
+        // Charger les premiers avis
+        setDisplayedReviews(getRandomReviews(loadedReviews, itemsPerPage));
+        setAverageRating(avgRating);
       } catch (err) {
         console.error('Erreur chargement avis:', err);
-        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
     loadReviews();
-  }, [productId]);
+  }, [itemsPerPage]);
 
+  // 🔀 Charger de nouveaux avis aléatoires au lieu d'ajouter
   const handleLoadNext = () => {
-    const nextIndex = displayedReviews.length + itemsPerPage;
-    setDisplayedReviews(reviews.slice(0, nextIndex));
+    const newReviews = getRandomReviews(allReviews, itemsPerPage);
+    setDisplayedReviews(newReviews);
+    
+    // Animation: scroll vers le haut pour voir les nouveaux avis
+    setTimeout(() => {
+      document.querySelector('.reviews-container')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   const handleReviewSuccess = () => {
-    if (productId) {
-      const loadReviews = async () => {
-        try {
-          const response = await fetch(
-            `${API_BASE_URL}/reviews/product/${productId}?limit=20&sortBy=recent`
-          );
-          if (response.ok) {
-            const data = await response.json();
-            setReviews(data.reviews || []);
-            setDisplayedReviews((data.reviews || []).slice(0, itemsPerPage));
-            setAverageRating(data.average || 0);
-          }
-        } catch (err) {
-          console.error('Erreur rechargement avis:', err);
-        }
-      };
-      loadReviews();
-    }
-  };
-
-  const handleMarkHelpful = async (reviewId) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}/helpful`, {
-        method: 'PUT'
-      });
-      if (response.ok) {
-        setReviews(reviews.map(r => 
-          r.id === reviewId ? { ...r, helpful: r.helpful + 1 } : r
-        ));
-        setDisplayedReviews(displayedReviews.map(r =>
-          r.id === reviewId ? { ...r, helpful: r.helpful + 1 } : r
-        ));
-        if (selectedReview?.id === reviewId) {
-          setSelectedReview({ ...selectedReview, helpful: selectedReview.helpful + 1 });
-        }
+    // Si vous voulez ajouter un nouvel avis à la liste statique
+    const loadReviews = () => {
+      try {
+        const loadedReviews = [...reviews];
+        const avgRating = loadedReviews.length > 0
+          ? loadedReviews.reduce((sum, r) => sum + r.rating, 0) / loadedReviews.length
+          : 0;
+        
+        setAllReviews(loadedReviews);
+        setDisplayedReviews(getRandomReviews(loadedReviews, itemsPerPage));
+        setAverageRating(avgRating);
+      } catch (err) {
+        console.error('Erreur rechargement avis:', err);
       }
-    } catch (err) {
-      console.error('Erreur mark helpful:', err);
+    };
+    loadReviews();
+  };
+
+  const handleMarkHelpful = (reviewId) => {
+    // Mettre à jour les avis localement
+    const updatedDisplayedReviews = displayedReviews.map(r =>
+      r.id === reviewId ? { ...r, helpful: r.helpful + 1 } : r
+    );
+    
+    setDisplayedReviews(updatedDisplayedReviews);
+    
+    if (selectedReview?.id === reviewId) {
+      setSelectedReview({ ...selectedReview, helpful: selectedReview.helpful + 1 });
     }
   };
 
-  if (loading && reviews.length === 0) {
+  if (loading && allReviews.length === 0) {
     return (
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 py-12 text-center">
         <p className="text-gray-500">Chargement des avis...</p>
@@ -114,22 +188,6 @@ export default function ReviewsSection({ productId }) {
             <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-gray-900 mb-2">
               Avis Clients
             </h2>
-            {reviews.length > 0 && (
-              <div className="flex items-center gap-2">
-                <div className="flex gap-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={14}
-                      className={i < Math.round(averageRating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm text-gray-600">
-                  {averageRating.toFixed(1)} ({reviews.length} avis)
-                </span>
-              </div>
-            )}
           </div>
 
           <button
@@ -143,11 +201,16 @@ export default function ReviewsSection({ productId }) {
         </div>
       </div>
 
-      {/* REVIEWS LIST - HORIZONTAL COMPACT */}
-      {reviews.length > 0 ? (
+      {/* 📊 JAUGE D'ÉTOILES */}
+      {allReviews.length > 0 && (
+        <RatingGauge reviews={allReviews} averageRating={averageRating} />
+      )}
+
+      {/* REVIEWS LIST - HAUTEUR RÉDUITE */}
+      {allReviews.length > 0 ? (
         <>
-          <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 mb-6 sm:mb-8">
-            <div className="space-y-3 sm:space-y-4">
+          <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 mb-6 sm:mb-8 reviews-container">
+            <div className="space-y-2 sm:space-y-3">
               {displayedReviews.map((review) => (
                 <button
                   key={review.id}
@@ -161,58 +224,60 @@ export default function ReviewsSection({ productId }) {
                     hover:shadow-md sm:hover:shadow-lg
                     transition-all duration-300
                     transform hover:scale-[1.005]
-                    h-[130px]
+                    h-[100px]
                     flex
                   "
                 >
                   
                   {/* IMAGES LEFT SIDE - 1/4 width */}
-                  <div className="w-1/4 flex-shrink-0 border-r border-gray-100 overflow-hidden flex flex-col">
+                  <div className="w-1/4 flex-shrink-0 border-r border-gray-100 overflow-hidden">
                     {review.images && review.images.length > 0 ? (
-                      <div className="flex flex-col h-full gap-0.5 p-1">
-                        {review.images.slice(0, 3).map((img, idx) => (
-                          <img
-                            key={idx}
-                            src={img.imageUrl}
-                            alt={`Photo ${idx + 1}`}
-                            className="flex-1 w-full object-cover rounded hover:scale-105 transition-transform"
-                          />
-                        ))}
-                      </div>
+                      <img
+                        src={review.images[0]?.imageUrl || review.images[0]}
+                        alt="Photo"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/100?text=Photo';
+                        }}
+                      />
+                    ) : review.productImage ? (
+                      <img
+                        src={review.productImage}
+                        alt="Produit"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/100?text=Photo';
+                        }}
+                      />
                     ) : (
                       <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                        <span className="text-[10px] text-gray-500">Sans photo</span>
+                        <span className="text-[9px] text-gray-500">Pas photo</span>
                       </div>
                     )}
                   </div>
 
                   {/* CONTENT RIGHT SIDE - 3/4 width */}
-                  <div className="flex-1 p-2.5 sm:p-3 flex flex-col justify-between">
+                  <div className="flex-1 p-2 sm:p-2.5 flex flex-col justify-between">
                     
                     {/* TOP - AUTHOR & RATING */}
                     <div>
-                      <div className="flex items-start gap-2 mb-1">
-                        <div className="w-6 h-6 rounded-full border-2 border-[#5E2251] bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0">
+                      <div className="flex items-start gap-1.5 mb-1">
+                        <div className="w-5 h-5 rounded-full border-2 border-[#5E2251] bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-[8px] flex-shrink-0">
                           {review.author?.charAt(0)?.toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-gray-900 text-xs truncate">
+                          <h3 className="font-bold text-gray-900 text-[10px] truncate">
                             {anonymizeName(review.author)}
                           </h3>
-                          {review.verified && (
-                            <span className="text-[9px] bg-green-100 text-green-800 px-1 py-0.5 rounded-full font-semibold">
-                              ✓ Vérifié
-                            </span>
-                          )}
                         </div>
                       </div>
                       
                       {/* RATING STARS */}
-                      <div className="flex gap-0.5 mb-1">
+                      <div className="flex gap-0.5">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            size={10}
+                            size={9}
                             className={
                               i < review.rating
                                 ? "fill-yellow-400 text-yellow-400"
@@ -224,58 +289,59 @@ export default function ReviewsSection({ productId }) {
                     </div>
 
                     {/* MIDDLE - TITLE & CONTENT */}
-                    <div className="flex-1 min-w-0 mb-1.5">
-                      <h4 className="font-bold text-gray-900 text-[11px] line-clamp-1 mb-0.5">
+                    <div className="flex-1 min-w-0 mb-1">
+                      <h4 className="font-bold text-gray-900 text-[10px] line-clamp-1 mb-0.5">
                         {review.title}
                       </h4>
-                      <p className="text-gray-600 text-[9px] line-clamp-2 leading-tight">
+                      <p className="text-gray-600 text-[8px] line-clamp-1 leading-tight">
                         {review.content}
                       </p>
                     </div>
 
                     {/* BOTTOM - ACTIONS */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
                           handleMarkHelpful(review.id);
                         }}
-                        className="flex items-center gap-0.5 text-gray-600 hover:text-[#5E2251] text-[9px] group transition-colors"
+                        className="flex items-center gap-0.5 text-gray-600 hover:text-[#5E2251] text-[8px] group transition-colors"
                       >
-                        <ThumbsUp size={10} className="group-hover:fill-[#5E2251]" />
+                        <ThumbsUp size={9} className="group-hover:fill-[#5E2251]" />
                         <span className="font-medium">{review.helpful || 0}</span>
                       </button>
 
-                      <button className="flex items-center gap-0.5 text-gray-600 hover:text-[#5E2251] text-[9px] group transition-colors">
-                        <MessageCircle size={10} />
-                      </button>
+                      {review.verified && (
+                        <span className="text-[7px] bg-green-100 text-green-800 px-1 py-0.5 rounded font-semibold">
+                          ✓ Vérifié
+                        </span>
+                      )}
                     </div>
                   </div>
                 </button>
               ))}
             </div>
 
-            {/* LOAD MORE BUTTON */}
-            {displayedReviews.length < reviews.length && (
-              <div className="flex justify-center mt-5 sm:mt-8">
-                <button
-                  onClick={handleLoadNext}
-                  className="
-                    px-6 sm:px-8 py-2 sm:py-3
-                    bg-[#5E2251]
-                    text-white
-                    font-bold
-                    rounded-lg
-                    hover:bg-[#7a2d64]
-                    transition-colors
-                    text-xs sm:text-base
-                    shadow-md hover:shadow-lg
-                  "
-                >
-                  Voir plus d'avis
-                </button>
-              </div>
-            )}
+            {/* LOAD MORE BUTTON - CHARGER NOUVEAUX AVIS */}
+            <div className="flex justify-center mt-5 sm:mt-6">
+              <button
+                onClick={handleLoadNext}
+                className="
+                  px-6 sm:px-8 py-2 sm:py-2.5
+                  bg-[#5E2251]
+                  text-white
+                  font-bold
+                  rounded-lg
+                  hover:bg-[#7a2d64]
+                  transition-all duration-300
+                  text-xs sm:text-sm
+                  shadow-md hover:shadow-lg
+                  hover:-translate-y-0.5
+                "
+              >
+                🔄 Charger d'autres avis
+              </button>
+            </div>
           </div>
         </>
       ) : (
@@ -371,7 +437,7 @@ export default function ReviewsSection({ productId }) {
                   {selectedReview.author?.charAt(0)?.toUpperCase()}
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                  <div className="flex items-center gap-2 mb-1 sm:mb-2 flex-wrap">
                     <h3 className="font-bold text-base sm:text-lg text-gray-900">
                       {anonymizeName(selectedReview.author)}
                     </h3>
@@ -381,6 +447,7 @@ export default function ReviewsSection({ productId }) {
                       </span>
                     )}
                   </div>
+                  <p className="text-xs sm:text-sm text-gray-500">{selectedReview.date}</p>
                 </div>
               </div>
 
@@ -403,7 +470,7 @@ export default function ReviewsSection({ productId }) {
               <h4 className="text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-4">
                 {selectedReview.title}
               </h4>
-              <p className="text-gray-700 leading-relaxed mb-4 sm:mb-8 text-sm sm:text-base whitespace-pre-wrap">
+              <p className="text-gray-700 leading-relaxed mb-4 sm:mb-8 text-[10px] sm:text-base whitespace-pre-wrap">
                 {selectedReview.content}
               </p>
 
@@ -417,9 +484,12 @@ export default function ReviewsSection({ productId }) {
                     {selectedReview.images.map((img, idx) => (
                       <img
                         key={idx}
-                        src={img.imageUrl}
+                        src={img.imageUrl || img}
                         alt={`Photo ${idx + 1}`}
                         className="w-full h-48 object-cover rounded-lg border-2 border-[#5E2251]"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/200?text=Photo';
+                        }}
                       />
                     ))}
                   </div>
@@ -430,15 +500,15 @@ export default function ReviewsSection({ productId }) {
               <div className="border-t border-gray-200 pt-4 sm:pt-6 flex items-center gap-4 sm:gap-6">
                 <button 
                   onClick={() => handleMarkHelpful(selectedReview.id)}
-                  className="flex items-center gap-1.5 sm:gap-2 text-gray-700 hover:text-[#5E2251] font-semibold transition-colors text-xs sm:text-base"
+                  className="flex items-center gap-1.5 sm:gap-2 text-gray-700 hover:text-[#5E2251] font-semibold transition-colors text-xs sm:text-base group"
                 >
-                  <ThumbsUp size={16} />
+                  <ThumbsUp size={16} className="group-hover:fill-[#5E2251]" />
                   <span className="hidden sm:inline">{selectedReview.helpful || 0} utiles</span>
                   <span className="sm:hidden">{selectedReview.helpful || 0}</span>
                 </button>
 
-                <button className="flex items-center gap-1.5 sm:gap-2 text-gray-700 hover:text-[#5E2251] font-semibold transition-colors text-xs sm:text-base">
-                  <MessageCircle size={16} />
+                <button className="flex items-center gap-1.5 sm:gap-2 text-gray-700 hover:text-[#5E2251] font-semibold transition-colors text-xs sm:text-base group">
+                  <MessageCircle size={16} className="group-hover:fill-[#5E2251]" />
                   <span className="hidden sm:inline">Répondre</span>
                 </button>
               </div>

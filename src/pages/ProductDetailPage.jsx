@@ -1,32 +1,186 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingBag, Heart, Star, Package, RotateCcw, Shield, Truck, ChevronDown } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingBag, Heart, Star, Package, RotateCcw, Shield, Truck } from "lucide-react";
 import Navbar from "../components/composants/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from "../components/composants/Footer";
 import { useProductBySlug } from "../hooks/useProducts";
 import { useCart } from "../store/CartContext";
-
-import fashion from "../data/k-fashion";
-import beauty from "../data/k-beauty";
-import bestSellers from "../data/bestSellers";
-import huntrix from "../data/huntrixProducts";
-import lightStick from "../data/lightStick";
 import ReviewsSection from "../components/composants/ReviewsSection";
+import RelatedProducts from "../components/composants/RelatedProduct";
 
 const PLACEHOLDER_IMAGE = "https://via.placeholder.com/500?text=Image+non+disponible";
 
-function findProductInStaticData(slug) {
-  const allProducts = [...fashion, ...beauty, ...bestSellers, ...huntrix, ...lightStick];
-  return allProducts.find(p => p.slug === slug);
+// ── Inline bold/italic parser ──────────────────────────────────────────────
+function parseInline(text) {
+  const parts = [];
+  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*)/g;
+  let last = 0;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > last) parts.push({ type: "text", content: text.slice(last, match.index) });
+    if (match[2]) parts.push({ type: "bold", content: match[2] });
+    else if (match[3]) parts.push({ type: "italic", content: match[3] });
+    last = match.index + match[0].length;
+  }
+  if (last < text.length) parts.push({ type: "text", content: text.slice(last) });
+  return parts.length > 0 ? parts : [{ type: "text", content: text }];
 }
+
+function InlineText({ text }) {
+  const parts = parseInline(text);
+  return (
+    <>
+      {parts.map((p, i) => {
+        if (p.type === "bold") return <strong key={i} className="font-semibold text-[#5E2251]">{p.content}</strong>;
+        if (p.type === "italic") return <em key={i} className="italic text-gray-500">{p.content}</em>;
+        return <span key={i}>{p.content}</span>;
+      })}
+    </>
+  );
+}
+
+// ── Markdown block parser ──────────────────────────────────────────────────
+function parseMarkdown(markdown) {
+  if (!markdown || typeof markdown !== "string") return [];
+  const lines = markdown.split("\n");
+  const elements = [];
+  let listBuffer = [];
+  let i = 0;
+
+  const flushList = () => {
+    if (listBuffer.length > 0) {
+      elements.push({ type: "ul", items: [...listBuffer] });
+      listBuffer = [];
+    }
+  };
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const t = line.trim();
+
+    if (t.startsWith("|") && t.endsWith("|")) {
+      flushList();
+      
+      const tableLines = [];
+      while (i < lines.length && lines[i].trim().startsWith("|") && lines[i].trim().endsWith("|")) {
+        tableLines.push(lines[i].trim());
+        i++;
+      }
+      i--;
+
+      if (tableLines.length >= 2) {
+        const headerCells = tableLines[0]
+          .split("|")
+          .slice(1, -1)
+          .map(cell => cell.trim());
+
+        const bodyRows = tableLines
+          .slice(2)
+          .map(row =>
+            row
+              .split("|")
+              .slice(1, -1)
+              .map(cell => cell.trim())
+          );
+
+        elements.push({
+          type: "table",
+          headers: headerCells,
+          rows: bodyRows,
+          key: i,
+        });
+      }
+    } else if (!t) {
+      flushList();
+    } else if (t.startsWith("### ")) {
+      flushList();
+      elements.push({ type: "h3", text: t.slice(4), key: i });
+    } else if (t.startsWith("## ")) {
+      flushList();
+      elements.push({ type: "h2", text: t.slice(3), key: i });
+    } else if (t.startsWith("# ")) {
+      flushList();
+      elements.push({ type: "h1", text: t.slice(2), key: i });
+    } else if (/^[-*•]\s/.test(t)) {
+      listBuffer.push({ text: t.replace(/^[-*•]\s/, ""), key: i });
+    } else {
+      flushList();
+      elements.push({ type: "p", text: t, key: i });
+    }
+
+    i++;
+  }
+  flushList();
+  return elements;
+}
+
+// ── Styled markdown renderer ───────────────────────────────────────────────
+function MarkdownDescription({ markdown }) {
+  const blocks = parseMarkdown(markdown);
+  if (!blocks.length) return null;
+
+  return (
+    <div className="desc-body space-y-6">
+      {blocks.map((block) => {
+        switch (block.type) {
+          case "h1":
+            return (
+              <div key={block.key} className="desc-h1">
+                <h2 className="desc-h1-text"><InlineText text={block.text} /></h2>
+              </div>
+            );
+          case "h2":
+            return (
+              <div key={block.key} className="desc-h2-wrap">
+                <span className="desc-h2-dot" />
+                <h3 className="desc-h2-text"><InlineText text={block.text} /></h3>
+              </div>
+            );
+          case "h3":
+            return (
+              <p key={block.key} className="desc-h3-text">
+                <InlineText text={block.text} />
+              </p>
+            );
+          case "ul":
+            return (
+              <ul key={block.items[0]?.key} className="desc-ul space-y-2">
+                {block.items.map((item) => (
+                  <li key={item.key} className="desc-li">
+                    <span className="desc-li-icon">
+                      <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                        <circle cx="4" cy="4" r="3" fill="#5E2251" opacity="0.7" />
+                      </svg>
+                    </span>
+                    <span className="desc-li-text"><InlineText text={item.text} /></span>
+                  </li>
+                ))}
+              </ul>
+            );
+          case "p":
+            return (
+              <p key={block.key} className="desc-p-text">
+                <InlineText text={block.text} />
+              </p>
+            );
+          default:
+            return null;
+        }
+      })}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// ✅ VERSION API UNIQUEMENT - Pas de données statiques
+// ══════════════════════════════════════════════════════════════════════════
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
@@ -35,44 +189,30 @@ export default function ProductDetailPage() {
   const [wished, setWished] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [descOpen, setDescOpen] = useState(false);
 
+  // ✅ Récupère le produit via l'API uniquement
   const { product: dbProduct, loading: dbLoading } = useProductBySlug(slug);
 
   useEffect(() => {
-    setLoading(true);
-    setVisible(false);
-
-    const normalize = (p) => ({
-      ...p,
-      name: p.name || p.title,
-      images: p.images?.filter(Boolean).length > 0
-        ? p.images
-        : [p.url, p.urlHover, p.image, p.hoverImage, p.imageUrl].filter(Boolean),
-    });
-
-    const foundProduct = findProductInStaticData(slug);
-
-    if (foundProduct) {
-      const n = normalize(foundProduct);
-      setProduct(n);
+    if (dbLoading) {
+      setLoading(true);
+      setVisible(false);
+    } else {
       setLoading(false);
-      setTimeout(() => setVisible(true), 60);
-      if (n.sizes?.length > 0) setSelectedSize(n.sizes[0].size || n.sizes[0]);
-      if (n.colors?.length > 0) setSelectedColor(n.colors[0].colorName || n.colors[0]);
-    } else if (dbProduct) {
-      const n = normalize(dbProduct);
-      setProduct(n);
-      setLoading(false);
-      setTimeout(() => setVisible(true), 60);
-      if (n.sizes?.length > 0) setSelectedSize(n.sizes[0].size || n.sizes[0]);
-      if (n.colors?.length > 0) setSelectedColor(n.colors[0].colorName || n.colors[0]);
-    } else if (!dbLoading) {
-      setLoading(false);
+      if (dbProduct) {
+        setTimeout(() => setVisible(true), 60);
+        // Initialiser les sélections par défaut
+        if (dbProduct.sizes?.length > 0) {
+          setSelectedSize(dbProduct.sizes[0].size || dbProduct.sizes[0]);
+        }
+        if (dbProduct.colors?.length > 0) {
+          setSelectedColor(dbProduct.colors[0].colorName || dbProduct.colors[0]);
+        }
+      }
     }
-  }, [slug, dbProduct, dbLoading]);
+  }, [dbProduct, dbLoading]);
 
-  // ── Guards en premier ──
+  // ── Guards ──────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#faf9f7]">
@@ -87,7 +227,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  if (!product) {
+  if (!dbProduct) {
     return (
       <div className="min-h-screen flex items-center justify-center flex-col gap-6 bg-[#faf9f7]">
         <div className="hidden lg:block"><Navbar /></div>
@@ -106,11 +246,13 @@ export default function ProductDetailPage() {
     );
   }
 
-  // ── Ici product est garanti non-null ──
-  const images = product.images?.filter(Boolean) || [];
+  // Utiliser dbProduct directement depuis l'API
+  const product = dbProduct;
+
+  // ── Computed values ──────────────────────────────────────────────────────
+  const images = product.images?.filter(Boolean) || [product.image || product.url].filter(Boolean);
   const currentImage = images.length > 0 ? images[currentImageIndex] : PLACEHOLDER_IMAGE;
-  
-  // ✅ CORRIGÉ: price est le prix réduit, originalPrice est l'ancien prix
+
   const numPrice = parseFloat(product.price) || 0;
   const numOriginalPrice = parseFloat(product.originalPrice) || null;
   const isOnSale = numOriginalPrice !== null && numOriginalPrice > numPrice;
@@ -121,9 +263,7 @@ export default function ProductDetailPage() {
   const nextImage = () => images.length > 1 && setCurrentImageIndex(p => (p + 1) % images.length);
   const prevImage = () => images.length > 1 && setCurrentImageIndex(p => (p - 1 + images.length) % images.length);
 
-  const cleanDescription = typeof product.description === "string"
-    ? product.description.replace(/#+\s/g, '').replace(/\*\*/g, '').replace(/💜|🎭|✨|📸|🌟|👕|👚|👗|👜|☕|🧢|🎵|📦|📐|💆/g, '').trim()
-    : '';
+  const rawDescription = typeof product.description === "string" ? product.description : "";
 
   const handleAddToCart = () => {
     if (product.sizes?.length > 0 && !selectedSize) {
@@ -134,30 +274,26 @@ export default function ProductDetailPage() {
       alert("Veuillez sélectionner une couleur");
       return;
     }
-
     addToCart(
       {
-        id: product.id || product.slug,
-        name: product.name,
+        id: product.id,
+        name: product.name || product.title,
         price: product.price,
-        image: product.images?.[0] || product.url,
+        image: images[0] || PLACEHOLDER_IMAGE,
       },
-      {
-        quantity,
-        size: selectedSize,
-        color: selectedColor,
-      }
+      { quantity, size: selectedSize, color: selectedColor }
     );
-
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2200);
   };
 
+  // ══════════════════════════════════════════════════════════════════════════
   return (
     <div className="min-h-screen bg-[#faf9f7]">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
         .pdp-root { font-family: 'DM Sans', sans-serif; }
+
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(28px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -171,53 +307,24 @@ export default function ProductDetailPage() {
         .anim-3 { animation: slideUp  0.55s 0.25s cubic-bezier(0.16,1,0.3,1) both; }
         .anim-4 { animation: slideUp  0.55s 0.35s cubic-bezier(0.16,1,0.3,1) both; }
         .anim-5 { animation: slideUp  0.55s 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+
         .thumb-btn { transition: all 0.2s ease; }
         .thumb-btn:hover { transform: scale(1.04); }
         .thumb-btn.active { transform: scale(1.04); }
-        .size-btn { transition: all 0.18s ease; }
-        .size-btn:hover:not(.active) { border-color: #5E2251; color: #5E2251; transform: translateY(-1px); }
-        .size-btn.active { background: #5E2251; border-color: #5E2251; color: white; box-shadow: 0 4px 12px rgba(94,34,81,0.25); }
-        .color-btn { transition: all 0.18s ease; }
-        .color-btn:hover:not(.active) { transform: scale(1.05); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
-        .color-btn.active { box-shadow: 0 0 0 3px white, 0 0 0 5px #5E2251; transform: scale(1.08); }
-        .cart-btn {
-          position: relative;
-          overflow: hidden;
-          transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-        }
-        .cart-btn::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: rgba(255,255,255,0.15);
-          transform: translateX(-100%);
-          transition: transform 0.4s ease;
-        }
-        .cart-btn:hover::before { transform: translateX(0); }
-        .cart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(94,34,81,0.3); }
-        .cart-btn:active { transform: translateY(0); }
-        .wish-btn { transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1); }
-        .wish-btn:hover { transform: scale(1.1); }
-        .wish-btn.wished { background: #fff0f5; border-color: #f43f6e; }
-        .guarantee-card { transition: all 0.2s ease; }
-        .guarantee-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
         .img-zoom img { transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
         .img-zoom:hover img { transform: scale(1.06); }
         .nav-arrow { transition: all 0.2s ease; opacity: 0; }
         .img-zoom:hover .nav-arrow { opacity: 1; }
         .nav-arrow:hover { background: #5E2251; color: white; transform: translateY(-50%) scale(1.1); }
-        
-        /* ✅ NOUVEAU: Styles pour les tailles avec scroll horizontal et wrapping smart */
+
+        .size-btn { transition: all 0.18s ease; }
+        .size-btn:hover:not(.active) { border-color: #5E2251; color: #5E2251; transform: translateY(-1px); }
+        .size-btn.active { background: #5E2251; border-color: #5E2251; color: white; box-shadow: 0 4px 12px rgba(94,34,81,0.25); }
         .size-options-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-          width: 100%;
-          align-items: center;
-          justify-content: flex-start;
+          display: flex; flex-wrap: wrap;
+          gap: 0.5rem; width: 100%;
+          align-items: center; justify-content: flex-start;
         }
-        
-        /* Sur mobile: grille 2-3 colonnes */
         @media (max-width: 640px) {
           .size-options-container {
             display: grid;
@@ -225,22 +332,156 @@ export default function ProductDetailPage() {
             gap: 0.5rem;
           }
         }
-        
-        /* Sur tablet/desktop: flex normal avec wrapping */
         @media (min-width: 641px) {
-          .size-options-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
+          .size-options-container { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        }
+
+        .color-btn { transition: all 0.18s ease; }
+        .color-btn:hover:not(.active) { transform: scale(1.05); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+        .color-btn.active { box-shadow: 0 0 0 3px white, 0 0 0 5px #5E2251; transform: scale(1.08); }
+
+        .cart-btn { position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
+        .cart-btn::before {
+          content: ''; position: absolute; inset: 0;
+          background: rgba(255,255,255,0.15);
+          transform: translateX(-100%); transition: transform 0.4s ease;
+        }
+        .cart-btn:hover::before { transform: translateX(0); }
+        .cart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(94,34,81,0.3); }
+        .cart-btn:active { transform: translateY(0); }
+
+        .wish-btn { transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+        .wish-btn:hover { transform: scale(1.1); }
+        .wish-btn.wished { background: #fff0f5; border-color: #f43f6e; }
+        .guarantee-card { transition: all 0.2s ease; }
+        .guarantee-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+        @media (min-width: 1024px) {
+          .img-col-sticky {
+            position: sticky;
+            top: 1.5rem;
+            align-self: flex-start;
           }
         }
+
+        .desc-card {
+          background: linear-gradient(135deg, #fdf9fc 0%, #faf7fb 100%);
+          border: 1px solid rgba(94,34,81,0.10);
+          border-radius: 20px;
+          padding: 1.5rem;
+          position: relative;
+          overflow: hidden;
+        }
+        .desc-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #5E2251, #9b4a8a, #5E2251);
+          border-radius: 20px 20px 0 0;
+        }
+        .desc-title-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 1.25rem;
+        }
+        .desc-title-icon {
+          width: 18px; height: 28px;
+          background: #5E2251;
+          border-radius: 8px;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0;
+        }
+        .desc-title-label {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #5E2251;
+        }
+        .desc-divider {
+          height: 1px;
+          background: linear-gradient(90deg, rgba(94,34,81,0.15) 0%, transparent 100%);
+          margin-bottom: 1.25rem;
+        }
+
+        .desc-h1 {
+          background: rgba(94,34,81,0.06);
+          border-left: 3px solid #5E2251;
+          border-radius: 0 10px 10px 0;
+          padding: 0.8rem 1.5rem;
+          margin-bottom: 0.5rem;
+        }
+        .desc-h1-text {
+          font-size: 20px;
+          font-weight: 700;
+          color: #3d1636;
+          letter-spacing: -0.01em;
+          margin: 0;
+          line-height: 1.2;
+        }
+
+        .desc-h2-wrap {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-top: 0.5rem;
+        }
+        .desc-h2-dot {
+          width: 10px; height: 10px;
+          background: #5E2251;
+          border-radius: 50%;
+          flex-shrink: 0;
+          opacity: 0.7;
+        }
+        .desc-h2-text {
+          font-size: 17px;
+          font-weight: 700;
+          color: #5E2251;
+          margin: 0;
+          line-height: 1.2;
+        }
+
+        .desc-h3-text {
+          font-size: 14px;
+          font-weight: 600;
+          color: #7a3569;
+          padding-left: 1rem;
+          margin: 0;
+          line-height: 1.2;
+        }
+
+        .desc-p-text {
+          font-size: 15px;
+          color: #6b5566;
+          line-height: 1.8;
+          margin: 0;
+        }
+
+        .desc-ul { list-style: none; padding-left: 0.25rem; margin: 0; }
+        .desc-li {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          font-size: 16px;
+          color: #6b5566;
+          line-height: 1.8;
+        }
+        .desc-li-icon {
+          flex-shrink: 0;
+          margin-top: 6px;
+          display: flex;
+          align-items: center;
+        }
+        .desc-li-text { flex: 1; }
       `}</style>
 
       <div className="pdp-root">
         <div className="hidden lg:block"><Navbar /></div>
         <div className="lg:hidden"><RespNav /></div>
 
-        {/* Promo banner */}
+        {/* ── Promo banner ─────────────────────────────────────────── */}
         <div className="w-full bg-[#5E2251]">
           <div className="max-w-7xl mx-auto px-4 py-2.5">
             <div className="flex justify-center divide-x divide-white/20">
@@ -254,7 +495,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Breadcrumb */}
+        {/* ── Breadcrumb ───────────────────────────────────────────── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-5 pb-3 flex items-center justify-between">
           <button onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#5E2251] transition-colors group font-medium">
@@ -270,17 +511,18 @@ export default function ProductDetailPage() {
                 <span className="text-gray-200">›</span>
               </>
             )}
-            <span className="text-gray-600 font-medium truncate max-w-[180px]">{product.name}</span>
+            <span className="text-gray-600 font-medium truncate max-w-[180px]">{product.name || product.title}</span>
           </div>
         </div>
 
-        {/* Main Grid */}
+        {/* ── Main Grid ────────────────────────────────────────────── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
           <div className={`grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-20 items-start transition-opacity duration-500 ${visible ? 'opacity-100' : 'opacity-0'}`}>
 
-            {/* LEFT — Images */}
-            <div className={`flex flex-col gap-3 ${visible ? 'anim-1' : ''}`}>
+            {/* ── LEFT — Images (sticky on desktop) ──────────────── */}
+            <div className={`flex flex-col gap-3 img-col-sticky ${visible ? 'anim-1' : ''}`}>
               <div className="relative aspect-[4/5] bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100/80 img-zoom">
+                {/* Badges */}
                 <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
                   {discount && (
                     <span className="bg-[#5E2251] text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow-lg shadow-[#5E2251]/20">
@@ -294,15 +536,17 @@ export default function ProductDetailPage() {
                   )}
                 </div>
 
+                {/* Wishlist */}
                 <button onClick={() => setWished(w => !w)}
                   className={`wish-btn absolute top-4 right-4 z-20 w-10 h-10 rounded-full border-2 flex items-center justify-center bg-white shadow-md ${wished ? 'wished' : 'border-gray-100'}`}>
                   <Heart size={17} className={wished ? 'fill-rose-500 text-rose-500' : 'text-gray-400'} />
                 </button>
 
-                <img src={currentImage} alt={product.name}
+                <img src={currentImage} alt={product.name || product.title}
                   className="w-full h-full object-contain p-4"
                   onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }} />
 
+                {/* Prev / Next */}
                 {images.length > 1 && (
                   <>
                     <button onClick={prevImage}
@@ -323,6 +567,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
+              {/* Thumbnails */}
               {images.length > 1 && (
                 <div className="grid grid-cols-5 gap-2">
                   {images.map((img, idx) => (
@@ -338,7 +583,7 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {/* RIGHT — Info */}
+            {/* ── RIGHT — Info (scrolls normally) ────────────────── */}
             <div className="flex flex-col gap-6 lg:pt-2">
 
               {/* Brand + Title */}
@@ -348,7 +593,7 @@ export default function ProductDetailPage() {
                 )}
                 <h1 style={{ fontFamily: "'Playfair Display', serif" }}
                   className="text-3xl md:text-4xl font-black text-gray-900 leading-[1.1] tracking-tight">
-                  {product.name}
+                  {product.name || product.title}
                 </h1>
                 {product.rating && (
                   <div className="flex items-center gap-3 mt-3">
@@ -364,7 +609,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              {/* ✅ PRIX CORRIGÉ */}
+              {/* Price */}
               <div className={`flex items-end gap-4 ${visible ? 'anim-2' : ''}`}>
                 <div>
                   <span className="text-5xl font-black text-gray-900 tracking-tight">
@@ -410,7 +655,7 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              {/* ✅ Sizes - NOUVEAU LAYOUT RESPONSIVE */}
+              {/* Sizes */}
               {product.sizes?.length > 0 && (
                 <div className={visible ? 'anim-3' : ''}>
                   <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400 mb-3">
@@ -421,16 +666,11 @@ export default function ProductDetailPage() {
                       const val = typeof size === "string" ? size : size.size;
                       const isActive = selectedSize === val;
                       return (
-                        <button 
-                          key={val} 
-                          onClick={() => setSelectedSize(val)}
+                        <button key={val} onClick={() => setSelectedSize(val)}
                           className={`size-btn py-2.5 px-3 rounded-xl border-2 font-semibold text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
-                            isActive 
-                              ? 'active' 
-                              : 'border-gray-200 text-gray-600 bg-white'
+                            isActive ? 'active' : 'border-gray-200 text-gray-600 bg-white'
                           }`}
-                          title={val}
-                        >
+                          title={val}>
                           {val}
                         </button>
                       );
@@ -503,21 +743,20 @@ export default function ProductDetailPage() {
                 ))}
               </div>
 
-              {/* Description accordéon */}
-              {cleanDescription && (
-                <div className={`border border-gray-100 rounded-2xl overflow-hidden bg-white ${visible ? 'anim-5' : ''}`}>
-                  <button onClick={() => setDescOpen(o => !o)}
-                    className="w-full flex items-center justify-between px-5 py-4 text-left">
-                    <span className="text-sm font-bold text-gray-800">Description du produit</span>
-                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${descOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${descOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className="px-5 pb-5 border-t border-gray-50">
-                      <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line mt-4">
-                        {cleanDescription}
-                      </p>
+              {/* Description */}
+              {rawDescription && (
+                <div className={`desc-card ${visible ? 'anim-5' : ''}`}>
+                  <div className="desc-title-row">
+                    <div className="desc-title-icon">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M1.5 1.5h4.8l6 6a1 1 0 010 1.41l-3.4 3.4a1 1 0 01-1.41 0l-6-6V1.5z" stroke="white" strokeWidth="1.3" strokeLinejoin="round"/>
+                        <circle cx="4.5" cy="4.5" r="0.8" fill="white"/>
+                      </svg>
                     </div>
+                    <span className="desc-title-label">Description du produit</span>
                   </div>
+                  <div className="desc-divider" />
+                  <MarkdownDescription markdown={rawDescription} />
                 </div>
               )}
 
@@ -531,9 +770,9 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
-        <ReviewsSection productId={product.id}/>
-        
 
+        <ReviewsSection productId={product.id} />
+        <RelatedProducts currentProductId={product.id} />
         <Footer />
       </div>
     </div>

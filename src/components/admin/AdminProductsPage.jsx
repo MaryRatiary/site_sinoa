@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Search, Filter, TrendingUp } from 'lucide-react';
 import { productsAPI, categoriesAPI } from '../../services/api';
-import ProductFormModal from './ProductFormModal';
+import {ProductModal} from './ProductModal';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
@@ -11,6 +11,24 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
+  
+  // États pour le modal de produit
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [modalMode, setModalMode] = useState('create');
+  const [productForm, setProductForm] = useState({
+    name: '',
+    description: '',
+    price: '',
+    originalPrice: '',
+    categoryId: '',
+    stock: 0,
+    sizes: [],
+    colors: [],
+    brand: '',
+    material: '',
+    careInstructions: ''
+  });
+  const [productImages, setProductImages] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -32,9 +50,47 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleEdit = (product) => {
+  const handleEditProduct = (product) => {
     setEditingProduct(product);
-    setShowModal(true);
+    
+    // Normaliser les tailles (extraire seulement les strings)
+    const normalizedSizes = Array.isArray(product.sizes) 
+      ? product.sizes.map(s => typeof s === 'string' ? s : s.size)
+      : [];
+    
+    // Normaliser les couleurs
+    const normalizedColors = Array.isArray(product.colors)
+      ? product.colors.map(c => ({
+          name: c.colorName || c.name || '',
+          hex: c.colorHex || c.hex || '#000000'
+        }))
+      : [];
+    
+    // Normaliser les images
+    const existingImages = Array.isArray(product.images)
+      ? product.images.map(img => ({
+          url: img,
+          isMainImage: img === product.image,
+          isHoverImage: img === product.hoverImage,
+        }))
+      : [];
+    
+    setProductForm({
+      name: product.name,
+      description: product.description || '',
+      price: product.price,
+      originalPrice: product.originalPrice || '',
+      categoryId: product.categoryId || '',
+      stock: product.stock || 0,
+      brand: product.brand || '',
+      material: product.material || '',
+      careInstructions: product.careInstructions || '',
+      sizes: normalizedSizes,
+      colors: normalizedColors
+    });
+    setProductImages(existingImages);
+    setModalMode('edit');
+    setShowProductModal(true);
   };
 
   const handleCreateNew = () => {
@@ -71,6 +127,47 @@ export default function AdminProductsPage() {
     total: products.length,
     lowStock: products.filter(p => p.stock < 10).length,
     totalValue: products.reduce((sum, p) => sum + (p.price * p.stock), 0).toFixed(2),
+  };
+
+
+  const resetProductForm = () => {
+    setProductForm({
+      name: '',
+      description: '',
+      price: '',
+      originalPrice: '',
+      categoryId: '',
+      stock: 0,
+      sizes: [],
+      colors: [],
+      brand: '',
+      material: '',
+      careInstructions: ''
+    });
+    setProductImages([]);
+    setModalMode('create');
+  };
+
+  const handleSaveProduct = async () => {
+    if (!productForm.name || !productForm.categoryId) {
+      alert('Veuillez remplir les champs obligatoires');
+      return;
+    }
+
+    try {
+      if (modalMode === 'edit' && editingProduct) {
+        await productsAPI.update(editingProduct.id, productForm);
+        alert('Produit mis à jour!');
+      } else {
+        await productsAPI.create(productForm);
+        alert('Produit créé!');
+      }
+      setShowProductModal(false);
+      resetProductForm();
+      fetchData();
+    } catch (err) {
+      alert('Erreur: ' + err.message);
+    }
   };
 
   return (
@@ -118,7 +215,7 @@ export default function AdminProductsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Gestion des Produits</h2>
         <button
-          onClick={handleCreateNew}
+          onClick={() => { resetProductForm(); setShowProductModal(true); setModalMode("create"); }}
           className="flex items-center gap-2 bg-purple-900 text-white px-6 py-3 rounded-lg hover:bg-purple-950 transition-all font-semibold"
         >
           <Plus size={20} />
@@ -177,7 +274,7 @@ export default function AdminProductsPage() {
                   filteredProducts.map((product) => (
                     <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">{product.name}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{getCategoryName(product.categoryid)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{getCategoryName(product.categoryId)}</td>
                       <td className="px-6 py-4 text-sm font-semibold text-gray-900">{product.price}€</td>
                       <td className="px-6 py-4 text-sm">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -192,7 +289,7 @@ export default function AdminProductsPage() {
                       </td>
                       <td className="px-6 py-4 text-sm flex gap-2">
                         <button
-                          onClick={() => handleEdit(product)}
+                          onClick={() => handleEditProduct(product)}
                           className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
                           title="Éditer"
                         >
@@ -222,19 +319,19 @@ export default function AdminProductsPage() {
       )}
 
       {/* Modal */}
-      <ProductFormModal
-        isOpen={showModal}
-        onClose={() => {
-          setShowModal(false);
-          setEditingProduct(null);
-        }}
-        product={editingProduct}
-        categories={categories}
-        onSuccess={() => {
-          fetchData();
-          setShowModal(false);
-          setEditingProduct(null);
-        }}
+      <ProductModal
+       show={showProductModal}
+       onClose={() => {
+         setShowProductModal(false);
+         resetProductForm();
+       }}
+       isEditing={modalMode === 'edit'}
+       productForm={productForm}
+       setProductForm={setProductForm}
+       productImages={productImages}
+       setProductImages={setProductImages}
+       categories={categories}
+       onSave={handleSaveProduct}
       />
     </div>
   );

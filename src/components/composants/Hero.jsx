@@ -25,12 +25,12 @@ export default function Hero() {
       </div>
 
       {/* CENTRE */}
-      <div className="absolute inset-0 flex items-center justify-center z-15 pointer-events-none">
+      {/* <div className="absolute inset-0 flex items-center justify-center z-15 pointer-events-none">
         <h1 className="text-[10rem] md:text-[22rem] font-black uppercase opacity-5 select-none animate-fade-in"
             style={{ WebkitTextStroke: '2px white', color: 'transparent' }}>
           DEMON
         </h1>
-      </div>
+      </div> */}
 
       {/* BAS GAUCHE */}
       <div className="absolute bottom-24 left-6 md:bottom-28 md:left-12 z-20 animate-slide-right delay-200">

@@ -7,18 +7,14 @@ import { useCategories } from '../../hooks/useCategories';
 import ExpandSearch from '../forms/ExpandSearch';
 import AnimatedBanner from './AnimatedBanner';
 
-const REVEAL_AFTER = 80;
-const HIDE_AFTER = 400;
-
 const Navbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [navHeight, setNavHeight] = useState(0);
 
   const navRef = useRef(null);
-  const spacerRef = useRef(null);
   const lastScrollY = useRef(0);
-  const scrolledUp = useRef(0);
-  const navState = useRef('unpinned'); // 'unpinned' | 'pinned-visible' | 'pinned-hidden'
   const ticking = useRef(false);
   const timeoutRef = useRef(null);
 
@@ -27,66 +23,37 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { categories, loading: categoriesLoading } = useCategories();
 
+  // Mesurer la hauteur de la navbar
   useEffect(() => {
-    const nav = navRef.current;
-    const spacer = spacerRef.current;
-    if (!nav || !spacer) return;
+    if (navRef.current) {
+      setNavHeight(navRef.current.offsetHeight);
+    }
+    window.addEventListener('resize', () => {
+      if (navRef.current) setNavHeight(navRef.current.offsetHeight);
+    });
+  }, []);
 
-    const navH = nav.offsetHeight;
-    const PIN_AT = HIDE_AFTER - navH;
-
+  // Logic simple: track scroll direction
+  useEffect(() => {
     const onScroll = () => {
       if (ticking.current) return;
       ticking.current = true;
 
       requestAnimationFrame(() => {
         const currentY = window.scrollY;
-        const delta = currentY - lastScrollY.current;
+        const scrollDelta = currentY - lastScrollY.current;
 
-        if (currentY < PIN_AT) {
-          // Zone normale — relative, zéro animation
-          if (navState.current !== 'unpinned') {
-            nav.style.transition = 'none';
-            nav.style.position = 'relative';
-            nav.style.top = '';
-            nav.style.left = '';
-            nav.style.right = '';
-            nav.style.transform = 'translateY(0)';
-            spacer.style.height = '0px';
-            navState.current = 'unpinned';
-            scrolledUp.current = 0;
-          }
-
-        } else if (currentY < HIDE_AFTER) {
-          // Zone tampon — switch silencieux relative → fixed
-          if (navState.current === 'unpinned') {
-            nav.style.transition = 'none';
-            nav.style.position = 'fixed';
-            nav.style.top = '0';
-            nav.style.left = '0';
-            nav.style.right = '0';
-            nav.style.transform = 'translateY(0)';
-            spacer.style.height = navH + 'px';
-            navState.current = 'pinned-visible';
-          }
-
-        } else {
-          // Zone sticky — animation active
-          if (delta > 2) {
-            if (navState.current !== 'pinned-hidden') {
-              nav.style.transition = 'transform 0.42s cubic-bezier(0.4, 0, 0.2, 1)';
-              nav.style.transform = 'translateY(-110%)';
-              navState.current = 'pinned-hidden';
-              scrolledUp.current = 0;
-            }
-          } else if (delta < -2) {
-            scrolledUp.current += Math.abs(delta);
-            if (scrolledUp.current >= REVEAL_AFTER && navState.current === 'pinned-hidden') {
-              nav.style.transition = 'transform 0.42s cubic-bezier(0.4, 0, 0.2, 1)';
-              nav.style.transform = 'translateY(0)';
-              navState.current = 'pinned-visible';
-            }
-          }
+        // En haut = toujours visible
+        if (currentY < 50) {
+          setIsVisible(true);
+        } 
+        // Scroll up = montre
+        else if (scrollDelta < 0) {
+          setIsVisible(true);
+        } 
+        // Scroll down = cache
+        else if (scrollDelta > 0) {
+          setIsVisible(false);
         }
 
         lastScrollY.current = currentY;
@@ -109,28 +76,54 @@ const Navbar = () => {
   return (
     <>
       <style>{`
+        /* Important: applique padding au html, pas au body */
+        html {
+          scroll-padding-top: ${navHeight}px;
+        }
+
         .navbar-root {
-          will-change: transform;
-          z-index: 50;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 999;
           width: 100%;
           background: white;
           border-bottom: 1px solid #f3f4f6;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+          /* Animation smooth */
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          transform: translateY(0);
+          will-change: transform;
         }
+
+        .navbar-root.hidden {
+          transform: translateY(-100%);
+        }
+
+        /* Padding pour la page sous la navbar */
+        .page-spacer {
+          height: ${navHeight}px;
+        }
+
         @keyframes megaIn {
           from { opacity: 0; transform: translateY(-6px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+
         @keyframes dropIn {
           from { opacity: 0; transform: translateY(-4px) scale(0.97); }
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
       `}</style>
 
-      {/* Spacer — height gérée par le scroll handler */}
-      <div ref={spacerRef} style={{ height: '0px' }} />
+      {/* Spacer qui push le contenu vers le bas */}
+      <div className="page-spacer" style={{ height: navHeight +7 }} />
 
-      <nav ref={navRef} className="navbar-root">
-
+      <nav 
+        ref={navRef}
+        className={`navbar-root ${!isVisible ? 'hidden' : ''}`}
+      >
         <AnimatedBanner />
 
         {/* TOP BAR */}

@@ -7,9 +7,6 @@ import Navbar from "../components/composants/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from "../components/composants/Footer";
 import { productsAPI } from "../services/api";
-
-import fashion from "../data/k-fashion";
-import beauty from "../data/k-beauty";
 import bestSellers from "../data/bestSellers";
 import huntrix from "../data/huntrixProducts";
 import lightStick from "../data/lightStick";
