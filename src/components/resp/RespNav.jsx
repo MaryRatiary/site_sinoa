@@ -58,7 +58,7 @@ export default function RespNav() {
                         key={child.id}
                         onClick={() => {
                             setIsMenuOpen(false);
-                            navigate(`/category/${child.id}`);
+                            navigate(`/category/${child.slug}`); // ✅ CORRIGÉ: utiliser slug
                         }}
                         className="flex flex-col items-center text-center group"
                     >
@@ -97,7 +97,7 @@ export default function RespNav() {
                                             toggleSubcategory(child.id);
                                         } else {
                                             setIsMenuOpen(false);
-                                            navigate(`/category/${child.id}`);
+                                            navigate(`/category/${child.slug}`); // ✅ CORRIGÉ: utiliser slug
                                         }
                                     }}
                                     className="flex-1 text-left flex items-center gap-2 text-xs font-bold uppercase text-gray-900 hover:text-[#5E2251] transition py-2"
@@ -278,7 +278,7 @@ export default function RespNav() {
                                                         toggleCategory(category.id);
                                                     } else {
                                                         setIsMenuOpen(false);
-                                                        navigate(`/category/${category.id}`);
+                                                        navigate(`/category/${category.slug}`); // ✅ CORRIGÉ: utiliser slug
                                                     }
                                                 }}
                                                 className="flex-1 text-left flex items-center gap-2 text-sm font-bold uppercase text-gray-900 hover:text-[#5E2251] transition py-2"
