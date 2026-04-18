@@ -120,14 +120,15 @@ const HuntrixSection = () => {
             className="flex-shrink-0 w-[45vw] sm:w-[40vw] md:w-[30vw] lg:w-[220px] snap-start"
           >
             <div className="h-[200px] md:h-auto overflow-hidden rounded-lg">
+              {/* ✅ CORRIGÉ: Inverser les prix - originalPrice affiché, price barré */}
               <ProductCard
                 slug={product.slug || `product-${product.id}`}
                 className="w-full h-full object-cover shadow-sm hover:shadow-md transition-shadow border border-gray-50"
                 image={product.image || product.url}
                 hoverImage={product.hoverImage || product.urlHover}
                 name={product.name || product.title}
-                price={product.price}
-                originalPrice={product.originalPrice}
+                price={product.originalPrice}
+                originalPrice={product.price}
               />
             </div>
           </div>

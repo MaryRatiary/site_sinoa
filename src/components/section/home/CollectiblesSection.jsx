@@ -46,14 +46,14 @@ const CollectiblesSection = () => {
   // Récupérer les produits de la catégorie sélectionnée
   const { products: selectedProducts, loading: productsLoading } = useProductsByCategory(selectedTab);
 
-  // Transformer les produits pour le SmoothSlider
+  // ✅ CORRIGÉ: Transformer les produits avec prix inversés
   const sliderCards = selectedProducts.map(product => ({
     id: product.id,
     slug: product.slug,
     url: product.image || product.imageUrl || '/placeholder.jpg',
     title: product.name,
-    price: product.price,
-    originalPrice: product.originalPrice
+    price: product.originalPrice,  // ✅ Inversé: originalPrice en normal
+    originalPrice: product.price   // ✅ Inversé: price barré
   }));
 
   if (loading) {

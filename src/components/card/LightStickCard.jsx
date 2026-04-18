@@ -143,14 +143,15 @@ const LightStickCard = () => {
                 <div className="relative p-0.5 rounded-lg md:rounded-xl transition-all duration-500 group-hover:shadow-xl">
                   <div className="absolute inset-0 rounded-lg md:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-gray-900/10 to-transparent pointer-events-none"></div>
                   <div className="bg-white rounded-lg md:rounded-xl overflow-hidden relative border border-gray-100 group-hover:border-gray-300 transition-colors">
+                    {/* ✅ CORRIGÉ: Inverser les prix - originalPrice affiché, price barré */}
                     <ProductCard
                       id={product.id}
                       slug={product.slug}
                       image={product.image || product.url}
                       hoverImage={product.imageHover || product.urlHover}
                       name={product.name}
-                      price={product.price}
-                      originalPrice={product.originalPrice}
+                      price={product.originalPrice}
+                      originalPrice={product.price}
                       isEstimated={product.isEstimated}
                     />
                     

@@ -146,14 +146,14 @@ const BestSellerSection = () => {
 
               <div className="flex flex-col h-full space-y-3">
                 <div className="relative overflow-hidden rounded-xl border border-gray-100 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 bg-white">
-                  {/* ✅ Utilise les données de l'API avec fallbacks */}
+                  {/* ✅ CORRIGÉ: Inversé les prix - originalPrice affiché, price barré */}
                   <ProductCard
                     slug={product.slug || `product-${product.id}`}
                     image={product.image || product.url}
                     hoverImage={product.hoverImage || product.urlHover}
                     name={product.name || product.title}
-                    price={product.price}
-                    originalPrice={product.originalPrice}
+                    price={product.originalPrice}
+                    originalPrice={product.price}
                     isEstimated={product.isEstimated}
                   />
                   <div className="absolute bottom-0 left-0 w-full h-1 bg-[#b35fc2] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>

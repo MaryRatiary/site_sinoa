@@ -200,6 +200,14 @@ export default function ProductDetailPage() {
     } else {
       setLoading(false);
       if (dbProduct) {
+        console.log('📦 Produit chargé:', {
+          id: dbProduct.id,
+          name: dbProduct.name,
+          colors: dbProduct.colors,
+          sizes: dbProduct.sizes,
+          images: dbProduct.images,
+          fullProduct: dbProduct
+        });
         setTimeout(() => setVisible(true), 60);
         // Initialiser les sélections par défaut
         if (dbProduct.sizes?.length > 0) {
@@ -208,9 +216,26 @@ export default function ProductDetailPage() {
         if (dbProduct.colors?.length > 0) {
           setSelectedColor(dbProduct.colors[0].colorName || dbProduct.colors[0]);
         }
+        setCurrentImageIndex(0);
       }
     }
   }, [dbProduct, dbLoading]);
+
+  // ✅ NOUVELLE: Synchronisation automatique selectedColor avec currentImageIndex
+  // Quand l'image change, on cherche la couleur correspondante
+  useEffect(() => {
+    if (!dbProduct?.colors || !dbProduct?.colors.length) return;
+    
+    const correspondingColor = dbProduct.colors[currentImageIndex];
+    if (correspondingColor) {
+      const colorName = correspondingColor.colorName || correspondingColor.name || correspondingColor;
+      setSelectedColor(colorName);
+    } else {
+      // Si pas de couleur pour cette image, on peut désélectionner ou garder
+      // On désélectionne pour être cohérent
+      setSelectedColor(null);
+    }
+  }, [currentImageIndex, dbProduct?.colors]);
 
   // ── Guards ──────────────────────────────────────────────────────────────
   if (loading) {
@@ -251,6 +276,9 @@ export default function ProductDetailPage() {
 
   // ── Computed values ──────────────────────────────────────────────────────
   const images = product.images?.filter(Boolean) || [product.image || product.url].filter(Boolean);
+  
+  // currentImageIndex est la source de vérité unique
+  // Afficher l'image à currentImageIndex
   const currentImage = images.length > 0 ? images[currentImageIndex] : PLACEHOLDER_IMAGE;
 
   const numPrice = parseFloat(product.price) || 0;
@@ -260,8 +288,16 @@ export default function ProductDetailPage() {
     ? Math.round(((numOriginalPrice - numPrice) / numOriginalPrice) * 100)
     : null;
 
-  const nextImage = () => images.length > 1 && setCurrentImageIndex(p => (p + 1) % images.length);
-  const prevImage = () => images.length > 1 && setCurrentImageIndex(p => (p - 1 + images.length) % images.length);
+  // ✅ CORRIGÉ: Les flèches changent juste currentImageIndex (la couleur se synchro via useEffect)
+  const nextImage = () => {
+    if (images.length <= 1) return;
+    setCurrentImageIndex(prev => (prev + 1) % images.length);
+  };
+  
+  const prevImage = () => {
+    if (images.length <= 1) return;
+    setCurrentImageIndex(prev => (prev - 1 + images.length) % images.length);
+  };
 
   const rawDescription = typeof product.description === "string" ? product.description : "";
 
@@ -317,7 +353,7 @@ export default function ProductDetailPage() {
         .img-zoom:hover .nav-arrow { opacity: 1; }
         .nav-arrow:hover { background: #5E2251; color: white; transform: translateY(-50%) scale(1.1); }
 
-        .size-btn { transition: all 0.18s ease; }
+        .size-btn { transition: all 0.18s ease; height: 44px; display: flex; align-items: center; justify-content: center; padding: 0 12px; white-space: nowrap; min-width: max-content; }
         .size-btn:hover:not(.active) { border-color: #5E2251; color: #5E2251; transform: translateY(-1px); }
         .size-btn.active { background: #5E2251; border-color: #5E2251; color: white; box-shadow: 0 4px 12px rgba(94,34,81,0.25); }
         .size-options-container {
@@ -327,8 +363,8 @@ export default function ProductDetailPage() {
         }
         @media (max-width: 640px) {
           .size-options-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 0.5rem;
           }
         }
@@ -545,33 +581,18 @@ export default function ProductDetailPage() {
                 <img src={currentImage} alt={product.name || product.title}
                   className="w-full h-full object-contain p-4"
                   onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }} />
-
-                {/* Prev / Next */}
-                {images.length > 1 && (
-                  <>
-                    <button onClick={prevImage}
-                      className="nav-arrow absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white shadow-md rounded-full flex items-center justify-center">
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button onClick={nextImage}
-                      className="nav-arrow absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white shadow-md rounded-full flex items-center justify-center">
-                      <ChevronRight size={18} />
-                    </button>
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                      {images.map((_, i) => (
-                        <button key={i} onClick={() => setCurrentImageIndex(i)}
-                          className={`rounded-full transition-all duration-300 ${i === currentImageIndex ? 'w-5 h-1.5 bg-[#5E2251]' : 'w-1.5 h-1.5 bg-gray-300'}`} />
-                      ))}
-                    </div>
-                  </>
-                )}
               </div>
 
               {/* Thumbnails */}
               {images.length > 1 && (
                 <div className="grid grid-cols-5 gap-2">
                   {images.map((img, idx) => (
-                    <button key={idx} onClick={() => setCurrentImageIndex(idx)}
+                    <button key={idx} 
+                      onClick={() => {
+                        // ✅ CORRIGÉ: On change juste currentImageIndex
+                        // La couleur se synchronise automatiquement via le useEffect
+                        setCurrentImageIndex(idx);
+                      }}
                       className={`thumb-btn aspect-square rounded-2xl overflow-hidden border-2 bg-white ${
                         currentImageIndex === idx ? 'active border-[#5E2251]' : 'border-transparent hover:border-gray-200'
                       }`}>
@@ -633,22 +654,28 @@ export default function ProductDetailPage() {
 
               <div className="h-px bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100" />
 
-              {/* Colors */}
+              {/* Colors - Small Circles with Images */}
               {product.colors?.length > 0 && (
                 <div className={visible ? 'anim-3' : ''}>
                   <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400 mb-3">
                     Couleur — <span className="text-gray-800 normal-case tracking-normal font-semibold">{selectedColor}</span>
                   </p>
-                  <div className="flex flex-wrap gap-2.5">
-                    {product.colors.map((color) => {
+                  <div className="flex flex-wrap gap-3">
+                    {product.colors.map((color, idx) => {
                       const name = color.colorName || color.name || color;
-                      const hex = color.colorHex || color.hex || "#888";
+                      const colorImage = images[idx] || PLACEHOLDER_IMAGE;
                       const isActive = selectedColor === name;
                       return (
-                        <button key={name} onClick={() => setSelectedColor(name)}
+                        <button key={name} onClick={() => {
+                          // ✅ CORRIGÉ: Changer la couleur et l'image qui correspond
+                          setSelectedColor(name);
+                          setCurrentImageIndex(idx);
+                        }}
                           title={name}
-                          className={`color-btn w-8 h-8 rounded-full border-2 ${isActive ? 'active border-white' : 'border-white'}`}
-                          style={{ backgroundColor: hex }} />
+                          className={`color-btn w-12 h-12 rounded-full border-2 overflow-hidden transition-all flex items-center justify-center bg-white ${isActive ? 'active border-[#5E2251] ring-2 ring-[#5E2251] ring-offset-2' : 'border-gray-300 hover:border-[#5E2251]'}`}>
+                          <img src={colorImage} alt={name} className="w-full h-full object-cover"
+                            onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }} />
+                        </button>
                       );
                     })}
                   </div>
@@ -667,7 +694,7 @@ export default function ProductDetailPage() {
                       const isActive = selectedSize === val;
                       return (
                         <button key={val} onClick={() => setSelectedSize(val)}
-                          className={`size-btn py-2.5 px-3 rounded-xl border-2 font-semibold text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
+                          className={`size-btn py-2.5 px-3 rounded-xl border-2 font-semibold text-xs sm:text-sm ${
                             isActive ? 'active' : 'border-gray-200 text-gray-600 bg-white'
                           }`}
                           title={val}>
