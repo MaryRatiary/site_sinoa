@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Filter, Star, BookOpen, Sparkles, Layers, ArrowLeft } from "lucide-react";
+import { Filter, Star, BookOpen, Sparkles, Layers, ArrowLeft, ChevronRight } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useProductsByCategory } from "../hooks/useProducts";
@@ -50,6 +50,7 @@ export default function DynamicProductPage() {
   const navigate = useNavigate();
   
   const [sortBy, setSortBy] = useState('vedette');
+  const [showFilters, setShowFilters] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   
   // ✅ Récupérer la catégorie par slug au lieu de par ID
@@ -67,100 +68,116 @@ export default function DynamicProductPage() {
   if (categoryLoading || productsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500">Chargement...</div>
+        <div className="text-gray-500 animate-pulse">Chargement...</div>
       </div>
     );
   }
 
   if (!category) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-400 font-sans">
-        Catégorie introuvable
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Catégorie introuvable</h2>
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 px-4 py-2 bg-[#5E2251] text-white rounded-lg hover:bg-[#4A1940] transition-colors"
+        >
+          <ArrowLeft size={18} />
+          Retour à l'accueil
+        </button>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Navigation */}
       <div className="hidden lg:block">
         <Navbar />
       </div>
-
       <div className="lg:hidden">
         <RespNav />
       </div>
 
-      {/* Discount Banner - RESPONSIVE */}
+      {/* ============ DISCOUNT BANNER - RESPONSIVE ============ */}
+      <div className="w-full bg-gradient-to-r from-amber-50 to-amber-50 border-b border-amber-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 md:py-5">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
+            {[
+              { discount: '-10%', condition: 'dès 2 articles' },
+              { discount: '-15%', condition: 'dès 3 articles' },
+              { discount: '-20%', condition: 'dès 4 articles' }
+            ].map((item, idx) => (
+              <div key={idx} className="flex flex-col items-center text-center">
+                <p className="text-sm sm:text-base md:text-lg font-black text-amber-700">{item.discount}</p>
+                <p className="text-[9px] sm:text-[11px] md:text-xs text-amber-600 font-medium">{item.condition}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ============ CATEGORY HEADER - RESPONSIVE ============ */}
       <div className="w-full bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 md:py-4">
-          <div className="grid grid-cols-3 gap-1 sm:gap-2 md:gap-4 text-center">
-            <div>
-              <p className="text-xs sm:text-base md:text-lg font-bold text-gray-900">-10%</p>
-              <p className="text-[8px] sm:text-[10px] md:text-xs text-gray-600">dès 2 articles</p>
-            </div>
-            <div>
-              <p className="text-xs sm:text-base md:text-lg font-bold text-gray-900">-15%</p>
-              <p className="text-[8px] sm:text-[10px] md:text-xs text-gray-600">dès 3 articles</p>
-            </div>
-            <div>
-              <p className="text-xs sm:text-base md:text-lg font-bold text-gray-900">-20%</p>
-              <p className="text-[8px] sm:text-[10px] md:text-xs text-gray-600">dès 4 articles</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Title Section - RESPONSIVE */}
-      <div className="w-full bg-white py-3 sm:py-4 md:py-6 px-3 sm:px-4 overflow-hidden">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center gap-2 sm:gap-3">
-          {category.image && (
-            <div className="flex-shrink-0">
-              <img
-                src={category.image}
-                alt={category.name}
-                className="w-12 sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 object-cover rounded-lg border border-gray-200 shadow-sm"
-              />
-            </div>
-          )}
-          
-          <div className="flex-1">
-            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-gray-900 tracking-tight animate-slide-up">
-              {category.name}
-            </h1>
-            {category.description && (
-              <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">{category.description}</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+            {/* Category Image */}
+            {category.image && (
+              <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <img
+                  src={category.image}
+                  alt={category.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             )}
+            
+            {/* Category Info */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 line-clamp-1">
+                {category.name}
+              </h1>
+              {category.description && (
+                <p className="text-sm sm:text-base text-gray-600 mt-2 line-clamp-2">{category.description}</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-1 sm:py-2">
-        <nav className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-gray-600">
-          <a href="/" className="text-[#5E2251] hover:underline">KPOP</a>
-          <span>›</span>
-          <span className="truncate">{category.name}</span>
+      {/* ============ BREADCRUMB ============ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3">
+        <nav className="flex items-center justify-start gap-2 text-xs sm:text-sm text-gray-600 overflow-x-auto">
+          <a href="/" className="text-[#5E2251] font-medium hover:underline whitespace-nowrap">Accueil</a>
+          <ChevronRight size={16} className="text-gray-400 flex-shrink-0" />
+          <span className="text-gray-700 font-medium truncate">{category.name}</span>
         </nav>
       </div>
 
-      {/* Filter & Sort Bar - RESPONSIVE */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 border-b border-gray-200">
-        <div className="flex flex-col gap-3 sm:gap-4">
-          <button className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-gray-300 hover:border-[#5E2251] hover:bg-[#f5f0f2] transition-all duration-300 text-gray-700 hover:text-[#5E2251] font-medium text-xs sm:text-sm w-fit">
-            <Filter size={16} className="sm:size-18" />
-            <span>Filtrer</span>
-          </button>
+      {/* ============ FILTER & SORT BAR - RESPONSIVE ============ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 border-b border-gray-200">
+        <div className="flex flex-col gap-4 sm:gap-6">
+          {/* Filter Button */}
+          <div>
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg border border-gray-300 hover:border-[#5E2251] hover:bg-[#f5f0f2] transition-all duration-300 text-gray-700 hover:text-[#5E2251] font-semibold text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
+            >
+              <Filter size={18} />
+              <span>Filtrer</span>
+            </button>
+          </div>
 
-          <div className="flex flex-col gap-2">
-            <span className="text-gray-700 font-medium text-xs sm:text-sm">Trier par:</span>
-            <div className="flex gap-1.5 sm:gap-2 flex-wrap">
+          {/* Sort Options */}
+          <div className="flex flex-col gap-3">
+            <span className="text-gray-700 font-semibold text-sm sm:text-base">Trier par:</span>
+            <div className="flex gap-2 sm:gap-3 flex-wrap">
               {SORT_OPTIONS.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => setSortBy(option.value)}
-                  className={`px-2.5 sm:px-4 py-1 sm:py-2 rounded-lg font-medium text-[10px] sm:text-sm transition-all duration-300 whitespace-nowrap ${
+                  className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 whitespace-nowrap ${
                     sortBy === option.value
-                      ? 'bg-[#5E2251] text-white shadow-lg'
+                      ? 'bg-[#5E2251] text-white shadow-lg hover:shadow-xl'
                       : 'border border-gray-300 text-gray-700 hover:border-[#5E2251] hover:bg-[#f5f0f2]'
                   }`}
                 >
@@ -172,19 +189,21 @@ export default function DynamicProductPage() {
         </div>
       </div>
 
-      {/* Products Count */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-4">
-        <p className="text-gray-600 text-xs sm:text-sm">{sortedProducts.length} produits</p>
+      {/* ============ PRODUCTS COUNT ============ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <p className="text-gray-700 font-semibold text-sm sm:text-base">
+          {sortedProducts.length} {sortedProducts.length === 1 ? 'produit' : 'produits'} trouvés
+        </p>
       </div>
 
-      {/* Products Grid */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 pb-16">
+      {/* ============ PRODUCTS GRID - RESPONSIVE ============ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16 md:pb-20">
         {sortedProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6 auto-rows-max">
             {sortedProducts.map((product) => (
               <div 
                 key={product.id} 
-                className="flex flex-col group cursor-pointer"
+                className="flex flex-col cursor-pointer"
                 onClick={() => handleViewDetails(product)}
               >
                 <ProductCard2 product={product} />
@@ -192,45 +211,57 @@ export default function DynamicProductPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <p className="text-gray-500">Aucun produit trouvé dans cette catégorie</p>
+          <div className="text-center py-12 sm:py-16">
+            <p className="text-gray-500 text-base sm:text-lg">Aucun produit trouvé dans cette catégorie</p>
           </div>
         )}
       </div>
 
-      {/* Sub-categories Section */}
+      {/* ============ SUB-CATEGORIES SECTION ============ */}
       {category.children && Array.isArray(category.children) && category.children.length > 0 && (
         <div className="w-full bg-gray-50 border-t border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 py-16">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="h-1 w-12 bg-[#5E2251]"></div>
-              <div className="flex items-center gap-2">
-                <Layers className="text-[#5E2251]" size={28} />
-                <h2 className="text-3xl font-bold text-gray-900">Sous-catégories</h2>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
+            {/* Header */}
+            <div className="flex items-center gap-3 sm:gap-4 mb-8 sm:mb-12">
+              <div className="h-1 w-8 sm:w-12 bg-[#5E2251] rounded-full"></div>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Layers className="text-[#5E2251] flex-shrink-0" size={24} />
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900">Sous-catégories</h2>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {category.children.map((subcat) => (
                 <div 
                   key={subcat.id}
-                  className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all cursor-pointer"
                   onClick={() => navigate(`/category/${subcat.slug}`)}
+                  className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:border-[#5E2251] transition-all duration-300 cursor-pointer"
                 >
+                  {/* Image */}
                   {subcat.image && (
-                    <img 
-                      src={subcat.image} 
-                      alt={subcat.name}
-                      className="w-full h-40 object-cover rounded-lg mb-0"
-                    />
+                    <div className="w-full h-40 sm:h-48 overflow-hidden bg-gray-100">
+                      <img 
+                        src={subcat.image} 
+                        alt={subcat.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
                   )}
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{subcat.name}</h3>
-                  {subcat.description && (
-                    <p className="text-sm text-gray-600 line-clamp-2">{subcat.description}</p>
-                  )}
-                  <button className="mt-4 text-[#5E2251] font-semibold hover:underline text-sm">
-                    Voir →
-                  </button>
+                  
+                  {/* Content */}
+                  <div className="p-4 sm:p-5">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-[#5E2251] transition-colors">
+                      {subcat.name}
+                    </h3>
+                    {subcat.description && (
+                      <p className="text-sm text-gray-600 mt-2 line-clamp-2">{subcat.description}</p>
+                    )}
+                    <button className="mt-4 inline-flex items-center gap-1.5 text-[#5E2251] font-semibold text-sm hover:gap-2.5 transition-all">
+                      <span>Voir</span>
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -238,37 +269,37 @@ export default function DynamicProductPage() {
         </div>
       )}
 
-      {/* Review Section */}
+      {/* ============ REVIEW SECTION ============ */}
       <ReviewSection categoryId={category.id} />
 
-      {/* Category Description Section */}
+      {/* ============ CATEGORY DESCRIPTION SECTION ============ */}
       {category.description && category.description.trim().length > 0 && (
         <div className="w-full bg-gradient-to-b from-gray-50 via-white to-gray-50 border-t-2 border-[#5E2251]">
-          <div className="max-w-7xl mx-auto px-4 py-20">
-            {/* Section Header */}
-            <div className="flex items-center gap-3 mb-12">
-              <div className="h-1 w-12 bg-[#5E2251]"></div>
-              <div className="flex items-center gap-2">
-                <BookOpen className="text-[#5E2251]" size={28} />
-                <h2 className="text-4xl font-black text-gray-900">À propos de {category.name}</h2>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
+            {/* Header */}
+            <div className="flex items-center gap-3 sm:gap-4 mb-8 sm:mb-12">
+              <div className="h-1 w-8 sm:w-12 bg-[#5E2251] rounded-full"></div>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <BookOpen className="text-[#5E2251] flex-shrink-0" size={24} />
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900">À propos de {category.name}</h2>
               </div>
             </div>
 
-            {/* Description Content with Markdown Support */}
-            <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-              <div className="prose prose-lg max-w-none text-gray-700 space-y-6">
+            {/* Description Box */}
+            <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 md:p-10 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+              <div className="prose prose-sm sm:prose-base max-w-none text-gray-700 space-y-4">
                 <ReactMarkdown 
                   remarkPlugins={[remarkGfm]}
                   components={{
-                    h1: ({node, ...props}) => <h1 className="text-3xl font-bold text-[#5E2251] mt-6 mb-4" {...props} />,
-                    h2: ({node, ...props}) => <h2 className="text-2xl font-bold text-[#5E2251] mt-5 mb-3" {...props} />,
-                    h3: ({node, ...props}) => <h3 className="text-xl font-bold text-[#5E2251] mt-4 mb-2" {...props} />,
-                    p: ({node, ...props}) => <p className="text-gray-700 leading-relaxed text-justify" {...props} />,
-                    ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-2 text-gray-700" {...props} />,
-                    ol: ({node, ...props}) => <ol className="list-decimal list-inside space-y-2 text-gray-700" {...props} />,
+                    h1: ({node, ...props}) => <h1 className="text-2xl sm:text-3xl font-black text-[#5E2251] mt-6 mb-4" {...props} />,
+                    h2: ({node, ...props}) => <h2 className="text-xl sm:text-2xl font-bold text-[#5E2251] mt-5 mb-3" {...props} />,
+                    h3: ({node, ...props}) => <h3 className="text-lg sm:text-xl font-bold text-[#5E2251] mt-4 mb-2" {...props} />,
+                    p: ({node, ...props}) => <p className="text-gray-700 leading-relaxed text-justify text-sm sm:text-base" {...props} />,
+                    ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-2 text-gray-700 text-sm sm:text-base" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal list-inside space-y-2 text-gray-700 text-sm sm:text-base" {...props} />,
                     li: ({node, ...props}) => <li className="text-gray-700" {...props} />,
-                    code: ({node, ...props}) => <code className="bg-gray-100 px-2 py-1 rounded text-[#5E2251] font-mono" {...props} />,
-                    blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-[#5E2251] pl-4 italic text-gray-600" {...props} />,
+                    code: ({node, ...props}) => <code className="bg-gray-100 px-2 py-1 rounded text-[#5E2251] font-mono text-xs sm:text-sm" {...props} />,
+                    blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-[#5E2251] pl-4 italic text-gray-600 text-sm sm:text-base" {...props} />,
                   }}
                 >
                   {category.description}
@@ -277,20 +308,20 @@ export default function DynamicProductPage() {
             </div>
 
             {/* Info Box */}
-            <div className="mt-8 flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <Sparkles className="text-blue-600 flex-shrink-0 mt-1" size={20} />
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-start gap-3 sm:gap-4 bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-5">
+              <Sparkles className="text-blue-600 flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6" />
               <div>
-                <p className="text-sm text-blue-900 font-medium">💡 Conseil client</p>
-                <p className="text-sm text-blue-800 mt-1">Découvrez tous nos produits {category.name.toLowerCase()} avec des descriptions détaillées et des images haute résolution.</p>
+                <p className="text-xs sm:text-sm text-blue-900 font-bold">💡 Conseil client</p>
+                <p className="text-xs sm:text-sm text-blue-800 mt-1">Découvrez tous nos produits {category.name.toLowerCase()} avec des descriptions détaillées et des images haute résolution.</p>
               </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* Footer */}
       <Footer />
-      
-      <footer className="bg-black text-white py-10 text-center text-sm">
+      <footer className="bg-black text-white py-8 sm:py-10 text-center text-xs sm:text-sm">
         <p>© 2026 K-POP BOUTIQUE. Made with Passion.</p>
       </footer>
     </div>
