@@ -54,7 +54,7 @@ import Footer from '../components/composants/Footer';
 // };
 
 // Timeline Component
-const OrderTimeline = ({ status, createdAt }) => {
+const OrderTimeline = ({ status, created_at }) => {
   const stages = [
     { key: 'pending', label: 'Commande confirmée', icon: CheckCircle, days: 0 },
     { key: 'processing', label: 'En traitement', icon: Clock, days: '1-2' },
@@ -121,9 +121,9 @@ const ProductCard = ({ item }) => {
       <div className="flex flex-col sm:flex-row gap-4 p-4">
         {/* Product Image */}
         <div className="w-full sm:w-32 h-40 sm:h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-          {item.imageUrl ? (
+          {item.image_url ? (
             <img
-              src={item.imageUrl}
+              src={item.image_url}
               alt={item.name}
               className="w-full h-full object-cover hover:scale-105 transition"
             />
@@ -190,10 +190,10 @@ const ShippingInfoCard = ({ order }) => {
           Informations de contact
         </h3>
         <div className="space-y-4">
-          {order.firstName || order.lastName ? (
+          {order.first_name || order.last_name ? (
             <div>
               <p className="text-sm text-gray-600 font-semibold mb-1">Nom complet</p>
-              <p className="text-gray-900 font-semibold">{order.firstName} {order.lastName}</p>
+              <p className="text-gray-900 font-semibold">{order.first_name} {order.last_name}</p>
             </div>
           ) : null}
 
@@ -469,7 +469,7 @@ export default function OrderDetailPage() {
                   <Truck size={24} className="text-[#5E2251]" />
                   Suivi de progression
                 </h2>
-                <OrderTimeline status={order.status} createdAt={order.createdat} />
+                <OrderTimeline status={order.status} created_at={order.createdat} />
               </div>
             </div>
 

@@ -40,8 +40,8 @@ export const MultiImageUpload = ({ images, onImagesChange }) => {
             {
               id: Date.now() + Math.random(),
               url: event.target.result,
-              isMainImage: images.length === 0,
-              isHoverImage: false,
+              is_main_image: images.length === 0,
+              is_hover_image: false,
             },
           ]);
         };
@@ -52,8 +52,8 @@ export const MultiImageUpload = ({ images, onImagesChange }) => {
 
   const removeImage = (id) => {
     const updatedImages = images.filter((img) => img.id !== id);
-    if (updatedImages.length > 0 && images.find((img) => img.id === id).isMainImage) {
-      updatedImages[0].isMainImage = true;
+    if (updatedImages.length > 0 && images.find((img) => img.id === id).is_main_image) {
+      updatedImages[0].is_main_image = true;
     }
     onImagesChange(updatedImages);
   };
@@ -61,7 +61,7 @@ export const MultiImageUpload = ({ images, onImagesChange }) => {
   const setMainImage = (id) => {
     const updatedImages = images.map((img) => ({
       ...img,
-      isMainImage: img.id === id,
+      is_main_image: img.id === id,
     }));
     onImagesChange(updatedImages);
   };
@@ -69,7 +69,7 @@ export const MultiImageUpload = ({ images, onImagesChange }) => {
   const setHoverImage = (id) => {
     const updatedImages = images.map((img) => ({
       ...img,
-      isHoverImage: img.id === id ? !img.isHoverImage : false,
+      is_hover_image: img.id === id ? !img.is_hover_image : false,
     }));
     onImagesChange(updatedImages);
   };
@@ -123,14 +123,14 @@ export const MultiImageUpload = ({ images, onImagesChange }) => {
                 />
 
                 {/* Badge Principal */}
-                {image.isMainImage && (
+                {image.is_main_image && (
                   <div className="absolute top-1 left-1 bg-green-500 text-white text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
                     Principale
                   </div>
                 )}
 
                 {/* Badge Hover */}
-                {image.isHoverImage && (
+                {image.is_hover_image && (
                   <div className="absolute top-1 right-1 bg-blue-500 text-white text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
                     Hover
                   </div>
@@ -138,7 +138,7 @@ export const MultiImageUpload = ({ images, onImagesChange }) => {
 
                 {/* Overlay avec boutons */}
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center gap-1 sm:gap-2 opacity-0 group-hover:opacity-100">
-                  {!image.isMainImage && (
+                  {!image.is_main_image && (
                     <button
                       type="button"
                       onClick={() => setMainImage(image.id)}
@@ -153,11 +153,11 @@ export const MultiImageUpload = ({ images, onImagesChange }) => {
                     type="button"
                     onClick={() => setHoverImage(image.id)}
                     className={`${
-                      image.isHoverImage
+                      image.is_hover_image
                         ? 'bg-blue-600 hover:bg-blue-700'
                         : 'bg-gray-500 hover:bg-gray-600'
                     } text-white p-1.5 sm:p-2 rounded-full transition-colors text-sm sm:text-base`}
-                    title={image.isHoverImage ? 'Retirer du hover' : 'Définir comme image hover'}
+                    title={image.is_hover_image ? 'Retirer du hover' : 'Définir comme image hover'}
                   >
                     👁️
                   </button>

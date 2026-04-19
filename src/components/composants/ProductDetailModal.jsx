@@ -50,7 +50,7 @@ const ProductDetailModal = ({ product, onClose }) => {
   const productDetails = {
     name: fullProduct.name || 'Produit KPOP',
     price: parseFloat(fullProduct.price) || 0,
-    originalPrice: parseFloat(fullProduct.originalprice || fullProduct.originalPrice) || null,
+    original_price: parseFloat(fullProduct.originalprice || fullProduct.original_price) || null,
     rating: fullProduct.rating || 4.5,
     reviews: fullProduct.reviews || 0,
     image: fullProduct.image || '',
@@ -59,8 +59,8 @@ const ProductDetailModal = ({ product, onClose }) => {
     sizes: (fullProduct.sizes && Array.isArray(fullProduct.sizes)) ? fullProduct.sizes : [],
     // Normaliser les couleurs - gérer les deux formats (minuscules et camelCase)
     colors: (fullProduct.colors && Array.isArray(fullProduct.colors)) ? fullProduct.colors.map(c => ({
-      colorname: c.colorname || c.colorName || c.name || '',
-      colorhex: c.colorhex || c.colorHex || c.hex || '#000000',
+      colorname: c.colorname || c.color_name || c.name || '',
+      colorhex: c.colorhex || c.color_hex || c.hex || '#000000',
       stock: c.stock || 0,
       id: c.id
     })) : [],
@@ -71,8 +71,8 @@ const ProductDetailModal = ({ product, onClose }) => {
     careInstructions: fullProduct.careinstructions || fullProduct.careInstructions || '',
   };
 
-  const discount = productDetails.originalPrice 
-    ? Math.round(((productDetails.originalPrice - productDetails.price) / productDetails.originalPrice) * 100)
+  const discount = productDetails.original_price 
+    ? Math.round(((productDetails.original_price - productDetails.price) / productDetails.original_price) * 100)
     : 0;
 
   const allImages = productDetails.images.filter(img => img);
@@ -225,9 +225,9 @@ const ProductDetailModal = ({ product, onClose }) => {
                     <span className="text-2xl font-bold text-gray-900">
                       {productDetails.price.toFixed(2)}€
                     </span>
-                    {productDetails.originalPrice && (
+                    {productDetails.original_price && (
                       <span className="text-sm text-gray-500 line-through">
-                        {productDetails.originalPrice.toFixed(2)}€
+                        {productDetails.original_price.toFixed(2)}€
                       </span>
                     )}
                   </div>
@@ -289,17 +289,17 @@ const ProductDetailModal = ({ product, onClose }) => {
                       <div className="flex gap-2 flex-wrap">
                         {productDetails.colors.map((colorObj) => {
                           // Gérer les deux formats de noms de colonnes (minuscules de la DB et camelCase)
-                          const colorName = colorObj.colorname || colorObj.colorName || colorObj.name || colorObj;
-                          const colorHex = colorObj.colorhex || colorObj.colorHex || colorObj.hex || '#000000';
+                          const color_name = colorObj.colorname || colorObj.color_name || colorObj.name || colorObj;
+                          const color_hex = colorObj.colorhex || colorObj.color_hex || colorObj.hex || '#000000';
                           const colorStock = colorObj.stock || 0;
                           const isAvailable = colorStock > 0;
                           return (
                             <button
-                              key={colorName}
-                              onClick={() => isAvailable && setSelectedColor(colorName)}
+                              key={color_name}
+                              onClick={() => isAvailable && setSelectedColor(color_name)}
                               disabled={!isAvailable}
                               className={`px-3 py-1.5 rounded text-xs font-semibold transition-all duration-200 flex items-center gap-2 relative ${
-                                selectedColor === colorName
+                                selectedColor === color_name
                                   ? 'bg-pink-600 text-white border-2 border-pink-600'
                                   : isAvailable
                                   ? 'bg-gray-100 text-gray-900 border-2 border-gray-300 hover:border-pink-600 cursor-pointer'
@@ -311,10 +311,10 @@ const ProductDetailModal = ({ product, onClose }) => {
                                 className={`w-3 h-3 rounded-full border-2 flex-shrink-0 ${
                                   isAvailable ? 'border-gray-400' : 'border-gray-300'
                                 }`}
-                                style={{ backgroundColor: isAvailable ? colorHex : '#d1d5db' }}
+                                style={{ backgroundColor: isAvailable ? color_hex : '#d1d5db' }}
                               />
                               <span className="flex-1 text-left">
-                                {colorName}
+                                {color_name}
                                 {!isAvailable && (
                                   <span className="block text-[7px] leading-none">Rupture</span>
                                 )}

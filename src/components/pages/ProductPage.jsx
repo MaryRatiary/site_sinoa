@@ -25,14 +25,14 @@ function applySort(products, sortType) {
       return sorted.sort((a, b) => (b.sales || 0) - (a.sales || 0));
     case 'price-asc':
       return sorted.sort((a, b) => {
-        const priceA = a.originalPrice || a.price;
-        const priceB = b.originalPrice || b.price;
+        const priceA = a.original_price || a.price;
+        const priceB = b.original_price || b.price;
         return priceA - priceB;
       });
     case 'price-desc':
       return sorted.sort((a, b) => {
-        const priceA = a.originalPrice || a.price;
-        const priceB = b.originalPrice || b.price;
+        const priceA = a.original_price || a.price;
+        const priceB = b.original_price || b.price;
         return priceB - priceA;
       });
     default:
@@ -66,7 +66,7 @@ export default function ProductPage() {
         setCategory(foundCategory);
         
         // Charge les produits pour cette catégorie
-        const productsData = await productsAPI.getAll(`?categoryId=${foundCategory.id}&limit=100`);
+        const productsData = await productsAPI.getAll(`?category_id=${foundCategory.id}&limit=100`);
         setProducts(productsData);
       } catch (err) {
         console.error('Error fetching products:', err);

@@ -6,7 +6,7 @@ const beauty = [
     urlHover: "/beauty/serum.webp",
     title: "Sérum Vitamine C K-Beauty",
     price: 34.90,
-    originalPrice: 59.90,
+    original_price: 59.90,
     description: `# Sérum Vitamine C K-Beauty
 
 ## ★★★★★ 4.8 Avis
@@ -62,7 +62,7 @@ Durée : 1-2 mois d'utilisation`,
     urlHover: "/beauty/essence.webp",
     title: "Masque Tissu Hydratant K-Beauty",
     price: 4.90,
-    originalPrice: 8.90,
+    original_price: 8.90,
     description: `# Masque Tissu Hydratant K-Beauty
 
 ## ★★★★★ 4.9 Avis
@@ -118,7 +118,7 @@ Retour sous 14 jours
     urlHover: "/beauty/oil.webp",
     title: "Nettoyant Double Cleanse K-Beauty",
     price: 24.90,
-    originalPrice: 44.90,
+    original_price: 44.90,
     description: `# Nettoyant Double Cleanse K-Beauty
 
 ## ★★★★★ 4.7 Avis
@@ -174,7 +174,7 @@ Convient à tous les types`,
     urlHover: "/beauty/toner.webp",
     title: "Toner Hydratant K-Beauty",
     price: 19.90,
-    originalPrice: 34.90,
+    original_price: 34.90,
     description: `# Toner Hydratant K-Beauty
 
 ## ★★★★★ 4.8 Avis
@@ -230,7 +230,7 @@ Appliquer avec coton ou mains`,
     urlHover: "/beauty/cream.webp",
     title: "Crème de Nuit Réparatrice K-Beauty",
     price: 44.90,
-    originalPrice: 79.90,
+    original_price: 79.90,
     description: `# Crème de Nuit Réparatrice K-Beauty
 
 ## ★★★★★ 4.9 Avis

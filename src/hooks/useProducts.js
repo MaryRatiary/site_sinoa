@@ -12,9 +12,19 @@ export const useProducts = (query = '') => {
         setLoading(true);
         const finalQuery = query || '?limit=50000';
         const data = await productsAPI.getAll(finalQuery);
-        setProducts(data);
+        
+        // ✅ Validate data structure
+        if (!Array.isArray(data)) {
+          console.warn('⚠️ Products API returned non-array:', typeof data);
+          setProducts([]);
+        } else {
+          setProducts(data);
+          console.log(`✅ Products loaded: ${data.length}`);
+        }
       } catch (err) {
+        console.error('❌ Error fetching products:', err);
         setError(err.message);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -26,44 +36,54 @@ export const useProducts = (query = '') => {
   return { products, loading, error };
 };
 
-export const useProductById = (productId) => {
+export const useProductById = (product_id) => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!productId) return;
+    if (!product_id) {
+      setProduct(null);
+      return;
+    }
 
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const data = await productsAPI.getById(productId);
+        const data = await productsAPI.getById(product_id);
         setProduct(data);
+        setError(null);
       } catch (err) {
+        console.error('❌ Error fetching product:', err);
         setError(err.message);
+        setProduct(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProduct();
-  }, [productId]);
+  }, [product_id]);
 
   return { product, loading, error };
 };
 
 /**
- * Fonction utilitaire pour récupérer récursivement tous les IDs de sous-catégories
+ * Utility function to recursively get all subcategory IDs
+ * ✅ FIXED: Only checks 'parent_id' (normalized from backend)
  */
-const getAllCategoryIdsRecursive = (categoryId, allCategoriesFlat) => {
-  const ids = new Set([parseInt(categoryId)]);
+const getAllCategoryIdsRecursive = (category_id, allCategoriesFlat) => {
+  const ids = new Set([parseInt(category_id)]);
   
-  const addChildIds = (parentId) => {
-    parentId = parseInt(parentId);
-    // Chercher les enfants avec parentid OU parentId (différentes conventions)
+  const addChildIds = (parent_id) => {
+    parent_id = parseInt(parent_id);
+    
+    // ✅ FIXED: Only check parent_id (consistent with backend normalization)
     const children = allCategoriesFlat.filter(cat => {
-      const catParentId = cat.parentid !== undefined ? parseInt(cat.parentid) : (cat.parentId !== undefined ? parseInt(cat.parentId) : null);
-      return catParentId === parentId;
+      const catParentId = cat.parent_id !== undefined 
+        ? parseInt(cat.parent_id) 
+        : null;
+      return catParentId === parent_id;
     });
     
     children.forEach(child => {
@@ -74,22 +94,23 @@ const getAllCategoryIdsRecursive = (categoryId, allCategoriesFlat) => {
     });
   };
   
-  addChildIds(categoryId);
+  addChildIds(category_id);
   return Array.from(ids);
 };
 
 /**
- * Hook pour récupérer les produits d'une catégorie (parent + toutes les sous-catégories)
- * ✅ CORRIGÉ: Utilise getAllFlat() pour obtenir TOUTES les catégories
+ * Hook to get products for a category (parent + all subcategories)
+ * ✅ FIXED: Uses proper field names and better error handling
  */
-export const useProductsByCategory = (categoryId) => {
+export const useProductsByCategory = (category_id) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!categoryId) {
+    if (!category_id) {
       setProducts([]);
+      setLoading(false);
       return;
     }
 
@@ -98,33 +119,50 @@ export const useProductsByCategory = (categoryId) => {
         setLoading(true);
         setError(null);
         
-        // 1. Récupérer TOUTES les catégories en format plat
+        // 1. Get all categories in flat format
         const allCategoriesFlat = await categoriesAPI.getAllFlat();
-        console.log('🔍 Catégories (format plat) récupérées:', allCategoriesFlat.length);
+        console.log(`📂 Flat categories retrieved: ${allCategoriesFlat.length}`);
         
-        // 2. Obtenir tous les IDs de catégories (parent + sous-catégories récursives)
-        const categoryIds = getAllCategoryIdsRecursive(categoryId, allCategoriesFlat);
-        console.log('📂 IDs de catégories à afficher:', categoryIds);
+        if (!Array.isArray(allCategoriesFlat) || allCategoriesFlat.length === 0) {
+          console.warn('⚠️ No categories found in database');
+          setProducts([]);
+          setError('No categories available');
+          return;
+        }
         
-        // 3. Récupérer tous les produits
+        // 2. Get all category IDs (parent + recursive subcategories)
+        const category_ids = getAllCategoryIdsRecursive(category_id, allCategoriesFlat);
+        console.log(`🗂️ Category IDs to display:`, category_ids);
+        
+        // 3. Get all products
         const allProducts = await productsAPI.getAll('?limit=50000');
-        console.log('📦 Produits totaux récupérés:', allProducts.length);
+        console.log(`📦 Total products retrieved: ${allProducts.length}`);
         
-        // 4. Filtrer les produits pour ceux qui appartiennent aux catégories
+        if (!Array.isArray(allProducts)) {
+          console.warn('⚠️ Products API returned non-array');
+          setProducts([]);
+          return;
+        }
+        
+        // 4. Filter products for this category and its subcategories
         const filteredProducts = allProducts.filter(product => {
-          const prodCategoryId = parseInt(product.categoryId);
-          return categoryIds.includes(prodCategoryId);
+          const prodCategoryId = parseInt(product.category_id);
+          return category_ids.includes(prodCategoryId);
         });
         
-        console.log('✅ Produits filtrés pour cette catégorie:', filteredProducts.length);
-        console.log('📊 Détail filtrage:', {
-          categoryIds,
-          sampleProducts: filteredProducts.slice(0, 3).map(p => ({ id: p.id, name: p.name, categoryId: p.categoryId }))
+        console.log(`✅ Filtered products for category: ${filteredProducts.length}`);
+        console.log('📊 Sample:', {
+          category_ids,
+          matchedProducts: filteredProducts.slice(0, 3).map(p => ({ 
+            id: p.id, 
+            name: p.name, 
+            category_id: p.category_id 
+          }))
         });
         
         setProducts(filteredProducts);
       } catch (err) {
-        console.error('❌ Erreur lors du chargement des produits:', err);
+        console.error('❌ Error loading products:', err);
         setError(err.message);
         setProducts([]);
       } finally {
@@ -133,13 +171,13 @@ export const useProductsByCategory = (categoryId) => {
     };
 
     fetchProducts();
-  }, [categoryId]);
+  }, [category_id]);
 
   return { products, loading, error };
 };
 
 /**
- * Hook pour récupérer un produit par slug
+ * Hook to get a product by slug
  */
 export const useProductBySlug = (slug) => {
   const [product, setProduct] = useState(null);
@@ -149,6 +187,7 @@ export const useProductBySlug = (slug) => {
   useEffect(() => {
     if (!slug) {
       setProduct(null);
+      setLoading(false);
       return;
     }
 
@@ -157,8 +196,9 @@ export const useProductBySlug = (slug) => {
         setLoading(true);
         const data = await productsAPI.getBySlug(slug);
         setProduct(data);
+        setError(null);
       } catch (err) {
-        console.error('Error fetching product by slug:', err);
+        console.error('❌ Error fetching product by slug:', err);
         setError(err.message);
         setProduct(null);
       } finally {
@@ -171,5 +211,3 @@ export const useProductBySlug = (slug) => {
 
   return { product, loading, error };
 };
-
-

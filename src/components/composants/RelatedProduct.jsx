@@ -203,13 +203,13 @@ const RelatedProducts = ({ currentProductId }) => {
                       </div>
 
                       {/* Sale Badge */}
-                      {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
+                      {product.original_price && parseFloat(product.original_price) > parseFloat(product.price) && (
                         <div className="absolute top-2 right-2 z-10">
                           <div 
                             className="flex items-center justify-center px-2 py-1 rounded-full text-white font-bold text-[11px] shadow-lg"
                             style={{ background: ACCENT_COLOR }}
                           >
-                            -{Math.round(((parseFloat(product.originalPrice) - parseFloat(product.price)) / parseFloat(product.originalPrice)) * 100)}%
+                            -{Math.round(((parseFloat(product.original_price) - parseFloat(product.price)) / parseFloat(product.original_price)) * 100)}%
                           </div>
                         </div>
                       )}
@@ -233,9 +233,9 @@ const RelatedProducts = ({ currentProductId }) => {
                         >
                           {parseFloat(product.price || 0).toFixed(2).replace('.', ',')}€
                         </span>
-                        {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
+                        {product.original_price && parseFloat(product.original_price) > parseFloat(product.price) && (
                           <span className="text-[11px] text-gray-400 line-through">
-                            {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}€
+                            {parseFloat(product.original_price).toFixed(2).replace('.', ',')}€
                           </span>
                         )}
                       </div>

@@ -23,7 +23,7 @@ function applySort(products, sortType) {
     case 'featured':
       return sorted.sort((a, b) => (b.featured || 0) - (a.featured || 0));
     case 'newest':
-      return sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     case 'price-asc':
       return sorted.sort((a, b) => {
         const priceA = parseFloat(a.price) || 0;
@@ -92,22 +92,22 @@ export default function CategoryPage() {
 
   // Fonction pour filtrer les produits de manière récursive
   const filterProductsByCategory = (allProducts, category, parentCategory) => {
-    const categoryIds = [category.id];
+    const category_ids = [category.id];
 
     // Ajouter tous les IDs des sous-catégories
-    const getAllSubcategoryIds = (cat) => {
+    const getAllSubcategory_ids = (cat) => {
       if (cat.children && cat.children.length > 0) {
         cat.children.forEach(child => {
-          categoryIds.push(child.id);
-          getAllSubcategoryIds(child);
+          category_ids.push(child.id);
+          getAllSubcategory_ids(child);
         });
       }
     };
 
-    getAllSubcategoryIds(parentCategory);
+    getAllSubcategory_ids(parentCategory);
 
     // Filtrer les produits
-    return allProducts.filter(product => categoryIds.includes(product.categoryId));
+    return allProducts.filter(product => category_ids.includes(product.category_id));
   };
 
   const sortedProducts = applySort(products, sortBy);
@@ -266,8 +266,8 @@ export default function CategoryPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {sortedProducts.map((product) => {
                 const price = product.price || 0;
-                const originalPrice = product.originalPrice || null;
-                const imageUrl = product.image || product.images?.[0] || '/placeholder.png';
+                const original_price = product.original_price || null;
+                const image_url = product.image || product.images?.[0] || '/placeholder.png';
                 
                 return (
                   <div 
@@ -278,14 +278,14 @@ export default function CategoryPage() {
                     <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-sm border border-gray-50 hover:shadow-lg transition-all duration-300 p-2.5 sm:p-3 md:p-4">
                       <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2.5 sm:mb-3 md:mb-4">
                         <img
-                          src={imageUrl}
+                          src={image_url}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           onError={(e) => {
                             e.target.src = '/placeholder.png';
                           }}
                         />
-                        {originalPrice && price < originalPrice && (
+                        {original_price && price < original_price && (
                           <div className="absolute top-2 left-2 bg-red-600 text-white text-[9px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
                             Soldes
                           </div>
@@ -307,13 +307,13 @@ export default function CategoryPage() {
 
                       {price > 0 && (
                         <div className="flex items-baseline gap-1.5 sm:gap-2">
-                          {originalPrice && price < originalPrice ? (
+                          {original_price && price < original_price ? (
                             <>
                               <span className="text-sm sm:text-base md:text-lg font-bold text-red-600">
                                 {price.toFixed(2)}€
                               </span>
                               <span className="text-[10px] sm:text-xs text-gray-400 line-through">
-                                {originalPrice.toFixed(2)}€
+                                {original_price.toFixed(2)}€
                               </span>
                             </>
                           ) : (

@@ -16,11 +16,11 @@ const ProductDetail = ({ product }) => {
   const productDetails = {
     name: product?.name || 'Produit KPOP',
     price: product?.price || 0,
-    originalPrice: product?.originalPrice || null,
+    original_price: product?.original_price || null,
     rating: product?.rating || 4.5,
     reviews: product?.reviewCount || 128,
     image: product?.image || '',
-    hoverImage: product?.hoverImage || '',
+    hover_image: product?.hover_image || '',
     description: product?.description || 'Produit officiel KPOP de haute qualité',
     sizes: product?.sizes || [],
     colors: product?.colors || [],
@@ -31,8 +31,8 @@ const ProductDetail = ({ product }) => {
     brand: product?.brand || 'KPOP Official',
   };
 
-  const discount = productDetails.originalPrice 
-    ? Math.round(((productDetails.originalPrice - productDetails.price) / productDetails.originalPrice) * 100)
+  const discount = productDetails.original_price 
+    ? Math.round(((productDetails.original_price - productDetails.price) / productDetails.original_price) * 100)
     : 0;
 
   const getSizeStock = (size) => {
@@ -41,7 +41,7 @@ const ProductDetail = ({ product }) => {
   };
 
   const getColorStock = (color) => {
-    const colorData = productDetails.colors?.find(c => c.colorName === color);
+    const colorData = productDetails.colors?.find(c => c.color_name === color);
     return colorData?.stock || 0;
   };
 
@@ -124,14 +124,14 @@ const ProductDetail = ({ product }) => {
                 <img src={productDetails.image} alt="Vue 1" className="w-full h-full object-cover hover:scale-105 transition-transform" />
               </button>
               
-              {productDetails.hoverImage && (
+              {productDetails.hover_image && (
                 <button
-                  onClick={() => setMainImage(productDetails.hoverImage)}
+                  onClick={() => setMainImage(productDetails.hover_image)}
                   className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
-                    mainImage === productDetails.hoverImage ? 'border-pink-500 shadow-md' : 'border-gray-300 hover:border-pink-300'
+                    mainImage === productDetails.hover_image ? 'border-pink-500 shadow-md' : 'border-gray-300 hover:border-pink-300'
                   }`}
                 >
-                  <img src={productDetails.hoverImage} alt="Vue 2" className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                  <img src={productDetails.hover_image} alt="Vue 2" className="w-full h-full object-cover hover:scale-105 transition-transform" />
                 </button>
               )}
             </div>
@@ -164,10 +164,10 @@ const ProductDetail = ({ product }) => {
               <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                 {productDetails.price.toFixed(2)}€
               </span>
-              {productDetails.originalPrice && (
+              {productDetails.original_price && (
                 <>
                   <span className="text-base sm:text-lg text-gray-500 line-through">
-                    {productDetails.originalPrice.toFixed(2)}€
+                    {productDetails.original_price.toFixed(2)}€
                   </span>
                   <span className="text-xs sm:text-sm font-bold text-red-600 ml-1 sm:ml-2">
                     -{discount}%
@@ -199,27 +199,27 @@ const ProductDetail = ({ product }) => {
                 </label>
                 <div className="flex gap-2 sm:gap-3 flex-wrap">
                   {productDetails.colors.map((colorObj) => {
-                    const colorName = colorObj.colorName;
-                    const colorHex = colorObj.colorHex || '#cccccc';
+                    const color_name = colorObj.color_name;
+                    const color_hex = colorObj.color_hex || '#cccccc';
                     const stock = colorObj.stock || 0;
                     const hasStock = stock > 0;
                     
                     return (
                       <button
-                        key={colorName}
-                        onClick={() => setSelectedColor(colorName)}
+                        key={color_name}
+                        onClick={() => setSelectedColor(color_name)}
                         disabled={!hasStock}
                         className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold transition-all text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 ${
-                          selectedColor === colorName
+                          selectedColor === color_name
                             ? 'bg-pink-600 text-white border-2 border-pink-600 shadow-md'
                             : hasStock
                             ? 'bg-gray-100 text-gray-900 border-2 border-gray-300 hover:border-pink-600 hover:bg-gray-50'
                             : 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed opacity-50'
                         }`}
-                        title={`${colorName}${hasStock ? ` (${stock} en stock)` : ' - rupture'}`}
+                        title={`${color_name}${hasStock ? ` (${stock} en stock)` : ' - rupture'}`}
                       >
-                        <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-gray-400" style={{ backgroundColor: colorHex }} />
-                        <span className="hidden sm:inline">{colorName}</span>
+                        <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-gray-400" style={{ backgroundColor: color_hex }} />
+                        <span className="hidden sm:inline">{color_name}</span>
                       </button>
                     );
                   })}

@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -37,8 +37,8 @@ export default function RegisterPage() {
       await register(
         formData.email,
         formData.password,
-        formData.firstName,
-        formData.lastName
+        formData.first_name,
+        formData.last_name
       );
       navigate('/');
     } catch (err) {
@@ -69,8 +69,8 @@ export default function RegisterPage() {
               </label>
               <input
                 type="text"
-                name="firstName"
-                value={formData.firstName}
+                name="first_name"
+                value={formData.first_name}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
                 required
@@ -82,8 +82,8 @@ export default function RegisterPage() {
               </label>
               <input
                 type="text"
-                name="lastName"
-                value={formData.lastName}
+                name="last_name"
+                value={formData.last_name}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
                 required

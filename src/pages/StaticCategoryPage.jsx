@@ -100,9 +100,9 @@ export default function StaticCategoryPage() {
   const sortedProducts = applySort(allProducts, sortBy);
 
   useEffect(() => {
-    const productId = searchParams.get('product');
-    if (productId && allProducts.length > 0) {
-      const product = allProducts.find(p => p.id === productId);
+    const product_id = searchParams.get('product');
+    if (product_id && allProducts.length > 0) {
+      const product = allProducts.find(p => p.id === product_id);
       if (product) {
         navigate(`/product/${product.slug}`);
       }
@@ -236,7 +236,7 @@ export default function StaticCategoryPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {sortedProducts.map((product) => {
                 const price = product.price || 0;
-                const originalPrice = product.originalPrice || null;
+                const original_price = product.original_price || null;
                 
                 return (
                   <div 
@@ -251,7 +251,7 @@ export default function StaticCategoryPage() {
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         />
-                        {originalPrice && price < originalPrice && (
+                        {original_price && price < original_price && (
                           <div className="absolute top-2 left-2 bg-red-600 text-white text-[9px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
                             Soldes
                           </div>
@@ -273,13 +273,13 @@ export default function StaticCategoryPage() {
 
                       {price > 0 && (
                         <div className="flex items-baseline gap-1.5 sm:gap-2">
-                          {originalPrice && price < originalPrice ? (
+                          {original_price && price < original_price ? (
                             <>
                               <span className="text-sm sm:text-base md:text-lg font-bold text-red-600">
                                 {price.toFixed(2)}€
                               </span>
                               <span className="text-[10px] sm:text-xs text-gray-400 line-through">
-                                {originalPrice.toFixed(2)}€
+                                {original_price.toFixed(2)}€
                               </span>
                             </>
                           ) : (

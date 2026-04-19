@@ -10,7 +10,7 @@ const LightStickCard = () => {
   const [categories, setCategories] = useState([
     { id: 'all', label: 'Tous les articles', dbId: null }
   ]);
-  const [categoryIds, setCategoryIds] = useState({});
+  const [category_ids, setCategoryIds] = useState({});
   const [displayProducts, setDisplayProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -68,8 +68,8 @@ const LightStickCard = () => {
 
   // 2️⃣ Récupérer les produits pour chaque catégorie
   const { products: allProducts, loading: allLoading } = useProducts('?limit=50000');
-  const { products: clothingProducts, loading: clothingLoading } = useProductsByCategory(categoryIds['clothing']);
-  const { products: accessoriesProducts, loading: accessoriesLoading } = useProductsByCategory(categoryIds['accessories']);
+  const { products: clothingProducts, loading: clothingLoading } = useProductsByCategory(category_ids['clothing']);
+  const { products: accessoriesProducts, loading: accessoriesLoading } = useProductsByCategory(category_ids['accessories']);
 
   // 3️⃣ Filtrer et afficher les produits basés sur la catégorie sélectionnée
   useEffect(() => {
@@ -95,10 +95,10 @@ const LightStickCard = () => {
                     (selectedCategory === 'accessories' && accessoriesLoading);
 
   useEffect(() => {
-    if (Object.keys(categoryIds).length > 0) {
+    if (Object.keys(category_ids).length > 0) {
       setLoading(false);
     }
-  }, [categoryIds]);
+  }, [category_ids]);
 
   if (isLoading) {
     return (
@@ -143,22 +143,22 @@ const LightStickCard = () => {
                 <div className="relative p-0.5 rounded-lg md:rounded-xl transition-all duration-500 group-hover:shadow-xl">
                   <div className="absolute inset-0 rounded-lg md:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-gray-900/10 to-transparent pointer-events-none"></div>
                   <div className="bg-white rounded-lg md:rounded-xl overflow-hidden relative border border-gray-100 group-hover:border-gray-300 transition-colors">
-                    {/* ✅ CORRIGÉ: Inverser les prix - originalPrice affiché, price barré */}
+                    {/* ✅ CORRIGÉ: Inverser les prix - original_price affiché, price barré */}
                     <ProductCard
                       id={product.id}
                       slug={product.slug}
                       image={product.image || product.url}
-                      hoverImage={product.imageHover || product.urlHover}
+                      hover_image={product.imageHover || product.urlHover}
                       name={product.name}
-                      price={product.originalPrice}
-                      originalPrice={product.price}
+                      price={product.original_price}
+                      original_price={product.price}
                       isEstimated={product.isEstimated}
                     />
                     
                     {/* Category Badge */}
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:block">
                       <span className="text-[9px] font-black text-white px-2.5 py-1 rounded-md bg-gray-900 uppercase tracking-wider">
-                        {product.categoryName || 'Article'}
+                        {product.category_name || 'Article'}
                       </span>
                     </div>
                   </div>

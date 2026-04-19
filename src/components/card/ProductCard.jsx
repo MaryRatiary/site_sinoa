@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export function ProductCard({ image, hoverImage, name, price, originalPrice, isEstimated, id, slug, className = "" }) {
+export function ProductCard({ image, hover_image, name, price, original_price, isEstimated, id, slug, className = "" }) {
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
-  const isOnSale = originalPrice !== undefined && originalPrice !== null;
+  const isOnSale = original_price !== undefined && original_price !== null;
 
   return (
     <div 
@@ -27,13 +27,13 @@ export function ProductCard({ image, hoverImage, name, price, originalPrice, isE
           src={image}
           alt={name}
           className={`absolute inset-0 w-full h-full object-contain transition-all duration-700 ${
-            hovered && hoverImage ? "scale-110 opacity-0" : "scale-100 opacity-100"
+            hovered && hover_image ? "scale-110 opacity-0" : "scale-100 opacity-100"
           }`}
         />
 
-        {hoverImage && (
+        {hover_image && (
           <img
-            src={hoverImage}
+            src={hover_image}
             alt={name}
             className={`absolute inset-0 w-full h-full object-contain transition-all duration-700 ${
               hovered ? "scale-105 opacity-100" : "scale-100 opacity-0"
@@ -55,7 +55,7 @@ export function ProductCard({ image, hoverImage, name, price, originalPrice, isE
                 {price ? price.toFixed(2) : "N/A"}€
               </span>
               <span className="text-[10px] md:text-sm text-gray-400 line-through">
-                {originalPrice ? originalPrice.toFixed(2) : "N/A"}€
+                {original_price ? original_price.toFixed(2) : "N/A"}€
               </span>
             </>
           ) : (

@@ -232,10 +232,10 @@ export default function ShopPage() {
                   id={product.id}
                   slug={product.slug}
                   image={product.url || product.image}
-                  hoverImage={product.urlHover || product.hoverImage}
+                  hover_image={product.urlHover || product.hover_image}
                   name={product.name || product.title}
                   price={product.price || product.realPrice}
-                  originalPrice={product.originalPrice || product.reducedPrice}
+                  original_price={product.original_price || product.reducedPrice}
                   isEstimated={product.isEstimated}
                 />
               )

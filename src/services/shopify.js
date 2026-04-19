@@ -81,10 +81,10 @@ export const createShopifyCheckout = async (items) => {
 
 /**
  * Récupère les détails d'un produit Shopify
- * @param {string} productId - ID du produit Shopify
+ * @param {string} product_id - ID du produit Shopify
  * @returns {Promise<Object>} Détails du produit
  */
-export const getShopifyProduct = async (productId) => {
+export const getShopifyProduct = async (product_id) => {
   const query = `
     query GetProduct($id: ID!) {
       product(id: $id) {
@@ -120,7 +120,7 @@ export const getShopifyProduct = async (productId) => {
     }
   `;
 
-  const variables = { id: productId };
+  const variables = { id: product_id };
   const data = await shopifyRequest(query, variables);
 
   return data.product;
@@ -211,7 +211,7 @@ export const handleShopifyWebhook = (webhookBody) => {
     totalPrice: order.total_price,
     status: order.fulfillment_status || 'pending',
     items: order.line_items.map(item => ({
-      productId: item.product_id,
+      product_id: item.product_id,
       quantity: item.quantity,
       price: item.price,
     })),
@@ -231,7 +231,7 @@ export const getShopifyOrders = async (accessToken, store, limit = 10) => {
             id
             orderNumber
             email
-            createdAt
+            created_at
             totalPriceSet {
               shopMoney {
                 amount

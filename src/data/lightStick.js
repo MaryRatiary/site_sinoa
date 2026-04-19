@@ -40,7 +40,7 @@ Stock limité`,
     brand: "BLACKPINK Official",
     material: "Plastique ABS + Cristaux acryliques",
     colors: [
-      { colorName: "Rose & Noir", colorHex: "#FF69B4", stock: 42 }
+      { color_name: "Rose & Noir", color_hex: "#FF69B4", stock: 42 }
     ],
     sizes: [],
     rating: 4.9,
@@ -91,7 +91,7 @@ Retour sous 14 jours`,
     brand: "BTS Official",
     material: "Aluminium + Verre optique",
     colors: [
-      { colorName: "Violet & Or", colorHex: "#9370DB", stock: 38 }
+      { color_name: "Violet & Or", color_hex: "#9370DB", stock: 38 }
     ],
     sizes: [],
     rating: 4.8,
@@ -142,7 +142,7 @@ En stock limité`,
     brand: "TWICE Official",
     material: "Plastique premium transparent",
     colors: [
-      { colorName: "Rose & Blanc", colorHex: "#FFB6C1", stock: 55 }
+      { color_name: "Rose & Blanc", color_hex: "#FFB6C1", stock: 55 }
     ],
     sizes: [],
     rating: 4.7,
@@ -193,7 +193,7 @@ Retour sous 14 jours`,
     brand: "SEVENTEEN Official",
     material: "Cristal optique premium",
     colors: [
-      { colorName: "Rose & Bleu", colorHex: "#DB7093", stock: 34 }
+      { color_name: "Rose & Bleu", color_hex: "#DB7093", stock: 34 }
     ],
     sizes: [],
     rating: 4.8,
@@ -244,7 +244,7 @@ Stock limité`,
     brand: "NewJeans Official",
     material: "Polycarbonate transparent",
     colors: [
-      { colorName: "Bleu & Blanc", colorHex: "#4169E1", stock: 61 }
+      { color_name: "Bleu & Blanc", color_hex: "#4169E1", stock: 61 }
     ],
     sizes: [],
     rating: 4.6,
@@ -295,7 +295,7 @@ Retour sous 14 jours`,
     brand: "Stray Kids Official",
     material: "ABS + Cristal acrylique",
     colors: [
-      { colorName: "Noir & Or", colorHex: "#FFD700", stock: 47 }
+      { color_name: "Noir & Or", color_hex: "#FFD700", stock: 47 }
     ],
     sizes: [],
     rating: 4.7,
@@ -346,7 +346,7 @@ En stock limité`,
     brand: "ATEEZ Official",
     material: "ABS cristal premium",
     colors: [
-      { colorName: "Bleu & Argent", colorHex: "#E0FFFF", stock: 39 }
+      { color_name: "Bleu & Argent", color_hex: "#E0FFFF", stock: 39 }
     ],
     sizes: [],
     rating: 4.5,
@@ -397,7 +397,7 @@ Retour sous 14 jours`,
     brand: "IVE Official",
     material: "Polycarbonate premium",
     colors: [
-      { colorName: "Violet & Rose", colorHex: "#DA70D6", stock: 52 }
+      { color_name: "Violet & Rose", color_hex: "#DA70D6", stock: 52 }
     ],
     sizes: [],
     rating: 4.6,

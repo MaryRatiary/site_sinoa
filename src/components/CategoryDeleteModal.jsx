@@ -9,7 +9,7 @@ import { categoriesAPI } from '../services/api';
  * - Exige le texte exact "Je veux effacer tout" en italique
  * - Les catégories vides peuvent être supprimées immédiatement
  */
-const CategoryDeleteModal = ({ categoryId, categoryName, isOpen, onClose, onConfirm }) => {
+const CategoryDeleteModal = ({ category_id, category_name, isOpen, onClose, onConfirm }) => {
   const [confirmationText, setConfirmationText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [deleteCheckData, setDeleteCheckData] = useState(null);
@@ -17,17 +17,17 @@ const CategoryDeleteModal = ({ categoryId, categoryName, isOpen, onClose, onConf
   const [step, setStep] = useState('loading'); // 'loading', 'confirm', 'success', 'error'
 
   useEffect(() => {
-    if (isOpen && categoryId) {
+    if (isOpen && category_id) {
       fetchDeleteCheckData();
     }
-  }, [isOpen, categoryId]);
+  }, [isOpen, category_id]);
 
   const fetchDeleteCheckData = async () => {
     try {
       setStep('loading');
       setError(null);
       // ✅ MODIFIÉ: Utiliser categoriesAPI.preDeleteCheck au lieu de fetch direct
-      const data = await categoriesAPI.preDeleteCheck(categoryId);
+      const data = await categoriesAPI.preDeleteCheck(category_id);
       setDeleteCheckData(data);
       setStep('confirm');
     } catch (err) {
@@ -46,7 +46,7 @@ const CategoryDeleteModal = ({ categoryId, categoryName, isOpen, onClose, onConf
     setIsLoading(true);
     try {
       // ✅ MODIFIÉ: Utiliser categoriesAPI.delete avec confirmationText
-      await categoriesAPI.delete(categoryId, confirmationText || undefined);
+      await categoriesAPI.delete(category_id, confirmationText || undefined);
 
       setStep('success');
       setTimeout(() => {
@@ -180,7 +180,7 @@ const CategoryDeleteModal = ({ categoryId, categoryName, isOpen, onClose, onConf
                   <div className="space-y-2">
                     {Object.entries(deleteCheckData.data.productsByCategory).map(([catId, catData]) => (
                       <div key={catId} className="text-xs">
-                        <p className="font-semibold text-gray-700">{catData.categoryName}</p>
+                        <p className="font-semibold text-gray-700">{catData.category_name}</p>
                         <ul className="ml-3 space-y-1">
                           {catData.products.slice(0, 3).map(product => (
                             <li key={product.id} className="text-gray-600">

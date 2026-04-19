@@ -26,7 +26,7 @@ const CollectiblesSection = () => {
           setCollectiblesParentId(collectiblesParent.id);
 
           const children = allCategories.filter(
-            cat => cat.parentId === collectiblesParent.id || cat.parentid === collectiblesParent.id
+            cat => cat.parent_id === collectiblesParent.id || cat.parentid === collectiblesParent.id
           );
 
           setCollectiblesCategories(children);
@@ -50,10 +50,10 @@ const CollectiblesSection = () => {
   const sliderCards = selectedProducts.map(product => ({
     id: product.id,
     slug: product.slug,
-    url: product.image || product.imageUrl || '/placeholder.jpg',
+    url: product.image || product.image_url || '/placeholder.jpg',
     title: product.name,
-    price: product.originalPrice,  // ✅ Inversé: originalPrice en normal
-    originalPrice: product.price   // ✅ Inversé: price barré
+    price: product.original_price,  // ✅ Inversé: original_price en normal
+    original_price: product.price   // ✅ Inversé: price barré
   }));
 
   if (loading) {

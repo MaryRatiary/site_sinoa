@@ -19,8 +19,8 @@ export default function AdminProductsPage() {
     name: '',
     description: '',
     price: '',
-    originalPrice: '',
-    categoryId: '',
+    original_price: '',
+    category_id: '',
     stock: 0,
     sizes: [],
     colors: [],
@@ -61,8 +61,8 @@ export default function AdminProductsPage() {
     // Normaliser les couleurs
     const normalizedColors = Array.isArray(product.colors)
       ? product.colors.map(c => ({
-          name: c.colorName || c.name || '',
-          hex: c.colorHex || c.hex || '#000000'
+          name: c.color_name || c.name || '',
+          hex: c.color_hex || c.hex || '#000000'
         }))
       : [];
     
@@ -70,8 +70,8 @@ export default function AdminProductsPage() {
     const existingImages = Array.isArray(product.images)
       ? product.images.map(img => ({
           url: img,
-          isMainImage: img === product.image,
-          isHoverImage: img === product.hoverImage,
+          is_main_image: img === product.image,
+          is_hover_image: img === product.hover_image,
         }))
       : [];
     
@@ -79,8 +79,8 @@ export default function AdminProductsPage() {
       name: product.name,
       description: product.description || '',
       price: product.price,
-      originalPrice: product.originalPrice || '',
-      categoryId: product.categoryId || '',
+      original_price: product.original_price || '',
+      category_id: product.category_id || '',
       stock: product.stock || 0,
       brand: product.brand || '',
       material: product.material || '',
@@ -110,15 +110,15 @@ export default function AdminProductsPage() {
     }
   };
 
-  const getCategoryName = (categoryId) => {
-    const category = categories.find((c) => c.id === categoryId);
+  const getCategoryName = (category_id) => {
+    const category = categories.find((c) => c.id === category_id);
     return category?.name || 'N/A';
   };
 
   // Filtrer les produits
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !filterCategory || product.categoryId === parseInt(filterCategory);
+    const matchesCategory = !filterCategory || product.category_id === parseInt(filterCategory);
     return matchesSearch && matchesCategory;
   });
 
@@ -135,8 +135,8 @@ export default function AdminProductsPage() {
       name: '',
       description: '',
       price: '',
-      originalPrice: '',
-      categoryId: '',
+      original_price: '',
+      category_id: '',
       stock: 0,
       sizes: [],
       colors: [],
@@ -149,7 +149,7 @@ export default function AdminProductsPage() {
   };
 
   const handleSaveProduct = async () => {
-    if (!productForm.name || !productForm.categoryId) {
+    if (!productForm.name || !productForm.category_id) {
       alert('Veuillez remplir les champs obligatoires');
       return;
     }
@@ -274,7 +274,7 @@ export default function AdminProductsPage() {
                   filteredProducts.map((product) => (
                     <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">{product.name}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{getCategoryName(product.categoryId)}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{getCategoryName(product.category_id)}</td>
                       <td className="px-6 py-4 text-sm font-semibold text-gray-900">{product.price}€</td>
                       <td className="px-6 py-4 text-sm">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${

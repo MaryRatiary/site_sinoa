@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Upload, Star, AlertCircle } from 'lucide-react';
 
-export const ReviewFormModal = ({ productId, onClose, onSuccess }) => {
+export const ReviewFormModal = ({ product_id, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     author: '',
     email: '',
@@ -86,7 +86,7 @@ export const ReviewFormModal = ({ productId, onClose, onSuccess }) => {
         images: base64Images
       };
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/reviews/product/${productId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/reviews/product/${product_id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

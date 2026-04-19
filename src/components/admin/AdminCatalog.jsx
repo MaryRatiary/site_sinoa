@@ -22,17 +22,17 @@ export default function AdminCatalog() {
   // ✅ NOUVEAU: État pour la modale de suppression sécurisée
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
-    categoryId: null,
-    categoryName: null
+    category_id: null,
+    category_name: null
   });
 
   // Form States
-  const [categoryForm, setCategoryForm] = useState({ name: '', description: '', image: '', parentId: null });
+  const [categoryForm, setCategoryForm] = useState({ name: '', description: '', image: '', parent_id: null });
   const [categoryImage, setCategoryImage] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null);
   const [isSubcategoryMode, setIsSubcategoryMode] = useState(false);
 
-  const [productForm, setProductForm] = useState({ name: '', description: '', price: '', originalPrice: '', categoryId: '', stock: '' });
+  const [productForm, setProductForm] = useState({ name: '', description: '', price: '', original_price: '', category_id: '', stock: '' });
   const [productImages, setProductImages] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
 
@@ -74,9 +74,9 @@ export default function AdminCatalog() {
     setShowCategoryModal(true);
   };
 
-  const handleAddSubcategory = (parentId) => {
+  const handleAddSubcategory = (parent_id) => {
     resetCategoryForm();
-    setCategoryForm({ name: '', description: '', image: '', parentId });
+    setCategoryForm({ name: '', description: '', image: '', parent_id });
     setIsSubcategoryMode(true);
     setModalMode('add');
     setShowCategoryModal(true);
@@ -88,10 +88,10 @@ export default function AdminCatalog() {
       name: category.name,
       description: category.description || '',
       image: category.image || '',
-      parentId: category.parentId || null
+      parent_id: category.parent_id || null
     });
     setCategoryImage(null);
-    setIsSubcategoryMode(!!category.parentId);
+    setIsSubcategoryMode(!!category.parent_id);
     setModalMode('edit');
     setShowCategoryModal(true);
   };
@@ -128,35 +128,35 @@ export default function AdminCatalog() {
   const handleDeleteCategory = (category) => {
     setDeleteModal({
       isOpen: true,
-      categoryId: category.id,
-      categoryName: category.name
+      category_id: category.id,
+      category_name: category.name
     });
   };
 
   // ✅ NOUVEAU: Confirmation de suppression avec texte exact
   const handleConfirmDeleteCategory = async () => {
     try {
-      await categoriesAPI.delete(deleteModal.categoryId);
+      await categoriesAPI.delete(deleteModal.category_id);
       const updatedCategories = await categoriesAPI.getAll();
       setCategories(updatedCategories);
       setSelectedItem(null);
-      setDeleteModal({ isOpen: false, categoryId: null, categoryName: null });
+      setDeleteModal({ isOpen: false, category_id: null, category_name: null });
       setError('');
     } catch (err) {
       setError(err.message);
-      setDeleteModal({ isOpen: false, categoryId: null, categoryName: null });
+      setDeleteModal({ isOpen: false, category_id: null, category_name: null });
     }
   };
 
   const resetCategoryForm = () => {
-    setCategoryForm({ name: '', description: '', image: '', parentId: null });
+    setCategoryForm({ name: '', description: '', image: '', parent_id: null });
     setCategoryImage(null);
     setEditingCategory(null);
   };
 
-  const handleAddProduct = (categoryId) => {
+  const handleAddProduct = (category_id) => {
     resetProductForm();
-    setProductForm({ ...productForm, categoryId });
+    setProductForm({ ...productForm, category_id });
     setModalMode('add');
     setShowProductModal(true);
   };
@@ -170,16 +170,16 @@ export default function AdminCatalog() {
     
     const normalizedColors = Array.isArray(product.colors)
       ? product.colors.map(c => ({
-          name: c.colorName || c.name || '',
-          hex: c.colorHex || c.hex || '#000000'
+          name: c.color_name || c.name || '',
+          hex: c.color_hex || c.hex || '#000000'
         }))
       : [];
     
     const existingImages = Array.isArray(product.images)
       ? product.images.map(img => ({
           url: img,
-          isMainImage: img === product.image,
-          isHoverImage: img === product.hoverImage,
+          is_main_image: img === product.image,
+          is_hover_image: img === product.hover_image,
         }))
       : [];
     
@@ -187,8 +187,8 @@ export default function AdminCatalog() {
       name: product.name,
       description: product.description || '',
       price: product.price,
-      originalPrice: product.originalPrice || '',
-      categoryId: product.categoryId || '',
+      original_price: product.original_price || '',
+      category_id: product.category_id || '',
       stock: product.stock || '',
       brand: product.brand || '',
       material: product.material || '',
@@ -203,7 +203,7 @@ export default function AdminCatalog() {
 
   const handleSaveProduct = async () => {
     try {
-      if (!productForm.name || !productForm.price || !productForm.categoryId) {
+      if (!productForm.name || !productForm.price || !productForm.category_id) {
         setError('Nom, prix et catégorie requis');
         return;
       }
@@ -211,7 +211,7 @@ export default function AdminCatalog() {
       const productData = {
         ...productForm,
         price: parseFloat(productForm.price),
-        originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : null,
+        original_price: productForm.original_price ? parseFloat(productForm.original_price) : null,
         stock: parseInt(productForm.stock) || 0,
         brand: productForm.brand || '',
         material: productForm.material || '',
@@ -220,22 +220,22 @@ export default function AdminCatalog() {
         colors: productForm.colors || [],
       };
 
-      let productId;
+      let product_id;
       if (editingProduct) {
         await productsAPI.update(editingProduct.id, productData);
-        productId = editingProduct.id;
+        product_id = editingProduct.id;
       } else {
         const response = await productsAPI.create(productData);
-        productId = response.id;
+        product_id = response.id;
       }
 
       if (productImages.length > 0) {
         for (const [index, image] of productImages.entries()) {
           if (image.url.startsWith('data:')) {
-            await productsAPI.addImage(productId, {
-              imageUrl: image.url,
-              isMainImage: image.isMainImage,
-              isHoverImage: image.isHoverImage,
+            await productsAPI.addImage(product_id, {
+              image_url: image.url,
+              is_main_image: image.is_main_image,
+              is_hover_image: image.is_hover_image,
               order: index,
             });
           }
@@ -269,8 +269,8 @@ export default function AdminCatalog() {
       name: '', 
       description: '', 
       price: '', 
-      originalPrice: '', 
-      categoryId: '', 
+      original_price: '', 
+      category_id: '', 
       stock: '',
       brand: '',
       material: '',
@@ -296,7 +296,7 @@ export default function AdminCatalog() {
     return flattenCategories(categories);
   };
 
-  const parentCategories = categories.filter(c => !c.parentId);
+  const parentCategories = categories.filter(c => !c.parent_id);
   const allCategoriesAsOptions = getAllCategoriesAsOptions();
 
   if (loading) {
@@ -340,14 +340,14 @@ export default function AdminCatalog() {
             products={products}
             onAddProduct={handleAddProduct}
             onEditItem={(item) => {
-              if (item.price !== undefined || item.categoryId !== undefined) {
+              if (item.price !== undefined || item.category_id !== undefined) {
                 handleEditProduct(item);
               } else {
                 handleEditCategory(item);
               }
             }}
             onDeleteItem={(item) => {
-              if (item?.price !== undefined || item?.categoryId !== undefined) {
+              if (item?.price !== undefined || item?.category_id !== undefined) {
                 handleDeleteProduct(item.id);
               } else {
                 handleDeleteCategory(item);
@@ -390,10 +390,10 @@ export default function AdminCatalog() {
 
       {/* ✅ NOUVEAU: Modal de suppression sécurisée */}
       <CategoryDeleteModal
-        categoryId={deleteModal.categoryId}
-        categoryName={deleteModal.categoryName}
+        category_id={deleteModal.category_id}
+        category_name={deleteModal.category_name}
         isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, categoryId: null, categoryName: null })}
+        onClose={() => setDeleteModal({ isOpen: false, category_id: null, category_name: null })}
         onConfirm={handleConfirmDeleteCategory}
       />
     </div>

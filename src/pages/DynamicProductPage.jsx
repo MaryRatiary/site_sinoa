@@ -270,7 +270,7 @@ export default function DynamicProductPage() {
       )}
 
       {/* ============ REVIEW SECTION ============ */}
-      <ReviewSection categoryId={category.id} />
+      <ReviewSection category_id={category.id} />
 
       {/* ============ CATEGORY DESCRIPTION SECTION ============ */}
       {category.description && category.description.trim().length > 0 && (

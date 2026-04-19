@@ -18,15 +18,15 @@ export default function AdminCategoriesPage() {
   // ✅ NOUVEAU: État pour la modale de suppression sécurisée
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
-    categoryId: null,
-    categoryName: null
+    category_id: null,
+    category_name: null
   });
   
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     image: '',
-    parentId: null,
+    parent_id: null,
   });
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function AdminCategoriesPage() {
         await categoriesAPI.create(formData);
         alert('Catégorie créée!');
       }
-      setFormData({ name: '', description: '', image: '', parentId: null });
+      setFormData({ name: '', description: '', image: '', parent_id: null });
       setEditingId(null);
       setShowForm(false);
       fetchCategories();
@@ -69,7 +69,7 @@ export default function AdminCategoriesPage() {
       name: category.name,
       description: category.description || '',
       image: category.image || '',
-      parentId: category.parentId || null,
+      parent_id: category.parent_id || null,
     });
     setEditingId(category.id);
     setShowForm(true);
@@ -79,30 +79,30 @@ export default function AdminCategoriesPage() {
   const handleDelete = (category) => {
     setDeleteModal({
       isOpen: true,
-      categoryId: category.id,
-      categoryName: category.name
+      category_id: category.id,
+      category_name: category.name
     });
   };
 
   // ✅ NOUVEAU: Callback après confirmation de suppression
   const handleConfirmDelete = async () => {
     try {
-      await categoriesAPI.delete(deleteModal.categoryId);
+      await categoriesAPI.delete(deleteModal.category_id);
       // Rafraîchir la liste
       fetchCategories();
       // Fermer la modale
-      setDeleteModal({ isOpen: false, categoryId: null, categoryName: null });
+      setDeleteModal({ isOpen: false, category_id: null, category_name: null });
     } catch (err) {
       alert('Erreur: ' + err.message);
     }
   };
 
-  const toggleExpand = (categoryId) => {
+  const toggleExpand = (category_id) => {
     const newExpanded = new Set(expandedIds);
-    if (newExpanded.has(categoryId)) {
-      newExpanded.delete(categoryId);
+    if (newExpanded.has(category_id)) {
+      newExpanded.delete(category_id);
     } else {
-      newExpanded.add(categoryId);
+      newExpanded.add(category_id);
     }
     setExpandedIds(newExpanded);
   };
@@ -280,7 +280,7 @@ export default function AdminCategoriesPage() {
         <h2 className="text-2xl font-bold text-gray-900">Gestion des Catégories</h2>
         <button
           onClick={() => {
-            setFormData({ name: '', description: '', image: '', parentId: null });
+            setFormData({ name: '', description: '', image: '', parent_id: null });
             setEditingId(null);
             setShowForm(true);
           }}
@@ -353,8 +353,8 @@ export default function AdminCategoriesPage() {
                 Catégorie parent
               </label>
               <select
-                value={formData.parentId || ''}
-                onChange={(e) => setFormData({ ...formData, parentId: e.target.value ? parseInt(e.target.value) : null })}
+                value={formData.parent_id || ''}
+                onChange={(e) => setFormData({ ...formData, parent_id: e.target.value ? parseInt(e.target.value) : null })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-900 transition-all"
               >
                 <option value="">Pas de parent (catégorie racine)</option>
@@ -387,10 +387,10 @@ export default function AdminCategoriesPage() {
 
       {/* ✅ NOUVEAU: Modale de suppression sécurisée */}
       <CategoryDeleteModal
-        categoryId={deleteModal.categoryId}
-        categoryName={deleteModal.categoryName}
+        category_id={deleteModal.category_id}
+        category_name={deleteModal.category_name}
         isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, categoryId: null, categoryName: null })}
+        onClose={() => setDeleteModal({ isOpen: false, category_id: null, category_name: null })}
         onConfirm={handleConfirmDelete}
       />
 

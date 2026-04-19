@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
  * d'une catégorie parente avec support de hiérarchie multi-niveaux
  */
 export const DynamicDropdown = ({ 
-  categoryId, 
+  category_id, 
   category,
   dropdownProps, 
   onClose, 

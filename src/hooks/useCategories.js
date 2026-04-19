@@ -13,8 +13,9 @@ export const useCategories = () => {
         const data = await categoriesAPI.getAll();
         setCategories(data);
         setError(null);
+        console.log('✅ Categories loaded:', data.length);
       } catch (err) {
-        console.error('Error fetching categories:', err);
+        console.error('❌ Error fetching categories:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -25,11 +26,11 @@ export const useCategories = () => {
   }, []);
 
   const getCategoryById = (id) =>
-    categories.find(cat => cat.id === parseInt(id)); // ✅ CORRIGÉ: parseInt pour cohérence
+    categories.find(cat => cat.id === parseInt(id));
 
-  // ✅ CORRIGÉ: parseInt ajouté pour éviter le bug string vs number
-  const getChildCategories = (parentId) =>
-    categories.filter(cat => cat.parentid === parseInt(parentId));
+  // ✅ FIXED: Changed from 'parentid' to 'parent_id' (matches backend)
+  const getChildCategories = (parent_id) =>
+    categories.filter(cat => cat.parent_id === parseInt(parent_id));
 
   return {
     categories,
@@ -43,7 +44,7 @@ export const useCategories = () => {
 /**
  * Hook pour récupérer les sous-catégories d'une catégorie parente
  */
-export const useChildCategories = (parentId) => {
+export const useChildCategories = (parent_id) => {
   const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -53,11 +54,12 @@ export const useChildCategories = (parentId) => {
       try {
         setLoading(true);
         // ✅ Utilise l'endpoint dédié au lieu de tout récupérer et filtrer côté client
-        const data = await categoriesAPI.getChildren(parentId);
+        const data = await categoriesAPI.getChildren(parent_id);
         setChildren(data);
         setError(null);
+        console.log(`✅ Child categories loaded for parent ${parent_id}:`, data.length);
       } catch (err) {
-        console.error('Error fetching child categories:', err);
+        console.error('❌ Error fetching child categories:', err);
         setError(err.message);
         setChildren([]);
       } finally {
@@ -65,10 +67,13 @@ export const useChildCategories = (parentId) => {
       }
     };
 
-    if (parentId) {
+    if (parent_id) {
       fetchChildren();
+    } else {
+      setChildren([]);
+      setLoading(false);
     }
-  }, [parentId]);
+  }, [parent_id]);
 
   return {
     children,
@@ -80,7 +85,7 @@ export const useChildCategories = (parentId) => {
 /**
  * Hook pour récupérer une catégorie avec ses détails complets
  */
-export const useCategoryWithDetails = (categoryId) => {
+export const useCategoryWithDetails = (category_id) => {
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -89,11 +94,11 @@ export const useCategoryWithDetails = (categoryId) => {
     const fetchCategory = async () => {
       try {
         setLoading(true);
-        const data = await categoriesAPI.getById(categoryId);
+        const data = await categoriesAPI.getById(category_id);
         setCategory(data);
         setError(null);
       } catch (err) {
-        console.error('Error fetching category:', err);
+        console.error('❌ Error fetching category:', err);
         setError(err.message);
         setCategory(null);
       } finally {
@@ -101,10 +106,13 @@ export const useCategoryWithDetails = (categoryId) => {
       }
     };
 
-    if (categoryId) {
+    if (category_id) {
       fetchCategory();
+    } else {
+      setCategory(null);
+      setLoading(false);
     }
-  }, [categoryId]);
+  }, [category_id]);
 
   return {
     category,
@@ -112,6 +120,7 @@ export const useCategoryWithDetails = (categoryId) => {
     error,
   };
 };
+
 /**
  * Hook pour récupérer une catégorie par slug
  */
@@ -128,7 +137,7 @@ export const useCategoryBySlug = (slug) => {
         setCategory(data);
         setError(null);
       } catch (err) {
-        console.error('Error fetching category by slug:', err);
+        console.error('❌ Error fetching category by slug:', err);
         setError(err.message);
         setCategory(null);
       } finally {
@@ -138,6 +147,9 @@ export const useCategoryBySlug = (slug) => {
 
     if (slug) {
       fetchCategory();
+    } else {
+      setCategory(null);
+      setLoading(false);
     }
   }, [slug]);
 

@@ -37,8 +37,8 @@ export const CatalogDetailsPanel = ({
         return null;
       };
 
-      const categoryIds = getAllCategoryIds(selectedItem.id);
-      const subProducts = products.filter(p => categoryIds.includes(p.categoryId));
+      const category_ids = getAllCategoryIds(selectedItem.id);
+      const subProducts = products.filter(p => category_ids.includes(p.category_id));
       setFilteredProducts(subProducts);
     }
   }, [selectedItem, products, categories]);
@@ -56,7 +56,7 @@ export const CatalogDetailsPanel = ({
 
   if (selectedItem.type === 'category') {
     const determineLevel = (item) => {
-      if (!item.parentId) return { level: 'Catégorie', color: 'purple' };
+      if (!item.parent_id) return { level: 'Catégorie', color: 'purple' };
       const findParent = (id, cats) => {
         for (const cat of cats) {
           if (cat.id === id) return cat;
@@ -67,8 +67,8 @@ export const CatalogDetailsPanel = ({
         }
         return null;
       };
-      const parent = findParent(item.parentId, categories);
-      if (!parent?.parentId) return { level: 'Sous-catégorie', color: 'blue' };
+      const parent = findParent(item.parent_id, categories);
+      if (!parent?.parent_id) return { level: 'Sous-catégorie', color: 'blue' };
       return { level: 'Sous-sous-catégorie', color: 'indigo' };
     };
 

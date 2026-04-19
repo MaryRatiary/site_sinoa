@@ -23,26 +23,46 @@ const BestSellerSection = () => {
         // 1. Récupérer TOUS les produits
         const allProducts = await productsAPI.getAll('?limit=50000');
         
+        console.log('🔍 BestSellerSection DEBUG:');
+        console.log('   Total products:', allProducts.length);
+        
         if (!allProducts || allProducts.length === 0) {
+          console.warn('⚠️  No products returned from API!');
           setProducts([]);
           setLoading(false);
           return;
         }
 
-        // 2. Grouper les produits par catégorie (en utilisant categoryName)
-        const productsByCategory = {};
-        
-        Object.entries(CATEGORIES).forEach(([groupName, categoryNames]) => {
-          productsByCategory[groupName] = allProducts.filter(p =>
-            categoryNames.includes(p.categoryName)
-          );
+        // 2. Afficher les noms de catégories disponibles
+        const availableCategories = [...new Set(allProducts.map(p => p.category_name))];
+        console.log('   Available category_name values:');
+        availableCategories.forEach(cat => {
+          const count = allProducts.filter(p => p.category_name === cat).length;
+          console.log(`     - "${cat}": ${count} products`);
         });
 
-        // 3. Sélectionner aléatoirement 2 produits par catégorie
+        // 3. Grouper les produits par catégorie (en utilisant category_name)
+        const productsByCategory = {};
+        
+        Object.entries(CATEGORIES).forEach(([group_name, category_names]) => {
+          productsByCategory[group_name] = allProducts.filter(p => {
+            const match = category_names.includes(p.category_name);
+            if (match && !productsByCategory[group_name]) {
+              console.log(`   ✅ Found "${p.category_name}" in ${group_name}`);
+            }
+            return match;
+          });
+          console.log(`   ${group_name}: ${productsByCategory[group_name].length} products`);
+        });
+
+        // 4. Sélectionner aléatoirement 2 produits par catégorie
         const selectedProducts = [];
         
-        Object.entries(productsByCategory).forEach(([groupName, groupProducts]) => {
-          if (groupProducts.length === 0) return;
+        Object.entries(productsByCategory).forEach(([group_name, groupProducts]) => {
+          if (groupProducts.length === 0) {
+            console.warn(`   ⚠️  No products found for ${group_name}`);
+            return;
+          }
 
           // Mélanger et prendre 2 aléatoires
           const shuffled = [...groupProducts].sort(() => Math.random() - 0.5);
@@ -50,10 +70,14 @@ const BestSellerSection = () => {
           selectedProducts.push(...twoRandom);
         });
 
-        // 4. Mélanger les 6 produits finaux (2×3 catégories)
+        // 5. Mélanger les 6 produits finaux (2×3 catégories)
         const mixed = selectedProducts.sort(() => Math.random() - 0.5);
         
         console.log(`✅ ${mixed.length} produits Best Seller chargés`);
+        if (mixed.length === 0) {
+          console.warn('⚠️  No products matched the categories!');
+        }
+        
         setProducts(mixed);
         setLoading(false);
       } catch (error) {
@@ -146,14 +170,14 @@ const BestSellerSection = () => {
 
               <div className="flex flex-col h-full space-y-3">
                 <div className="relative overflow-hidden rounded-xl border border-gray-100 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 bg-white">
-                  {/* ✅ CORRIGÉ: Inversé les prix - originalPrice affiché, price barré */}
+                  {/* ✅ CORRIGÉ: Inversé les prix - original_price affiché, price barré */}
                   <ProductCard
                     slug={product.slug || `product-${product.id}`}
                     image={product.image || product.url}
-                    hoverImage={product.hoverImage || product.urlHover}
+                    hover_image={product.hover_image || product.urlHover}
                     name={product.name || product.title}
-                    price={product.originalPrice}
-                    originalPrice={product.price}
+                    price={product.original_price}
+                    original_price={product.price}
                     isEstimated={product.isEstimated}
                   />
                   <div className="absolute bottom-0 left-0 w-full h-1 bg-[#b35fc2] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>

@@ -20,7 +20,7 @@ export const ProductModal = ({
 
   if (!show) return null;
 
-  const getCategoryPath = (categoryId, allCategories) => {
+  const getCategoryPath = (category_id, allCategories) => {
     const findPath = (id, cats, path = []) => {
       for (const cat of cats) {
         if (cat.id === id) {
@@ -34,7 +34,7 @@ export const ProductModal = ({
       return null;
     };
     
-    const path = findPath(categoryId, allCategories);
+    const path = findPath(category_id, allCategories);
     return path ? path.join(' > ') : '';
   };
 
@@ -84,10 +84,10 @@ export const ProductModal = ({
     }
   };
 
-  const handleRemoveColor = (colorName) => {
+  const handleRemoveColor = (color_name) => {
     setProductForm({
       ...productForm,
-      colors: productForm.colors.filter(c => c.name !== colorName)
+      colors: productForm.colors.filter(c => c.name !== color_name)
     });
   };
 
@@ -150,8 +150,8 @@ export const ProductModal = ({
               <input
                 type="number"
                 step="0.01"
-                value={productForm.originalPrice}
-                onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value })}
+                value={productForm.original_price}
+                onChange={(e) => setProductForm({ ...productForm, original_price: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm"
                 placeholder="0.00"
               />
@@ -164,8 +164,8 @@ export const ProductModal = ({
                 Catégorie *
               </label>
               <select
-                value={productForm.categoryId}
-                onChange={(e) => setProductForm({ ...productForm, categoryId: e.target.value })}
+                value={productForm.category_id}
+                onChange={(e) => setProductForm({ ...productForm, category_id: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm"
               >
                 <option value="">Sélectionner une catégorie</option>

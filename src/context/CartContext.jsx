@@ -44,23 +44,23 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const removeFromCart = (productId, size, color) => {
+  const removeFromCart = (product_id, size, color) => {
     setCartItems(
       cartItems.filter(
         (item) =>
-          !(item.id === productId && item.size === size && item.color === color)
+          !(item.id === product_id && item.size === size && item.color === color)
       )
     );
   };
 
-  const updateQuantity = (productId, size, color, quantity) => {
+  const updateQuantity = (product_id, size, color, quantity) => {
     if (quantity <= 0) {
-      removeFromCart(productId, size, color);
+      removeFromCart(product_id, size, color);
       return;
     }
     setCartItems(
       cartItems.map((item) =>
-        item.id === productId && item.size === size && item.color === color
+        item.id === product_id && item.size === size && item.color === color
           ? { ...item, quantity }
           : item
       )

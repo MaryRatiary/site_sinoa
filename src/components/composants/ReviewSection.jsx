@@ -3,20 +3,20 @@ import { useState, useEffect } from 'react';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-export default function ReviewSection({ categoryId }) {
+export default function ReviewSection({ category_id }) {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [avgRating, setAvgRating] = useState(0);
 
   useEffect(() => {
     fetchReviews();
-  }, [categoryId]);
+  }, [category_id]);
 
   const fetchReviews = async () => {
     try {
       setLoading(true);
       // Appel API pour récupérer les avis de la catégorie
-      const response = await fetch(`${API_BASE_URL}/reviews/category/${categoryId}`);
+      const response = await fetch(`${API_BASE_URL}/reviews/category/${category_id}`);
       
       // Vérifier si la réponse est OK et si c'est du JSON
       if (response.ok) {
@@ -146,7 +146,7 @@ export default function ReviewSection({ categoryId }) {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600">{new Date(review.createdAt).toLocaleDateString('fr-FR')}</p>
+                    <p className="text-sm text-gray-600">{new Date(review.created_at).toLocaleDateString('fr-FR')}</p>
                   </div>
                 </div>
 

@@ -81,7 +81,7 @@ export default function AddressSelector({ formData, setFormData }) {
           ...formData,
           shippingAddress: address.road || data.display_name?.split(',')[0] || '',
           city: address.city || address.town || address.village || '',
-          postalCode: address.postcode || '',
+          postal_code: address.postcode || '',
           country: address.country || 'France',
           latitude: selectedLocation.lat,
           longitude: selectedLocation.lng,
@@ -168,8 +168,8 @@ export default function AddressSelector({ formData, setFormData }) {
               <label className="block text-sm font-medium text-gray-700 mb-2">Code postal *</label>
               <input
                 type="text"
-                value={formData.postalCode}
-                onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                value={formData.postal_code}
+                onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E2251] focus:border-transparent"
                 placeholder="75001"
                 required
@@ -204,7 +204,7 @@ export default function AddressSelector({ formData, setFormData }) {
                 {formData.shippingAddress && (
                   <>
                     {formData.shippingAddress}<br />
-                    {formData.postalCode} {formData.city}, {formData.country}
+                    {formData.postal_code} {formData.city}, {formData.country}
                   </>
                 )}
               </p>

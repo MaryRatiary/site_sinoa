@@ -31,10 +31,10 @@ function Stars({ rating }) {
  *   id            {string|number}
  *   name          {string}
  *   price         {number}        ← Prix RÉDUIT (affiché en couleur)
- *   originalPrice {number|null}   ← Prix ORIGINAL (affiché barré si solde)
+ *   original_price {number|null}   ← Prix ORIGINAL (affiché barré si solde)
  *   isEstimated   {boolean}
  *   image         {string}
- *   hoverImage    {string|null}
+ *   hover_image    {string|null}
  *   rating        {number|null}
  *   isNew         {boolean}
  *   slug          {string|optional}
@@ -51,21 +51,21 @@ export function ProductCard2({ product, className = "" }) {
     slug,
     name,
     price,
-    originalPrice,
+    original_price,
     isEstimated,
     image,
-    hoverImage,
+    hover_image,
     rating,
     isNew,
   } = product;
 
   // ✅ CORRIGÉ: Convertir les prix en nombres
   const numPrice = parseFloat(price) || 0;
-  const numOriginalPrice = parseFloat(originalPrice) || null;
+  const numOriginalPrice = parseFloat(original_price) || null;
 
-  // ✅ CORRIGÉ: originalPrice > price = c'est une solde
+  // ✅ CORRIGÉ: original_price > price = c'est une solde
   const isOnSale = numOriginalPrice !== null && numOriginalPrice > numPrice;
-  const hasHoverImage = hoverImage && hoverImage.trim() !== "";
+  const hasHoverImage = hover_image && hover_image.trim() !== "";
   const discountPercent = isOnSale 
     ? Math.round(((numOriginalPrice - numPrice) / numOriginalPrice) * 100)
     : 0;
@@ -160,7 +160,7 @@ export function ProductCard2({ product, className = "" }) {
           {/* Image hover */}
           {hasHoverImage && (
             <img
-              src={hoverImage}
+              src={hover_image}
               alt={`${name} vue alternative`}
               className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out ${
                 hovered

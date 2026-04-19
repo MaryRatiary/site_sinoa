@@ -6,7 +6,7 @@ const fashion = [
     urlHover: "/fashion/t-shirt.jpg",
     title: "T-Shirt K-Fashion Oversize",
     price: 29.90,
-    originalPrice: 49.90,
+    original_price: 49.90,
     description: `# T-Shirt K-Fashion Oversize
 
 ## ★★★★★ 4.5 Avis
@@ -47,9 +47,9 @@ Stock limité par taille`,
     brand: "K-Style Collection",
     material: "100% Coton Premium",
     colors: [
-      { colorName: "Noir", colorHex: "#000000", stock: 15 },
-      { colorName: "Blanc", colorHex: "#FFFFFF", stock: 12 },
-      { colorName: "Gris", colorHex: "#808080", stock: 8 }
+      { color_name: "Noir", color_hex: "#000000", stock: 15 },
+      { color_name: "Blanc", color_hex: "#FFFFFF", stock: 12 },
+      { color_name: "Gris", color_hex: "#808080", stock: 8 }
     ],
     sizes: [
       { size: "XS", stock: 5 },
@@ -72,7 +72,7 @@ Stock limité par taille`,
     urlHover: "/fashion/pull.jpg",
     title: "Pull Coréen Tricot Premium",
     price: 49.90,
-    originalPrice: 79.90,
+    original_price: 79.90,
     description: `# Pull Coréen Tricot Premium
 
 ## ★★★★★ 4.8 Avis
@@ -113,9 +113,9 @@ Séchage à plat`,
     brand: "K-Style Collection",
     material: "70% Acrylique, 30% Laine",
     colors: [
-      { colorName: "Beige", colorHex: "#F5F5DC", stock: 10 },
-      { colorName: "Marine", colorHex: "#001a4d", stock: 14 },
-      { colorName: "Rose", colorHex: "#FFB6C1", stock: 7 }
+      { color_name: "Beige", color_hex: "#F5F5DC", stock: 10 },
+      { color_name: "Marine", color_hex: "#001a4d", stock: 14 },
+      { color_name: "Rose", color_hex: "#FFB6C1", stock: 7 }
     ],
     sizes: [
       { size: "XS", stock: 4 },
@@ -138,7 +138,7 @@ Séchage à plat`,
     urlHover: "/fashion/jupe.JPG",
     title: "Jupe Plissée Coréenne",
     price: 39.90,
-    originalPrice: 69.90,
+    original_price: 69.90,
     description: `# Jupe Plissée Coréenne
 
 ## ★★★★★ 4.6 Avis
@@ -179,9 +179,9 @@ Repassage facile`,
     brand: "K-Style Collection",
     material: "100% Polyester",
     colors: [
-      { colorName: "Noir", colorHex: "#000000", stock: 9 },
-      { colorName: "Gris Clair", colorHex: "#D3D3D3", stock: 11 },
-      { colorName: "Bordeaux", colorHex: "#800020", stock: 6 }
+      { color_name: "Noir", color_hex: "#000000", stock: 9 },
+      { color_name: "Gris Clair", color_hex: "#D3D3D3", stock: 11 },
+      { color_name: "Bordeaux", color_hex: "#800020", stock: 6 }
     ],
     sizes: [
       { size: "XS", stock: 3 },
@@ -204,7 +204,7 @@ Repassage facile`,
     urlHover: "/fashion/robe1.jpg",
     title: "Robe Coréenne Midi",
     price: 59.90,
-    originalPrice: 99.90,
+    original_price: 99.90,
     description: `# Robe Coréenne Midi
 
 ## ★★★★★ 4.7 Avis
@@ -245,9 +245,9 @@ Séchage à l'air libre`,
     brand: "K-Style Collection",
     material: "80% Polyester, 20% Spandex",
     colors: [
-      { colorName: "Noir", colorHex: "#000000", stock: 8 },
-      { colorName: "Bleu Navy", colorHex: "#000080", stock: 7 },
-      { colorName: "Abricot", colorHex: "#FBCEB1", stock: 5 }
+      { color_name: "Noir", color_hex: "#000000", stock: 8 },
+      { color_name: "Bleu Navy", color_hex: "#000080", stock: 7 },
+      { color_name: "Abricot", color_hex: "#FBCEB1", stock: 5 }
     ],
     sizes: [
       { size: "XS", stock: 2 },
@@ -270,7 +270,7 @@ Séchage à l'air libre`,
     urlHover: "/fashion/robe.jpg",
     title: "Robe Coréenne Élégante Soirée",
     price: 79.90,
-    originalPrice: 129.90,
+    original_price: 129.90,
     description: `# Robe Coréenne Élégante Soirée
 
 ## ★★★★★ 4.9 Avis
@@ -311,9 +311,9 @@ Emballage premium inclus`,
     brand: "K-Style Collection Premium",
     material: "100% Polyester Satin",
     colors: [
-      { colorName: "Noir", colorHex: "#000000", stock: 6 },
-      { colorName: "Bleu Royal", colorHex: "#4169E1", stock: 5 },
-      { colorName: "Bordeaux Profond", colorHex: "#640000", stock: 4 }
+      { color_name: "Noir", color_hex: "#000000", stock: 6 },
+      { color_name: "Bleu Royal", color_hex: "#4169E1", stock: 5 },
+      { color_name: "Bordeaux Profond", color_hex: "#640000", stock: 4 }
     ],
     sizes: [
       { size: "XS", stock: 2 },

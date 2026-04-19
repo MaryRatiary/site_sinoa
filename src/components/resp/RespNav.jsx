@@ -33,13 +33,13 @@ export default function RespNav() {
         fetchCategories();
     }, []);
 
-    const toggleCategory = (categoryId) => {
-        setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
+    const toggleCategory = (category_id) => {
+        setExpandedCategory(expandedCategory === category_id ? null : category_id);
         setExpandedSubcategory(null);
     };
 
-    const toggleSubcategory = (subcategoryId) => {
-        setExpandedSubcategory(expandedSubcategory === subcategoryId ? null : subcategoryId);
+    const toggleSubcategory = (subcategory_id) => {
+        setExpandedSubcategory(expandedSubcategory === subcategory_id ? null : subcategory_id);
     };
 
     // Vérifier si une sous-catégorie a un seul niveau (pas de children)
@@ -176,7 +176,7 @@ export default function RespNav() {
                                     <>
                                         <div className="px-4 py-3 border-b border-gray-100">
                                             <p className="text-sm font-semibold text-gray-900">
-                                                {user?.firstName} {user?.lastName}
+                                                {user?.first_name} {user?.last_name}
                                             </p>
                                             <p className="text-xs text-gray-500">{user?.email}</p>
                                         </div>

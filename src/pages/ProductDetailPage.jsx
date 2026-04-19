@@ -214,7 +214,7 @@ export default function ProductDetailPage() {
           setSelectedSize(dbProduct.sizes[0].size || dbProduct.sizes[0]);
         }
         if (dbProduct.colors?.length > 0) {
-          setSelectedColor(dbProduct.colors[0].colorName || dbProduct.colors[0]);
+          setSelectedColor(dbProduct.colors[0].color_name || dbProduct.colors[0]);
         }
         setCurrentImageIndex(0);
       }
@@ -230,8 +230,8 @@ export default function ProductDetailPage() {
     if (currentImageIndex < dbProduct.colors.length) {
       const correspondingColor = dbProduct.colors[currentImageIndex];
       if (correspondingColor) {
-        const colorName = correspondingColor.colorName || correspondingColor.name || correspondingColor;
-        setSelectedColor(colorName);
+        const color_name = correspondingColor.color_name || correspondingColor.name || correspondingColor;
+        setSelectedColor(color_name);
       } else {
         setSelectedColor(null);
       }
@@ -287,7 +287,7 @@ export default function ProductDetailPage() {
   const currentImage = images.length > 0 ? images[currentImageIndex] : PLACEHOLDER_IMAGE;
 
   const numPrice = parseFloat(product.price) || 0;
-  const numOriginalPrice = parseFloat(product.originalPrice) || null;
+  const numOriginalPrice = parseFloat(product.original_price) || null;
   const isOnSale = numOriginalPrice !== null && numOriginalPrice > numPrice;
   const discount = isOnSale
     ? Math.round(((numOriginalPrice - numPrice) / numOriginalPrice) * 100)
@@ -670,7 +670,7 @@ export default function ProductDetailPage() {
                       .map((color, idx) => ({ color, idx }))
                       .filter(({ idx }) => idx < images.length) // ✅ NE MONTRER QUE LES COULEURS AVEC UNE PHOTO
                       .map(({ color, idx }) => {
-                        const name = color.colorName || color.name || color;
+                        const name = color.color_name || color.name || color;
                         const colorImage = images[idx]; // Plus de PLACEHOLDER ici
                         const isActive = selectedColor === name;
                         return (
@@ -805,7 +805,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        <ReviewsSection productId={product.id} />
+        <ReviewsSection product_id={product.id} />
         <RelatedProducts currentProductId={product.id} />
         <Footer />
       </div>

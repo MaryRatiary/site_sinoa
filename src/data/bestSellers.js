@@ -4,12 +4,12 @@ const bestSellers = [
         slug: 'carte-cadeau-kpop',
         name: "Carte Cadeau KPOP",
         isEstimated: false,
-        originalPrice: 25.00,
+        original_price: 25.00,
         price: 19.90,
         url: "/boxes/box1.png",
         image: "/boxes/box1.png",
         urlHover: "/boxes/box2.png",
-        hoverImage: "/boxes/box2.png",
+        hover_image: "/boxes/box2.png",
         description: `# Carte Cadeau KPOP
 
 ## ★★★★★ 4.8 Avis
@@ -55,11 +55,11 @@ Retour sous 14 jours`,
         name: "Calendrier de l'Avent KPop Demon Hunters",
         isEstimated: false,
         price: 49.90,
-        originalPrice: 29.90,
+        original_price: 29.90,
         url: "/boxes/box3.png",
         image: "/boxes/box3.png",
         urlHover: "/boxes/box4.png",
-        hoverImage: "/boxes/box4.png",
+        hover_image: "/boxes/box4.png",
         description: `# Calendrier de l'Avent KPop Demon Hunters
 
 ## ★★★★★ 4.9 Avis
@@ -105,11 +105,11 @@ Stock très limité
         name: "Poupées Huntrix Demon Hunters",
         isEstimated: true,
         price: 39.90,
-        originalPrice: 24.90,
+        original_price: 24.90,
         url: "/figurines/figurine23.png",
         image: "/figurines/figurine23.png",
         urlHover: "/figurines/figurine24.png",
-        hoverImage: "/figurines/figurine24.png",
+        hover_image: "/figurines/figurine24.png",
         description: `# Poupées Huntrix Demon Hunters
 
 ## ★★★★★ 4.7 Avis
@@ -146,7 +146,7 @@ Stock limité`,
         inStock: true,
         stock: 120,
         colors: [
-            { colorName: "Pack Complet", colorHex: "#FFD700", stock: 120 }
+            { color_name: "Pack Complet", color_hex: "#FFD700", stock: 120 }
         ],
         sizes: [],
         careInstructions: "Protéger de la lumière directe, dépoussierer régulièrement"
@@ -157,11 +157,11 @@ Stock limité`,
         name: "Calendrier de l'Avent KPop Huntrix",
         isEstimated: true,
         price: 49.90,
-        originalPrice: 29.90,
+        original_price: 29.90,
         url: "/boxes/box5.png",
         image: "/boxes/box5.png",
         urlHover: "/boxes/box6.png",
-        hoverImage: "/boxes/box6.png",
+        hover_image: "/boxes/box6.png",
         description: `# Calendrier de l'Avent KPop Huntrix
 
 ## ★★★★★ 4.8 Avis
@@ -207,11 +207,11 @@ Retour impossible (produits découverts)`,
         name: "Carte Cadeau KPOP Premium",
         isEstimated: true,
         price: 25.00,
-        originalPrice: null,
+        original_price: null,
         url: "/boxes/box1.png",
         image: "/boxes/box1.png",
         urlHover: "/boxes/box2.png",
-        hoverImage: "/boxes/box2.png",
+        hover_image: "/boxes/box2.png",
         description: `# Carte Cadeau KPOP Premium
 
 ## ★★★★★ 4.9 Avis
@@ -257,11 +257,11 @@ Code sécurisé au verso`,
         name: "Calendrier de l'Avent KPop Demon Hunters Deluxe",
         isEstimated: false,
         price: 49.90,
-        originalPrice: 29.90,
+        original_price: 29.90,
         url: "/boxes/box3.png",
         image: "/boxes/box3.png",
         urlHover: "/boxes/box4.png",
-        hoverImage: "/boxes/box4.png",
+        hover_image: "/boxes/box4.png",
         description: `# Calendrier de l'Avent Demon Hunters Deluxe
 
 ## ★★★★★ 4.9 Avis
@@ -307,11 +307,11 @@ Très rare à trouver`,
         name: "Figurines Huntrix Collector Set",
         isEstimated: true,
         price: 39.90,
-        originalPrice: 24.90,
+        original_price: 24.90,
         url: "/figurines/figurine23.png",
         image: "/figurines/figurine23.png",
         urlHover: "/figurines/figurine24.png",
-        hoverImage: "/figurines/figurine24.png",
+        hover_image: "/figurines/figurine24.png",
         description: `# Figurines Huntrix Collector Set
 
 ## ★★★★★ 4.8 Avis
@@ -348,7 +348,7 @@ Stock ultra-limité`,
         inStock: true,
         stock: 78,
         colors: [
-            { colorName: "Set Complet", colorHex: "#C0C0C0", stock: 78 }
+            { color_name: "Set Complet", color_hex: "#C0C0C0", stock: 78 }
         ],
         sizes: [],
         careInstructions: "Protéger de la chaleur, dépoussierer avec soin"
@@ -359,11 +359,11 @@ Stock ultra-limité`,
         name: "Box Surprise KPOP Demon Hunters",
         isEstimated: true,
         price: 49.90,
-        originalPrice: 29.90,
+        original_price: 29.90,
         url: "/boxes/box5.png",
         image: "/boxes/box5.png",
         urlHover: "/boxes/box6.png",
-        hoverImage: "/boxes/box6.png",
+        hover_image: "/boxes/box6.png",
         description: `# Box Surprise KPOP Demon Hunters
 
 ## ★★★★★ 4.7 Avis

@@ -114,13 +114,13 @@ export default function CartPage() {
   const [successOrderId, setSuccessOrderId] = useState('');
   
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: user?.email || '',
     phone: '',
     shippingAddress: '',
     city: '',
-    postalCode: '',
+    postal_code: '',
     country: 'France',
     latitude: null,
     longitude: null,
@@ -183,7 +183,7 @@ export default function CartPage() {
 
     try {
       const items = cartItems.map((item) => ({
-        productId: item.id,
+        product_id: item.id,
         quantity: item.quantity,
         size: item.size,
         color: item.color,
@@ -194,12 +194,12 @@ export default function CartPage() {
         formData.shippingAddress,
         formData.paymentMethod,
         {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
           email: formData.email,
           phone: formData.phone,
           city: formData.city,
-          postalCode: formData.postalCode,
+          postal_code: formData.postal_code,
           country: formData.country,
           latitude: formData.latitude,
           longitude: formData.longitude,
@@ -326,8 +326,8 @@ export default function CartPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-2">Prénom *</label>
                         <input
                           type="text"
-                          value={formData.firstName}
-                          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                          value={formData.first_name}
+                          onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E2251] focus:border-transparent text-sm"
                           required
                         />
@@ -336,8 +336,8 @@ export default function CartPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-2">Nom *</label>
                         <input
                           type="text"
-                          value={formData.lastName}
-                          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                          value={formData.last_name}
+                          onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E2251] focus:border-transparent text-sm"
                           required
                         />
@@ -520,9 +520,9 @@ export default function CartPage() {
                         Adresse
                       </h3>
                       <p className="text-gray-600 text-sm">
-                        {formData.firstName} {formData.lastName}<br />
+                        {formData.first_name} {formData.last_name}<br />
                         {formData.shippingAddress}<br />
-                        {formData.postalCode} {formData.city}, {formData.country}
+                        {formData.postal_code} {formData.city}, {formData.country}
                       </p>
                     </div>
 

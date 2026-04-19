@@ -12,13 +12,13 @@ const Checkout = () => {
   // Form Data
   const [formData, setFormData] = useState({
     // Step 1: Shipping
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     phone: '',
     address: '',
     city: '',
-    postalCode: '',
+    postal_code: '',
     country: 'France',
     shippingMethod: 'standard',
 
@@ -48,11 +48,11 @@ const Checkout = () => {
 
   const validateStep = (currentStep) => {
     if (currentStep === 1) {
-      if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
+      if (!formData.first_name || !formData.last_name || !formData.email || !formData.phone) {
         alert('Veuillez remplir tous les champs requis');
         return false;
       }
-      if (!formData.address || !formData.city || !formData.postalCode) {
+      if (!formData.address || !formData.city || !formData.postal_code) {
         alert('Veuillez remplir l\'adresse complète');
         return false;
       }
@@ -104,7 +104,7 @@ const Checkout = () => {
           total: getTotalPrice(),
           items: cartItems,
           customer: {
-            name: `${formData.firstName} ${formData.lastName}`,
+            name: `${formData.first_name} ${formData.last_name}`,
             email: formData.email,
           },
         },
@@ -185,8 +185,8 @@ const Checkout = () => {
                       </label>
                       <input
                         type="text"
-                        name="firstName"
-                        value={formData.firstName}
+                        name="first_name"
+                        value={formData.first_name}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-600"
                         placeholder="Jean"
@@ -198,8 +198,8 @@ const Checkout = () => {
                       </label>
                       <input
                         type="text"
-                        name="lastName"
-                        value={formData.lastName}
+                        name="last_name"
+                        value={formData.last_name}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-600"
                         placeholder="Dupont"
@@ -269,8 +269,8 @@ const Checkout = () => {
                       </label>
                       <input
                         type="text"
-                        name="postalCode"
-                        value={formData.postalCode}
+                        name="postal_code"
+                        value={formData.postal_code}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-600"
                         placeholder="75001"
@@ -430,11 +430,11 @@ const Checkout = () => {
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Livraison à:</span>
-                        <span className="font-semibold">{formData.firstName} {formData.lastName}</span>
+                        <span className="font-semibold">{formData.first_name} {formData.last_name}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Adresse:</span>
-                        <span className="font-semibold">{formData.address}, {formData.postalCode} {formData.city}</span>
+                        <span className="font-semibold">{formData.address}, {formData.postal_code} {formData.city}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Email:</span>

@@ -18,7 +18,7 @@ export const CategoryModal = ({
 
   if (!show) return null;
 
-  const getCategoryPath = (categoryId, allCategories) => {
+  const getCategoryPath = (category_id, allCategories) => {
     const findPath = (id, cats, path = []) => {
       for (const cat of cats) {
         if (cat.id === id) {
@@ -32,7 +32,7 @@ export const CategoryModal = ({
       return null;
     };
     
-    const path = findPath(categoryId, allCategories);
+    const path = findPath(category_id, allCategories);
     return path ? path.join(' > ') : '';
   };
 
@@ -85,8 +85,8 @@ export const CategoryModal = ({
                 Catégorie parent *
               </label>
               <select
-                value={categoryForm.parentId || ''}
-                onChange={(e) => setCategoryForm({ ...categoryForm, parentId: e.target.value ? parseInt(e.target.value) : null })}
+                value={categoryForm.parent_id || ''}
+                onChange={(e) => setCategoryForm({ ...categoryForm, parent_id: e.target.value ? parseInt(e.target.value) : null })}
                 disabled={isLoading}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >

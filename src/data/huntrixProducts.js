@@ -4,7 +4,7 @@ const huntrixProducts = [
     slug: 't-shirt-huntrix-demon-hunter',
     name: "T-Shirt Huntrix Demon Hunter",
     price: 34.90,
-    originalPrice: 54.90,
+    original_price: 54.90,
     url: "/figurines/figurine1.png",
     urlHover: "/figurines/figurine2.png",
     description: `# T-Shirt Huntrix Demon Hunter
@@ -38,9 +38,9 @@ Quantité limitée pour les vrais fans`,
     brand: "Huntrix Official",
     material: "100% Coton Premium",
     colors: [
-      { colorName: "Noir", colorHex: "#000000", stock: 25 },
-      { colorName: "Blanc", colorHex: "#FFFFFF", stock: 18 },
-      { colorName: "Gris", colorHex: "#808080", stock: 12 }
+      { color_name: "Noir", color_hex: "#000000", stock: 25 },
+      { color_name: "Blanc", color_hex: "#FFFFFF", stock: 18 },
+      { color_name: "Gris", color_hex: "#808080", stock: 12 }
     ],
     sizes: [
       { size: "XS", stock: 5 },
@@ -62,7 +62,7 @@ Quantité limitée pour les vrais fans`,
     slug: 'sweat-huntrix-premium',
     name: "Sweat Huntrix Premium",
     price: 59.90,
-    originalPrice: 89.90,
+    original_price: 89.90,
     url: "/figurines/figurine3.png",
     urlHover: "/figurines/figurine4.png",
     description: `# Sweat Huntrix Premium
@@ -96,9 +96,9 @@ Stock limité`,
     brand: "Huntrix Premium",
     material: "80% Coton, 20% Polyester",
     colors: [
-      { colorName: "Noir", colorHex: "#000000", stock: 18 },
-      { colorName: "Gris Foncé", colorHex: "#2F4F4F", stock: 15 },
-      { colorName: "Bleu Marine", colorHex: "#000080", stock: 12 }
+      { color_name: "Noir", color_hex: "#000000", stock: 18 },
+      { color_name: "Gris Foncé", color_hex: "#2F4F4F", stock: 15 },
+      { color_name: "Bleu Marine", color_hex: "#000080", stock: 12 }
     ],
     sizes: [
       { size: "XS", stock: 3 },
@@ -119,7 +119,7 @@ Stock limité`,
     slug: 'figurine-huntrix-articulee',
     name: "Figurine Huntrix Articulée",
     price: 44.90,
-    originalPrice: 74.90,
+    original_price: 74.90,
     url: "/figurines/figurine5.webp",
     urlHover: "/figurines/figurine6.png",
     description: `# Figurine Huntrix Articulée Collector
@@ -154,7 +154,7 @@ Quantité très limitée`,
     brand: "Huntrix Collectibles",
     material: "PVC haute qualité",
     colors: [
-      { colorName: "Version Standard", colorHex: "#C0C0C0", stock: 32 }
+      { color_name: "Version Standard", color_hex: "#C0C0C0", stock: 32 }
     ],
     sizes: [],
     rating: 4.9,
@@ -169,7 +169,7 @@ Quantité très limitée`,
     slug: 'sac-a-dos-huntrix-officiel',
     name: "Sac à Dos Huntrix Officiel",
     price: 69.90,
-    originalPrice: 109.90,
+    original_price: 109.90,
     url: "/figurines/figurine7.png",
     urlHover: "/figurines/figurine8.png",
     description: `# Sac à Dos Huntrix Officiel
@@ -204,8 +204,8 @@ En stock limité`,
     brand: "Huntrix Official",
     material: "Polyester haute densité",
     colors: [
-      { colorName: "Noir", colorHex: "#000000", stock: 28 },
-      { colorName: "Gris", colorHex: "#808080", stock: 22 }
+      { color_name: "Noir", color_hex: "#000000", stock: 28 },
+      { color_name: "Gris", color_hex: "#808080", stock: 22 }
     ],
     sizes: [],
     rating: 4.7,
@@ -220,7 +220,7 @@ En stock limité`,
     slug: 'poster-huntrix-limited-edition',
     name: "Poster Huntrix Limited Edition",
     price: 14.90,
-    originalPrice: 24.90,
+    original_price: 24.90,
     url: "/figurines/figurine9.png",
     urlHover: "/figurines/figurine10.png",
     description: `# Poster Huntrix Limited Edition
@@ -269,7 +269,7 @@ Emballage rouleau
     slug: 'mug-huntrix-collector',
     name: "Mug Huntrix Collector",
     price: 12.90,
-    originalPrice: 19.90,
+    original_price: 19.90,
     url: "/figurines/figurine11.png",
     urlHover: "/figurines/figurine12.png",
     description: `# Mug Huntrix Collector
@@ -304,8 +304,8 @@ Stock limité`,
     brand: "Huntrix Official",
     material: "Céramique premium",
     colors: [
-      { colorName: "Blanc", colorHex: "#FFFFFF", stock: 67 },
-      { colorName: "Noir", colorHex: "#000000", stock: 45 }
+      { color_name: "Blanc", color_hex: "#FFFFFF", stock: 67 },
+      { color_name: "Noir", color_hex: "#000000", stock: 45 }
     ],
     sizes: [],
     rating: 4.6,
@@ -320,7 +320,7 @@ Stock limité`,
     slug: 'casquette-huntrix-officielle',
     name: "Casquette Huntrix Officielle",
     price: 29.90,
-    originalPrice: 49.90,
+    original_price: 49.90,
     url: "/figurines/figurine13.png",
     urlHover: "/figurines/figurine14.png",
     description: `# Casquette Huntrix Officielle
@@ -355,8 +355,8 @@ Stock limité`,
     brand: "Huntrix Official",
     material: "Coton 100%",
     colors: [
-      { colorName: "Noir", colorHex: "#000000", stock: 38 },
-      { colorName: "Blanc", colorHex: "#FFFFFF", stock: 25 }
+      { color_name: "Noir", color_hex: "#000000", stock: 38 },
+      { color_name: "Blanc", color_hex: "#FFFFFF", stock: 25 }
     ],
     sizes: [
       { size: "One Size", stock: 63 }
@@ -373,7 +373,7 @@ Stock limité`,
     slug: 'album-huntrix-demon-hunters',
     name: "Album Huntrix Demon Hunters",
     price: 24.90,
-    originalPrice: 39.90,
+    original_price: 39.90,
     url: "/figurines/figurine15.jpg",
     urlHover: "/figurines/figurine16.jpg",
     description: `# Album Huntrix Demon Hunters

@@ -18,11 +18,11 @@ const ProductGrid = ({ products, category }) => {
               className="product-image"
             />
             <img
-              src={product.hoverImage}
+              src={product.hover_image}
               alt={product.name}
               className="product-image-hover"
             />
-            {product.originalPrice && (
+            {product.original_price && (
               <div className="badge-sale">SOLDE</div>
             )}
           </div>
@@ -34,9 +34,9 @@ const ProductGrid = ({ products, category }) => {
               <span className="price">
                 {product.price?.toFixed(2).replace('.', ',')}€
               </span>
-              {product.originalPrice && (
+              {product.original_price && (
                 <span className="original-price">
-                  {product.originalPrice?.toFixed(2).replace('.', ',')}€
+                  {product.original_price?.toFixed(2).replace('.', ',')}€
                 </span>
               )}
             </div>

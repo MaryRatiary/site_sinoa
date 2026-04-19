@@ -6,7 +6,7 @@ export const categoriesAPI = {
   
   getById: (id) => apiCall(`/categories/${id}`),
 
-  getChildren: (parentId) => apiCall(`/categories/${parentId}/children`),
+  getChildren: (parent_id) => apiCall(`/categories/${parent_id}/children`),
 
   create: (data) =>
     apiCall('/categories', {
@@ -25,8 +25,8 @@ export const categoriesAPI = {
       method: 'DELETE',
     }),
 
-  reorder: (categoryId, targetCategoryId) =>
-    apiCall(`/categories/${categoryId}/reorder`, {
+  reorder: (category_id, targetCategoryId) =>
+    apiCall(`/categories/${category_id}/reorder`, {
       method: 'PUT',
       body: JSON.stringify({ targetCategoryId }),
     }),

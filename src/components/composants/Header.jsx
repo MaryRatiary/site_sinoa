@@ -23,6 +23,37 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { categories, loading: categoriesLoading } = useCategories();
 
+  // 🔍 DEBUG: Log les catégories pour voir pourquoi elles ne s'affichent pas
+  useEffect(() => {
+    console.log('🔍 NAVBAR DEBUG:');
+    console.log('   categoriesLoading:', categoriesLoading);
+    console.log('   categories count:', categories.length);
+    console.log('   categories:', categories);
+    
+    if (categories.length > 0) {
+      console.log('   🔗 First category structure:', {
+        id: categories[0].id,
+        name: categories[0].name,
+        slug: categories[0].slug,
+        children: categories[0].children,
+        childrenCount: categories[0].children?.length || 0
+      });
+      
+      // Afficher la structure complète
+      categories.forEach((cat, idx) => {
+        console.log(`   Category ${idx}:`, {
+          id: cat.id,
+          name: cat.name,
+          level: cat.level,
+          parent_id: cat.parent_id,
+          children_count: cat.children?.length || 0
+        });
+      });
+    } else {
+      console.warn('⚠️  No categories loaded!');
+    }
+  }, [categories, categoriesLoading]);
+
   // Mesurer la hauteur de la navbar
   useEffect(() => {
     if (navRef.current) {
@@ -155,7 +186,7 @@ const Navbar = () => {
                   {isAuthenticated ? (
                     <>
                       <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                        <p className="text-sm font-bold text-gray-900">{user?.firstName} {user?.lastName}</p>
+                        <p className="text-sm font-bold text-gray-900">{user?.first_name} {user?.last_name}</p>
                         <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                       </div>
                       <Link to="/orders" onClick={() => setShowUserMenu(false)}
@@ -210,22 +241,30 @@ const Navbar = () => {
               ))}
             </div>
           ) : (
-            categories.map((category) => (
-              <div key={category.id} className="relative"
-                onMouseEnter={() => { keep(); open(`category-${category.id}`); }}
-                onMouseLeave={close}>
-                <button
-                  onClick={() => { closeNow(); navigate(`/category/${category.slug}`); }}
-                  className="flex items-center gap-1 text-gray-600 hover:text-[#5E2251] py-2 transition-colors duration-200 relative group"
-                >
-                  {category.name}
-                  <ChevronDown size={12}
-                    className={`transition-transform duration-300 ${activeMenu === `category-${category.id}` ? 'rotate-180 text-[#5E2251]' : ''}`}
-                  />
-                  <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#5E2251] group-hover:w-full transition-all duration-300 rounded-full" />
-                </button>
-              </div>
-            ))
+            <>
+              {categories.length === 0 && (
+                <p className="text-red-500 text-sm">❌ Aucune catégorie chargée</p>
+              )}
+              {categories.map((category) => {
+                console.log('📍 Rendering category:', category.name, 'has children:', category.children?.length);
+                return (
+                  <div key={category.id} className="relative"
+                    onMouseEnter={() => { keep(); open(`category-${category.id}`); }}
+                    onMouseLeave={close}>
+                    <button
+                      onClick={() => { closeNow(); navigate(`/category/${category.slug}`); }}
+                      className="flex items-center gap-1 text-gray-600 hover:text-[#5E2251] py-2 transition-colors duration-200 relative group"
+                    >
+                      {category.name}
+                      <ChevronDown size={12}
+                        className={`transition-transform duration-300 ${activeMenu === `category-${category.id}` ? 'rotate-180 text-[#5E2251]' : ''}`}
+                      />
+                      <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#5E2251] group-hover:w-full transition-all duration-300 rounded-full" />
+                    </button>
+                  </div>
+                );
+              })}
+            </>
           )}
         </div>
 

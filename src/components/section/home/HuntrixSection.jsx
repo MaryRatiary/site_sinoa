@@ -19,20 +19,42 @@ const HuntrixSection = () => {
         // 1. Récupérer TOUS les produits
         const allProducts = await productsAPI.getAll('?limit=50000');
         
+        console.log('🔍 HuntrixSection DEBUG:');
+        console.log('   Total products:', allProducts.length);
+        
         if (!allProducts || allProducts.length === 0) {
+          console.warn('⚠️  No products returned from API!');
           setProducts([]);
           setLoading(false);
           return;
         }
 
-        // 2. Filtrer par catégories Huntrix (en utilisant categoryName)
-        const filteredProducts = allProducts.filter(p =>
-          HUNTRIX_CATEGORIES.includes(p.categoryName)
-        );
+        // 2. Afficher les noms de catégories disponibles
+        const availableCategories = [...new Set(allProducts.map(p => p.category_name))];
+        console.log('   Available category_name values:');
+        availableCategories.forEach(cat => {
+          const count = allProducts.filter(p => p.category_name === cat).length;
+          console.log(`     - "${cat}": ${count} products`);
+        });
+
+        // 3. Filtrer par catégories Huntrix (en utilisant category_name)
+        const filteredProducts = allProducts.filter(p => {
+          const match = HUNTRIX_CATEGORIES.includes(p.category_name);
+          if (match && p.id === allProducts.find(prod => HUNTRIX_CATEGORIES.includes(prod.category_name))?.id) {
+            console.log(`   ✅ Found Huntrix product: "${p.name}" in category "${p.category_name}"`);
+          }
+          return match;
+        });
 
         console.log(`🧸 ${filteredProducts.length} produits Huntrix trouvés`);
 
-        // 3. Limiter à 20 produits max
+        if (filteredProducts.length === 0) {
+          console.warn('⚠️  No products matched Huntrix categories!');
+          console.log('   Expected categories:', HUNTRIX_CATEGORIES);
+          console.log('   Available categories:', availableCategories);
+        }
+
+        // 4. Limiter à 20 produits max
         const limitedProducts = filteredProducts.slice(0, 20);
         
         setProducts(limitedProducts);
@@ -120,15 +142,15 @@ const HuntrixSection = () => {
             className="flex-shrink-0 w-[45vw] sm:w-[40vw] md:w-[30vw] lg:w-[220px] snap-start"
           >
             <div className="h-[200px] md:h-auto overflow-hidden rounded-lg">
-              {/* ✅ CORRIGÉ: Inverser les prix - originalPrice affiché, price barré */}
+              {/* ✅ CORRIGÉ: Inverser les prix - original_price affiché, price barré */}
               <ProductCard
                 slug={product.slug || `product-${product.id}`}
                 className="w-full h-full object-cover shadow-sm hover:shadow-md transition-shadow border border-gray-50"
                 image={product.image || product.url}
-                hoverImage={product.hoverImage || product.urlHover}
+                hover_image={product.hover_image || product.urlHover}
                 name={product.name || product.title}
-                price={product.originalPrice}
-                originalPrice={product.price}
+                price={product.original_price}
+                original_price={product.price}
               />
             </div>
           </div>

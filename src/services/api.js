@@ -29,10 +29,10 @@ export const apiCall = async (endpoint, options = {}) => {
 
 // ============ AUTH ============
 export const authAPI = {
-  register: (email, password, firstName, lastName) =>
+  register: (email, password, first_name, last_name) =>
     apiCall('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ email, password, firstName, lastName }),
+      body: JSON.stringify({ email, password, first_name, last_name }),
     }),
 
   login: (email, password) =>
@@ -57,7 +57,7 @@ export const categoriesAPI = {
 
   getById: (id) => apiCall(`/categories/${id}`),
 
-  getChildren: (parentId) => apiCall(`/categories/${parentId}/children`),
+  getChildren: (parent_id) => apiCall(`/categories/${parent_id}/children`),
 
   // ✅ NOUVEAU: Vérifier ce qui sera supprimé avant suppression
   preDeleteCheck: (id) => apiCall(`/categories/${id}/delete-check`),
@@ -80,8 +80,8 @@ export const categoriesAPI = {
       body: confirmationText ? JSON.stringify({ confirmationText }) : undefined,
     }),
 
-  reorder: (categoryId, targetCategoryId) =>
-    apiCall(`/categories/${categoryId}/reorder`, {
+  reorder: (category_id, targetCategoryId) =>
+    apiCall(`/categories/${category_id}/reorder`, {
       method: 'PUT',
       body: JSON.stringify({ targetCategoryId }),
     }),
@@ -113,34 +113,34 @@ export const productsAPI = {
     }),
 
   // Images
-  addImage: (productId, imageData) =>
-    apiCall(`/products/${productId}/images`, {
+  addImage: (product_id, imageData) =>
+    apiCall(`/products/${product_id}/images`, {
       method: 'POST',
       body: JSON.stringify(imageData),
     }),
 
   // Tailles
-  addSize: (productId, size, stock) =>
-    apiCall(`/products/${productId}/sizes`, {
+  addSize: (product_id, size, stock) =>
+    apiCall(`/products/${product_id}/sizes`, {
       method: 'POST',
       body: JSON.stringify({ size, stock }),
     }),
 
-  updateSizeStock: (productId, sizeId, stock) =>
-    apiCall(`/products/${productId}/sizes/${sizeId}`, {
+  updateSizeStock: (product_id, sizeId, stock) =>
+    apiCall(`/products/${product_id}/sizes/${sizeId}`, {
       method: 'PUT',
       body: JSON.stringify({ stock }),
     }),
 
   // Couleurs
-  addColor: (productId, colorName, colorHex, stock) =>
-    apiCall(`/products/${productId}/colors`, {
+  addColor: (product_id, color_name, color_hex, stock) =>
+    apiCall(`/products/${product_id}/colors`, {
       method: 'POST',
-      body: JSON.stringify({ colorName, colorHex, stock }),
+      body: JSON.stringify({ color_name, color_hex, stock }),
     }),
 
-  updateColorStock: (productId, colorId, stock) =>
-    apiCall(`/products/${productId}/colors/${colorId}`, {
+  updateColorStock: (product_id, colorId, stock) =>
+    apiCall(`/products/${product_id}/colors/${colorId}`, {
       method: 'PUT',
       body: JSON.stringify({ stock }),
     }),
@@ -148,16 +148,16 @@ export const productsAPI = {
 
 // ============ CART ============
 export const cartAPI = {
-  addToCart: (productId, quantity, size, color) =>
+  addToCart: (product_id, quantity, size, color) =>
     apiCall('/cart', {
       method: 'POST',
-      body: JSON.stringify({ productId, quantity, size, color }),
+      body: JSON.stringify({ product_id, quantity, size, color }),
     }),
 
   getCart: () => apiCall('/cart'),
 
-  removeFromCart: (productId) =>
-    apiCall(`/cart/${productId}`, {
+  removeFromCart: (product_id) =>
+    apiCall(`/cart/${product_id}`, {
       method: 'DELETE',
     }),
 
@@ -176,12 +176,12 @@ export const checkoutAPI = {
         items, 
         shippingAddress, 
         paymentMethod,
-        firstName: shippingDetails.firstName,
-        lastName: shippingDetails.lastName,
+        first_name: shippingDetails.first_name,
+        last_name: shippingDetails.last_name,
         email: shippingDetails.email,
         phone: shippingDetails.phone,
         city: shippingDetails.city,
-        postalCode: shippingDetails.postalCode,
+        postal_code: shippingDetails.postal_code,
         country: shippingDetails.country,
         latitude: shippingDetails.latitude,
         longitude: shippingDetails.longitude,

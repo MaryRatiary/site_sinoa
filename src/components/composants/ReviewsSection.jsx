@@ -90,7 +90,7 @@ const RatingGauge = ({ reviews, averageRating }) => {
   );
 };
 
-export default function ReviewsSection({ productId }) {
+export default function ReviewsSection({ product_id }) {
   const [displayedReviews, setDisplayedReviews] = useState([]);
   const [selectedReview, setSelectedReview] = useState(null);
   const [showFormModal, setShowFormModal] = useState(false);
@@ -233,7 +233,7 @@ export default function ReviewsSection({ productId }) {
                   <div className="w-1/4 flex-shrink-0 border-r border-gray-100 overflow-hidden">
                     {review.images && review.images.length > 0 ? (
                       <img
-                        src={review.images[0]?.imageUrl || review.images[0]}
+                        src={review.images[0]?.image_url || review.images[0]}
                         alt="Photo"
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -484,7 +484,7 @@ export default function ReviewsSection({ productId }) {
                     {selectedReview.images.map((img, idx) => (
                       <img
                         key={idx}
-                        src={img.imageUrl || img}
+                        src={img.image_url || img}
                         alt={`Photo ${idx + 1}`}
                         className="w-full h-48 object-cover rounded-lg border-2 border-[#5E2251]"
                         onError={(e) => {
@@ -520,7 +520,7 @@ export default function ReviewsSection({ productId }) {
       {/* FORM MODAL */}
       {showFormModal && (
         <ReviewFormModal
-          productId={productId}
+          product_id={product_id}
           onClose={() => setShowFormModal(false)}
           onSuccess={handleReviewSuccess}
         />

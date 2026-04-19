@@ -24,9 +24,9 @@ const GroupSection = () => {
     const withDiscount = products
       .map(p => {
         const price = parseFloat(p.price) || 0;
-        const originalPrice = parseFloat(p.originalPrice) || null;
-        if (originalPrice && originalPrice > price) {
-          const discount = Math.round(((originalPrice - price) / originalPrice) * 100);
+        const original_price = parseFloat(p.original_price) || null;
+        if (original_price && original_price > price) {
+          const discount = Math.round(((original_price - price) / original_price) * 100);
           if (discount >= 20) {
             return { 
               ...p, 
@@ -286,9 +286,9 @@ const GroupSection = () => {
                               style={{ fontFamily: "'Space Mono', monospace", color: ACCENT_COLOR }}>
                           {product.price?.toFixed(2).replace('.', ',')}€
                         </span>
-                        {product.originalPrice && (
+                        {product.original_price && (
                           <span className="text-[10px] text-gray-400 line-through">
-                            {product.originalPrice?.toFixed(2).replace('.', ',')}€
+                            {product.original_price?.toFixed(2).replace('.', ',')}€
                           </span>
                         )}
                       </div>

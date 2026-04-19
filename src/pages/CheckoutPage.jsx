@@ -12,13 +12,13 @@ const CheckoutPage = () => {
   const { user, isAuthenticated } = useAuth();
 
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
+    first_name: user?.first_name || '',
+    last_name: user?.last_name || '',
     email: user?.email || '',
     phone: user?.phone || '',
     address: user?.address || '',
     city: user?.city || '',
-    postalCode: user?.postalCode || '',
+    postal_code: user?.postal_code || '',
     country: user?.country || 'France',
   });
 
@@ -50,13 +50,13 @@ const CheckoutPage = () => {
     setError(null);
 
     try {
-      const shippingAddress = `${formData.address}, ${formData.city} ${formData.postalCode}, ${formData.country}`;
+      const shippingAddress = `${formData.address}, ${formData.city} ${formData.postal_code}, ${formData.country}`;
 
       if (paymentMethod === 'shopify') {
         // 1️⃣ Créer la commande dans la base de données
         const order = await checkoutAPI.createOrder(
           cartItems.map(item => ({
-            productId: item.id,
+            product_id: item.id,
             quantity: item.quantity,
             size: item.size,
             color: item.color,
@@ -83,7 +83,7 @@ const CheckoutPage = () => {
         // Paiement local (futur: Stripe, etc.)
         const order = await checkoutAPI.createOrder(
           cartItems.map(item => ({
-            productId: item.id,
+            product_id: item.id,
             quantity: item.quantity,
             size: item.size,
             color: item.color,
@@ -138,18 +138,18 @@ const CheckoutPage = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <input
                     type="text"
-                    name="firstName"
+                    name="first_name"
                     placeholder="Prénom"
-                    value={formData.firstName}
+                    value={formData.first_name}
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E2251] focus:border-transparent outline-none"
                   />
                   <input
                     type="text"
-                    name="lastName"
+                    name="last_name"
                     placeholder="Nom"
-                    value={formData.lastName}
+                    value={formData.last_name}
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E2251] focus:border-transparent outline-none"
@@ -206,9 +206,9 @@ const CheckoutPage = () => {
                     />
                     <input
                       type="text"
-                      name="postalCode"
+                      name="postal_code"
                       placeholder="Code postal"
-                      value={formData.postalCode}
+                      value={formData.postal_code}
                       onChange={handleInputChange}
                       required
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5E2251] focus:border-transparent outline-none"

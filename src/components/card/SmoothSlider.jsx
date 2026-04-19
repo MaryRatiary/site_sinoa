@@ -232,9 +232,9 @@ export default function SmoothSlider({ cards = [], className = "", productType =
                       >
                         ${card.price.toFixed(0)}
                       </span>
-                      {card.originalPrice && card.originalPrice > card.price && (
+                      {card.original_price && card.original_price > card.price && (
                         <span className="text-white/40 text-xs line-through">
-                          ${card.originalPrice.toFixed(0)}
+                          ${card.original_price.toFixed(0)}
                         </span>
                       )}
                     </div>

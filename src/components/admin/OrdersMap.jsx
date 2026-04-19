@@ -190,7 +190,7 @@ export default function OrdersMap({ orders = [], selectedOrder, setSelectedOrder
                         {order.shippingAddress}
                       </p>
                       <p className="text-sm text-gray-600 mb-2">
-                        {order.postalCode} {order.city}
+                        {order.postal_code} {order.city}
                       </p>
                       <div className="flex items-center gap-2 mb-3">
                         {getStatusIcon(order.status)}
@@ -263,7 +263,7 @@ export default function OrdersMap({ orders = [], selectedOrder, setSelectedOrder
                     <div>
                       <p className="text-xs text-gray-600">Adresse</p>
                       <p className="text-sm text-gray-900 truncate">
-                        {order.postalCode} {order.city}
+                        {order.postal_code} {order.city}
                       </p>
                     </div>
                     <div>
