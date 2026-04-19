@@ -221,18 +221,23 @@ export default function ProductDetailPage() {
     }
   }, [dbProduct, dbLoading]);
 
-  // ✅ NOUVELLE: Synchronisation automatique selectedColor avec currentImageIndex
+  // ✅ AMÉLIORÉ: Synchronisation selectedColor avec currentImageIndex
   // Quand l'image change, on cherche la couleur correspondante
   useEffect(() => {
     if (!dbProduct?.colors || !dbProduct?.colors.length) return;
     
-    const correspondingColor = dbProduct.colors[currentImageIndex];
-    if (correspondingColor) {
-      const colorName = correspondingColor.colorName || correspondingColor.name || correspondingColor;
-      setSelectedColor(colorName);
+    // Si currentImageIndex est dans le range des couleurs
+    if (currentImageIndex < dbProduct.colors.length) {
+      const correspondingColor = dbProduct.colors[currentImageIndex];
+      if (correspondingColor) {
+        const colorName = correspondingColor.colorName || correspondingColor.name || correspondingColor;
+        setSelectedColor(colorName);
+      } else {
+        setSelectedColor(null);
+      }
     } else {
-      // Si pas de couleur pour cette image, on peut désélectionner ou garder
-      // On désélectionne pour être cohérent
+      // currentImageIndex est au-delà des couleurs disponibles
+      // (ex: 4 couleurs mais 6 photos) → on désélectionne la couleur
       setSelectedColor(null);
     }
   }, [currentImageIndex, dbProduct?.colors]);
@@ -661,23 +666,25 @@ export default function ProductDetailPage() {
                     Couleur — <span className="text-gray-800 normal-case tracking-normal font-semibold">{selectedColor}</span>
                   </p>
                   <div className="flex flex-wrap gap-3">
-                    {product.colors.map((color, idx) => {
-                      const name = color.colorName || color.name || color;
-                      const colorImage = images[idx] || PLACEHOLDER_IMAGE;
-                      const isActive = selectedColor === name;
-                      return (
-                        <button key={name} onClick={() => {
-                          // ✅ CORRIGÉ: Changer la couleur et l'image qui correspond
-                          setSelectedColor(name);
-                          setCurrentImageIndex(idx);
-                        }}
-                          title={name}
-                          className={`color-btn w-12 h-12 rounded-full border-2 overflow-hidden transition-all flex items-center justify-center bg-white ${isActive ? 'active border-[#5E2251] ring-2 ring-[#5E2251] ring-offset-2' : 'border-gray-300 hover:border-[#5E2251]'}`}>
-                          <img src={colorImage} alt={name} className="w-full h-full object-cover"
-                            onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }} />
-                        </button>
-                      );
-                    })}
+                    {product.colors
+                      .map((color, idx) => ({ color, idx }))
+                      .filter(({ idx }) => idx < images.length) // ✅ NE MONTRER QUE LES COULEURS AVEC UNE PHOTO
+                      .map(({ color, idx }) => {
+                        const name = color.colorName || color.name || color;
+                        const colorImage = images[idx]; // Plus de PLACEHOLDER ici
+                        const isActive = selectedColor === name;
+                        return (
+                          <button key={name} onClick={() => {
+                            setSelectedColor(name);
+                            setCurrentImageIndex(idx);
+                          }}
+                            title={name}
+                            className={`color-btn w-12 h-12 rounded-full border-2 overflow-hidden transition-all flex items-center justify-center bg-white ${isActive ? 'active border-[#5E2251] ring-2 ring-[#5E2251] ring-offset-2' : 'border-gray-300 hover:border-[#5E2251]'}`}>
+                            <img src={colorImage} alt={name} className="w-full h-full object-cover"
+                              onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }} />
+                          </button>
+                        );
+                      })}
                   </div>
                 </div>
               )}
