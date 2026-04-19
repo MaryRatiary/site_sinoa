@@ -5,16 +5,18 @@ import { categoriesAPI } from "../../services/api";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import ExpandSearch from "../forms/ExpandSearch";
+import CartModal from "../cart/CartModal"; // ✅ NOUVEAU
 
 export default function RespNav() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [expandedSubcategory, setExpandedSubcategory] = useState(null);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false); // ✅ NOUVEAU - state du modal
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const { getItemCount } = useCart();
+    const { cartItems } = useCart(); // ✅ MODIFIÉ - utiliser cartItems au lieu de getItemCount
     const { user, isAuthenticated, isAdmin, logout } = useAuth();
 
     useEffect(() => {
@@ -140,196 +142,203 @@ export default function RespNav() {
     };
 
     return (
-        <div className="lg:hidden bg-white">
-            {/* Header with logo and icons */}
-            <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200 gap-2">
-                <button 
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition"
-                >
-                    {isMenuOpen ? <X size={24} /> : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>}
-                </button>
+        <>
+            <div className="lg:hidden bg-white">
+                {/* Header with logo and icons */}
+                <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200 gap-2">
+                    <button 
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition"
+                    >
+                        {isMenuOpen ? <X size={24} /> : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>}
+                    </button>
 
-                <Link to="/" className="flex flex-col items-center text-center flex-1">
-                    <h1 className="text-sm font-bold tracking-tighter">프랑스</h1>
-                    <h1 className="text-lg font-black tracking-[0.2em] mt-[-4px]">HUNTRIX</h1>
-                </Link>
-
-                <div className="flex items-center gap-2">
-                    <div className="relative">
-                        <ExpandSearch />
-                    </div>
-                    
-                    {/* User Menu */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setShowUserMenu(!showUserMenu)}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition hover:text-[#5E2251]"
-                        >
-                            <User size={20} />
-                        </button>
-                        
-                        {/* User Dropdown */}
-                        {showUserMenu && (
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                                {isAuthenticated ? (
-                                    <>
-                                        <div className="px-4 py-3 border-b border-gray-100">
-                                            <p className="text-sm font-semibold text-gray-900">
-                                                {user?.first_name} {user?.last_name}
-                                            </p>
-                                            <p className="text-xs text-gray-500">{user?.email}</p>
-                                        </div>
-                                        
-                                        <Link
-                                            to="/orders"
-                                            onClick={() => setShowUserMenu(false)}
-                                            className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#5E2251] transition-colors"
-                                        >
-                                            <Package size={16} />
-                                            Mes Commandes
-                                        </Link>
-                                        
-                                        {isAdmin() && (
-                                            <Link
-                                                to="/admin/management"
-                                                onClick={() => setShowUserMenu(false)}
-                                                className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#5E2251] transition-colors border-t border-gray-100"
-                                            >
-                                                <LayoutDashboard size={16} />
-                                                Dashboard Admin
-                                            </Link>
-                                        )}
-                                        
-                                        <button
-                                            onClick={handleLogout}
-                                            className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-gray-100"
-                                        >
-                                            <LogOut size={16} />
-                                            Déconnexion
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Link
-                                            to="/login"
-                                            onClick={() => setShowUserMenu(false)}
-                                            className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#5E2251] transition-colors"
-                                        >
-                                            Connexion
-                                        </Link>
-                                        <Link
-                                            to="/register"
-                                            onClick={() => setShowUserMenu(false)}
-                                            className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#5E2251] transition-colors border-t border-gray-100"
-                                        >
-                                            Inscription
-                                        </Link>
-                                    </>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                    
-                    {/* Cart */}
-                    <Link to="/cart" className="relative p-2 hover:bg-gray-100 rounded-lg transition hover:text-[#5E2251]">
-                        <ShoppingBag size={20} />
-                        {getItemCount() > 0 && (
-                            <span className="absolute top-1 right-1 w-5 h-5 bg-[#5E2251] text-white text-xs rounded-full flex items-center justify-center font-bold">
-                                {getItemCount()}
-                            </span>
-                        )}
+                    <Link to="/" className="flex flex-col items-center text-center flex-1">
+                        <h1 className="text-sm font-bold tracking-tighter">프랑스</h1>
+                        <h1 className="text-lg font-black tracking-[0.2em] mt-[-4px]">HUNTRIX</h1>
                     </Link>
-                </div>
-            </div>
 
-            {/* Menu Drawer */}
-            {isMenuOpen && (
-                <div className="bg-white border-t border-gray-200 max-h-[70vh] overflow-y-auto">
-                    <div className="p-4 space-y-4">
-                        {/* Best Sellers */}
-                        <Link
-                            to="/best-sellers"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="flex items-center justify-between font-bold text-sm uppercase"
-                        >
-                            <span>Best Sellers</span>
-                            <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">HOT</span>
-                        </Link>
-
-                        {/* Categories Parents */}
-                        {loading ? (
-                            <div className="p-4 text-center">
-                                <p className="text-xs text-gray-500">Chargement des catégories...</p>
-                            </div>
-                        ) : categories.length > 0 ? (
-                            categories.map((category) => {
-                                const hasChildren = category.children && category.children.length > 0;
-                                const isExpanded = expandedCategory === category.id;
-                                const isSingleLevel = isSingleLevelCategory(category);
-
-                                return (
-                                    <div key={category.id} className="border-b border-gray-200 pb-4">
-                                        {/* Catégorie parent */}
-                                        <div className="flex items-center justify-between gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    if (hasChildren) {
-                                                        toggleCategory(category.id);
-                                                    } else {
-                                                        setIsMenuOpen(false);
-                                                        navigate(`/category/${category.slug}`); // ✅ CORRIGÉ: utiliser slug
-                                                    }
-                                                }}
-                                                className="flex-1 text-left flex items-center gap-2 text-sm font-bold uppercase text-gray-900 hover:text-[#5E2251] transition py-2"
+                    <div className="flex items-center gap-2">
+                        <div className="relative">
+                            <ExpandSearch />
+                        </div>
+                        
+                        {/* User Menu */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowUserMenu(!showUserMenu)}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition hover:text-[#5E2251]"
+                            >
+                                <User size={20} />
+                            </button>
+                            
+                            {/* User Dropdown */}
+                            {showUserMenu && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                                    {isAuthenticated ? (
+                                        <>
+                                            <div className="px-4 py-3 border-b border-gray-100">
+                                                <p className="text-sm font-semibold text-gray-900">
+                                                    {user?.first_name} {user?.last_name}
+                                                </p>
+                                                <p className="text-xs text-gray-500">{user?.email}</p>
+                                            </div>
+                                            
+                                            <Link
+                                                to="/orders"
+                                                onClick={() => setShowUserMenu(false)}
+                                                className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#5E2251] transition-colors"
                                             >
-                                                {category.icon && (
-                                                    <img
-                                                        src={category.icon}
-                                                        alt={category.name}
-                                                        className="w-6 h-6 object-cover rounded flex-shrink-0"
+                                                <Package size={16} />
+                                                Mes Commandes
+                                            </Link>
+                                            
+                                            {isAdmin() && (
+                                                <Link
+                                                    to="/admin/management"
+                                                    onClick={() => setShowUserMenu(false)}
+                                                    className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#5E2251] transition-colors border-t border-gray-100"
+                                                >
+                                                    <LayoutDashboard size={16} />
+                                                    Dashboard Admin
+                                                </Link>
+                                            )}
+                                            
+                                            <button
+                                                onClick={handleLogout}
+                                                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-gray-100"
+                                            >
+                                                <LogOut size={16} />
+                                                Déconnexion
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link
+                                                to="/login"
+                                                onClick={() => setShowUserMenu(false)}
+                                                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#5E2251] transition-colors"
+                                            >
+                                                Connexion
+                                            </Link>
+                                            <Link
+                                                to="/register"
+                                                onClick={() => setShowUserMenu(false)}
+                                                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#5E2251] transition-colors border-t border-gray-100"
+                                            >
+                                                Inscription
+                                            </Link>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* ✅ MODIFIÉ: Cart button opens modal instead of linking to /cart */}
+                        <button 
+                            onClick={() => setIsCartOpen(true)}
+                            className="relative p-2 hover:bg-gray-100 rounded-lg transition hover:text-[#5E2251]">
+                            <ShoppingBag size={20} />
+                            {cartItems.length > 0 && (
+                                <span className="absolute top-1 right-1 w-5 h-5 bg-[#5E2251] text-white text-xs rounded-full flex items-center justify-center font-bold">
+                                    {cartItems.length}
+                                </span>
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Menu Drawer */}
+                {isMenuOpen && (
+                    <div className="bg-white border-t border-gray-200 max-h-[70vh] overflow-y-auto">
+                        <div className="p-4 space-y-4">
+                            {/* Best Sellers */}
+                            <Link
+                                to="/best-sellers"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="flex items-center justify-between font-bold text-sm uppercase"
+                            >
+                                <span>Best Sellers</span>
+                                <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">HOT</span>
+                            </Link>
+
+                            {/* Categories Parents */}
+                            {loading ? (
+                                <div className="p-4 text-center">
+                                    <p className="text-xs text-gray-500">Chargement des catégories...</p>
+                                </div>
+                            ) : categories.length > 0 ? (
+                                categories.map((category) => {
+                                    const hasChildren = category.children && category.children.length > 0;
+                                    const isExpanded = expandedCategory === category.id;
+                                    const isSingleLevel = isSingleLevelCategory(category);
+
+                                    return (
+                                        <div key={category.id} className="border-b border-gray-200 pb-4">
+                                            {/* Catégorie parent */}
+                                            <div className="flex items-center justify-between gap-2">
+                                                <button
+                                                    onClick={() => {
+                                                        if (hasChildren) {
+                                                            toggleCategory(category.id);
+                                                        } else {
+                                                            setIsMenuOpen(false);
+                                                            navigate(`/category/${category.slug}`); // ✅ CORRIGÉ: utiliser slug
+                                                        }
+                                                    }}
+                                                    className="flex-1 text-left flex items-center gap-2 text-sm font-bold uppercase text-gray-900 hover:text-[#5E2251] transition py-2"
+                                                >
+                                                    {category.icon && (
+                                                        <img
+                                                            src={category.icon}
+                                                            alt={category.name}
+                                                            className="w-6 h-6 object-cover rounded flex-shrink-0"
+                                                        />
+                                                    )}
+                                                    <span>{category.name}</span>
+                                                </button>
+                                                {hasChildren && (
+                                                    <Plus 
+                                                        size={16} 
+                                                        className={`transition-transform flex-shrink-0 ${isExpanded ? "rotate-45 text-[#5E2251]" : "text-gray-400"}`}
+                                                        onClick={() => toggleCategory(category.id)}
                                                     />
                                                 )}
-                                                <span>{category.name}</span>
-                                            </button>
-                                            {hasChildren && (
-                                                <Plus 
-                                                    size={16} 
-                                                    className={`transition-transform flex-shrink-0 ${isExpanded ? "rotate-45 text-[#5E2251]" : "text-gray-400"}`}
-                                                    onClick={() => toggleCategory(category.id)}
-                                                />
+                                            </div>
+
+                                            {/* Sous-catégories */}
+                                            {hasChildren && isExpanded && (
+                                                <div>
+                                                    {/* Mode grille pour catégories simples */}
+                                                    {isSingleLevel ? (
+                                                        renderGridSubcategories(category.children)
+                                                    ) : (
+                                                        /* Mode dropdown imbriqué pour catégories complexes */
+                                                        renderNestedSubcategories(category.children)
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
+                                    );
+                                })
+                            ) : (
+                                <p className="text-xs text-gray-500 text-center py-4">Aucune catégorie disponible</p>
+                            )}
+                        </div>
 
-                                        {/* Sous-catégories */}
-                                        {hasChildren && isExpanded && (
-                                            <div>
-                                                {/* Mode grille pour catégories simples */}
-                                                {isSingleLevel ? (
-                                                    renderGridSubcategories(category.children)
-                                                ) : (
-                                                    /* Mode dropdown imbriqué pour catégories complexes */
-                                                    renderNestedSubcategories(category.children)
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <p className="text-xs text-gray-500 text-center py-4">Aucune catégorie disponible</p>
-                        )}
+                        {/* Language/Currency Footer */}
+                        <div className="border-t border-gray-200 p-4">
+                            <button className="w-full flex items-center justify-between text-xs font-semibold text-gray-700 bg-gray-100 p-2 rounded hover:bg-gray-200 transition">
+                                <span>🌍 Madagascar (EUR €)</span>
+                                <ChevronRight size={14} />
+                            </button>
+                        </div>
                     </div>
+                )}
+            </div>
 
-                    {/* Language/Currency Footer */}
-                    <div className="border-t border-gray-200 p-4">
-                        <button className="w-full flex items-center justify-between text-xs font-semibold text-gray-700 bg-gray-100 p-2 rounded hover:bg-gray-200 transition">
-                            <span>🌍 Madagascar (EUR €)</span>
-                            <ChevronRight size={14} />
-                        </button>
-                    </div>
-                </div>
-            )}
-        </div>
+            {/* ✅ NOUVEAU: CartModal */}
+            <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+        </>
     );
 }
