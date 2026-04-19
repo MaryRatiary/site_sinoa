@@ -88,12 +88,12 @@ export const AdminOrdersEnhanced = ({ orders, onRefresh }) => {
     const headers = ['ID', 'Client', 'Email', 'Montant', 'Statut', 'Paiement', 'Date'];
     const data = filteredAndSortedOrders.map(order => [
       order.id,
-      `${order.first_name} ${order.last_name}`,
+      `${order.firstname} ${order.lastname}`,
       order.email,
-      order.total_price,
+      order.totalprice,
       order.status,
-      order.payment_status || 'N/A',
-      new Date(order.created_at).toLocaleDateString('fr-FR')
+      order.paymentstatus || 'N/A',
+      new Date(order.createdat).toLocaleDateString('fr-FR')
     ]);
 
     const csv = [
@@ -119,7 +119,7 @@ export const AdminOrdersEnhanced = ({ orders, onRefresh }) => {
       const search = searchTerm.toLowerCase();
       result = result.filter(order =>
         order.id.toString().includes(search) ||
-        `${order.first_name} ${order.last_name}`.toLowerCase().includes(search) ||
+        `${order.firstname} ${order.lastname}`.toLowerCase().includes(search) ||
         order.email.toLowerCase().includes(search)
       );
     }
@@ -131,25 +131,25 @@ export const AdminOrdersEnhanced = ({ orders, onRefresh }) => {
 
     // Payment filter
     if (filterPayment !== 'all') {
-      result = result.filter(order => (order.payment_status || 'unpaid') === filterPayment);
+      result = result.filter(order => (order.paymentstatus || 'unpaid') === filterPayment);
     }
 
     // Date range filter
     if (dateRange.start) {
       result = result.filter(order => 
-        new Date(order.created_at) >= new Date(dateRange.start)
+        new Date(order.createdat) >= new Date(dateRange.start)
       );
     }
     if (dateRange.end) {
       result = result.filter(order => 
-        new Date(order.created_at) <= new Date(dateRange.end)
+        new Date(order.createdat) <= new Date(dateRange.end)
       );
     }
 
     // Price range filter
     result = result.filter(order =>
-      parseFloat(order.total_price) >= priceRange.min &&
-      parseFloat(order.total_price) <= priceRange.max
+      parseFloat(order.totalprice) >= priceRange.min &&
+      parseFloat(order.totalprice) <= priceRange.max
     );
 
     // Sort
@@ -432,18 +432,18 @@ export const AdminOrdersEnhanced = ({ orders, onRefresh }) => {
 
                     <div className="min-w-0">
                       <p className="text-xs sm:text-sm text-gray-600 font-semibold uppercase">Client</p>
-                      <p className="font-semibold text-gray-900 text-sm truncate">{order.first_name} {order.last_name}</p>
+                      <p className="font-semibold text-gray-900 text-sm truncate">{order.firstname} {order.lastname}</p>
                       <p className="text-xs text-gray-600 truncate">{order.email}</p>
                     </div>
 
                     <div className="hidden sm:block">
                       <p className="text-xs sm:text-sm text-gray-600 font-semibold uppercase">Montant</p>
-                      <p className="font-bold text-green-600 text-base sm:text-lg">{parseFloat(order.total_price).toFixed(2)}€</p>
+                      <p className="font-bold text-green-600 text-base sm:text-lg">{parseFloat(order.totalprice).toFixed(2)}€</p>
                     </div>
 
                     <div className="hidden lg:block">
                       <p className="text-xs text-gray-600 font-semibold uppercase">Date</p>
-                      <p className="text-sm text-gray-900">{new Date(order.created_at).toLocaleDateString('fr-FR')}</p>
+                      <p className="text-sm text-gray-900">{new Date(order.createdat).toLocaleDateString('fr-FR')}</p>
                     </div>
 
                     <div>
@@ -453,8 +453,8 @@ export const AdminOrdersEnhanced = ({ orders, onRefresh }) => {
                           {getStatusIcon(order.status)}
                           <span className="capitalize">{order.status}</span>
                         </div>
-                        <div className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold w-fit ${getPaymentBg(order.payment_status || 'unpaid')}`}>
-                          {order.payment_status || 'unpaid'}
+                        <div className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold w-fit ${getPaymentBg(order.paymentstatus || 'unpaid')}`}>
+                          {order.paymentstatus || 'unpaid'}
                         </div>
                       </div>
                     </div>
