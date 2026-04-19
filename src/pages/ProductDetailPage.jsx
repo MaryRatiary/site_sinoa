@@ -11,7 +11,7 @@ import RelatedProducts from "../components/composants/RelatedProduct";
 
 const PLACEHOLDER_IMAGE = "https://via.placeholder.com/500?text=Image+non+disponible";
 
-// ── Inline bold/italic parser ──────────────────────────────────────────────
+// Inline bold/italic parser ──────────────────────────────────────────────
 function parseInline(text) {
   const parts = [];
   const regex = /(\*\*(.+?)\*\*|\*(.+?)\*)/g;
@@ -321,16 +321,16 @@ export default function ProductDetailPage() {
     ? Math.round(((numOriginalPrice - numPrice) / numOriginalPrice) * 100)
     : null;
 
-  // ✅ CORRIGÉ: Les flèches changent juste currentImageIndex (la couleur se synchro via useEffect)
-  const nextImage = () => {
-    if (images.length <= 1) return;
-    setCurrentImageIndex(prev => (prev + 1) % images.length);
-  };
-  
-  const prevImage = () => {
-    if (images.length <= 1) return;
-    setCurrentImageIndex(prev => (prev - 1 + images.length) % images.length);
-  };
+    // ✅ CORRIGÉ: Les flèches changent juste currentImageIndex (la couleur se synchro via useEffect)
+    const nextImage = () => {
+      if (images.length <= 1) return;
+      setCurrentImageIndex(prev => (prev + 1) % images.length);
+    };
+    
+    const prevImage = () => {
+      if (images.length <= 1) return;
+      setCurrentImageIndex(prev => (prev - 1 + images.length) % images.length);
+    }; 
 
   const rawDescription = typeof product.description === "string" ? product.description : "";
 
