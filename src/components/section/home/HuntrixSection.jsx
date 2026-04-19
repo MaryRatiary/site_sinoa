@@ -8,7 +8,6 @@ const HuntrixSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ CORRIGÉ: Utilise les NOMS de catégories (Peluches, Figurines, Box & Cosplay)
   const HUNTRIX_CATEGORIES = ['Peluches', 'Figurines', 'Box & Cosplay'];
 
   useEffect(() => {
@@ -16,51 +15,24 @@ const HuntrixSection = () => {
       try {
         setLoading(true);
 
-        // 1. Récupérer TOUS les produits
         const allProducts = await productsAPI.getAll('?limit=50000');
         
-        console.log('🔍 HuntrixSection DEBUG:');
-        console.log('   Total products:', allProducts.length);
-        
         if (!allProducts || allProducts.length === 0) {
-          console.warn('⚠️  No products returned from API!');
           setProducts([]);
           setLoading(false);
           return;
         }
 
-        // 2. Afficher les noms de catégories disponibles
-        const availableCategories = [...new Set(allProducts.map(p => p.category_name))];
-        console.log('   Available category_name values:');
-        availableCategories.forEach(cat => {
-          const count = allProducts.filter(p => p.category_name === cat).length;
-          console.log(`     - "${cat}": ${count} products`);
-        });
-
-        // 3. Filtrer par catégories Huntrix (en utilisant category_name)
         const filteredProducts = allProducts.filter(p => {
-          const match = HUNTRIX_CATEGORIES.includes(p.category_name);
-          if (match && p.id === allProducts.find(prod => HUNTRIX_CATEGORIES.includes(prod.category_name))?.id) {
-            console.log(`   ✅ Found Huntrix product: "${p.name}" in category "${p.category_name}"`);
-          }
-          return match;
+          return HUNTRIX_CATEGORIES.includes(p.category_name);
         });
 
-        console.log(`🧸 ${filteredProducts.length} produits Huntrix trouvés`);
-
-        if (filteredProducts.length === 0) {
-          console.warn('⚠️  No products matched Huntrix categories!');
-          console.log('   Expected categories:', HUNTRIX_CATEGORIES);
-          console.log('   Available categories:', availableCategories);
-        }
-
-        // 4. Limiter à 20 produits max
         const limitedProducts = filteredProducts.slice(0, 20);
         
         setProducts(limitedProducts);
         setLoading(false);
       } catch (error) {
-        console.error('❌ Erreur lors du chargement des produits Huntrix:', error);
+        console.error('Erreur lors du chargement des produits Huntrix:', error);
         setProducts([]);
         setLoading(false);
       }
@@ -69,7 +41,6 @@ const HuntrixSection = () => {
     fetchProducts();
   }, []);
 
-  // ── Loader ──────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <section ref={ref} className="scroll-animate flex flex-col lg:flex-row gap-3 md:gap-6 items-start px-0">
@@ -89,7 +60,6 @@ const HuntrixSection = () => {
     );
   }
 
-  // ── Empty state ─────────────────────────────────────────────────────────
   if (products.length === 0) {
     return (
       <section ref={ref} className="scroll-animate flex flex-col lg:flex-row gap-3 md:gap-6 items-start px-0">
@@ -114,11 +84,9 @@ const HuntrixSection = () => {
     );
   }
 
-  // ── Success state ────────────────────────────────────────────────────────
   return (
     <section ref={ref} className="scroll-animate flex flex-col lg:flex-row gap-3 md:gap-6 items-start px-0">
       
-      {/* Image Huntrix */}
       <div className="relative z-20 w-full sm:w-[55vw] lg:w-[280px] 
                       aspect-video h-[250px] 
                       sm:aspect-[5/6] sm:h-auto lg:h-[450px] 
@@ -134,7 +102,6 @@ const HuntrixSection = () => {
         </div>
       </div>
 
-      {/* Produits Scroll */}
       <div className="w-full flex flex-nowrap overflow-x-auto gap-3 pb-6 snap-x snap-mandatory scrollbar-hide focus:outline-none">
         {products.map((product, index) => (
           <div 
@@ -142,7 +109,6 @@ const HuntrixSection = () => {
             className="flex-shrink-0 w-[45vw] sm:w-[40vw] md:w-[30vw] lg:w-[220px] snap-start"
           >
             <div className="h-[200px] md:h-auto overflow-hidden rounded-lg">
-              {/* ✅ CORRIGÉ: Inverser les prix - original_price affiché, price barré */}
               <ProductCard
                 slug={product.slug || `product-${product.id}`}
                 className="w-full h-full object-cover shadow-sm hover:shadow-md transition-shadow border border-gray-50"

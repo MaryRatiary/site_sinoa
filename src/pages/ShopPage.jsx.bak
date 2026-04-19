@@ -2,10 +2,14 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Filter, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductCard2 } from "../components/card/ProductCard2";
+import { ProductCard } from "../components/card/ProductCard";
 import Navbar from "../components/composants/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from "../components/composants/Footer";
 import { productsAPI } from "../services/api";
+import bestSellers from "../data/bestSellers";
+import huntrix from "../data/huntrixProducts";
+import lightStick from "../data/lightStick";
 
 const SORT_OPTIONS = [
   { value: 'random', label: 'Aléatoire' },
@@ -49,7 +53,7 @@ export default function ShopPage() {
   useEffect(() => {
     const fetchDb = async () => {
       try {
-        const data = await productsAPI.getAll('?limit=50000');
+        const data = await productsAPI.getAll('?limit=200');
         setDbProducts(data || []);
       } catch {
         setDbProducts([]);
@@ -60,14 +64,34 @@ export default function ShopPage() {
     fetchDb();
   }, []);
 
-  const allProducts = useMemo(() => 
-    shuffleArray(dbProducts || []), [dbProducts]);
+  const staticProducts = useMemo(() => [
+    ...bestSellers,
+    ...huntrix,
+    ...lightStick,
+    ...fashion.map(p => ({ ...p, name: p.name || p.title })),
+    ...beauty.map(p => ({ ...p, name: p.name || p.title })),
+  ].map(p => ({ ...p, _source: 'static' })), []);
+
+  const normalizedDbProducts = useMemo(() =>
+    dbProducts.map(p => ({ ...p, _source: 'db' })), [dbProducts]);
+
+  const allProducts = useMemo(() => {
+    const slugsSeen = new Set();
+    const merged = [...staticProducts, ...normalizedDbProducts].filter(p => {
+      const key = p.slug || p.id;
+      if (!key || slugsSeen.has(key)) return false;
+      slugsSeen.add(key);
+      return true;
+    });
+    return shuffleArray(merged);
+  }, [staticProducts, normalizedDbProducts]);
 
   const sortedProducts = useMemo(() => {
-    setCurrentPage(1);
+    setCurrentPage(1); // reset page quand on change le tri
     return applySort(allProducts, sortBy);
   }, [allProducts, sortBy]);
 
+  // Pagination
   const totalPages = Math.ceil(sortedProducts.length / PRODUCTS_PER_PAGE);
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
@@ -84,6 +108,7 @@ export default function ShopPage() {
     if (target) navigate(`/product/${target}`);
   };
 
+  // Génère les numéros de pages à afficher
   const getPageNumbers = () => {
     if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
     const pages = [];
@@ -193,13 +218,27 @@ export default function ShopPage() {
         ) : paginatedProducts.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {paginatedProducts.map((product, idx) => (
-              <div
-                key={`product-${product.id}-${idx}`}
-                className="flex flex-col group cursor-pointer"
-                onClick={() => handleClick(product)}
-              >
-                <ProductCard2 product={product} />
-              </div>
+              product._source === 'db' ? (
+                <div
+                  key={`db-${product.id}-${idx}`}
+                  className="flex flex-col group cursor-pointer"
+                  onClick={() => handleClick(product)}
+                >
+                  <ProductCard2 product={product} />
+                </div>
+              ) : (
+                <ProductCard
+                  key={`static-${product.id || product.slug}-${idx}`}
+                  id={product.id}
+                  slug={product.slug}
+                  image={product.url || product.image}
+                  hover_image={product.urlHover || product.hover_image}
+                  name={product.name || product.title}
+                  price={product.price || product.realPrice}
+                  original_price={product.original_price || product.reducedPrice}
+                  isEstimated={product.isEstimated}
+                />
+              )
             ))}
           </div>
         ) : (
@@ -213,6 +252,7 @@ export default function ShopPage() {
       {totalPages > 1 && (
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-8 pb-16">
           <div className="flex items-center justify-center gap-1 sm:gap-2">
+
             {/* Prev */}
             <button
               onClick={() => handlePageChange(currentPage - 1)}

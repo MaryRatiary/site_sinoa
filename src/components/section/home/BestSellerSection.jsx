@@ -8,7 +8,6 @@ const BestSellerSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ CORRIGÉ: Utilise les NOMS de catégories au lieu des IDs
   const CATEGORIES = {
     vetements: ['T-shirts & Débardeurs', 'Sweats & Pulls', 'Vestes & Costumes'],
     accessoires: ['Sacs & Maroquinerie', 'Bijoux & Accessoires', 'Mode & Protection'],
@@ -20,68 +19,40 @@ const BestSellerSection = () => {
       try {
         setLoading(true);
 
-        // 1. Récupérer TOUS les produits
         const allProducts = await productsAPI.getAll('?limit=50000');
         
-        console.log('🔍 BestSellerSection DEBUG:');
-        console.log('   Total products:', allProducts.length);
-        
         if (!allProducts || allProducts.length === 0) {
-          console.warn('⚠️  No products returned from API!');
           setProducts([]);
           setLoading(false);
           return;
         }
 
-        // 2. Afficher les noms de catégories disponibles
-        const availableCategories = [...new Set(allProducts.map(p => p.category_name))];
-        console.log('   Available category_name values:');
-        availableCategories.forEach(cat => {
-          const count = allProducts.filter(p => p.category_name === cat).length;
-          console.log(`     - "${cat}": ${count} products`);
-        });
-
-        // 3. Grouper les produits par catégorie (en utilisant category_name)
         const productsByCategory = {};
         
         Object.entries(CATEGORIES).forEach(([group_name, category_names]) => {
           productsByCategory[group_name] = allProducts.filter(p => {
-            const match = category_names.includes(p.category_name);
-            if (match && !productsByCategory[group_name]) {
-              console.log(`   ✅ Found "${p.category_name}" in ${group_name}`);
-            }
-            return match;
+            return category_names.includes(p.category_name);
           });
-          console.log(`   ${group_name}: ${productsByCategory[group_name].length} products`);
         });
 
-        // 4. Sélectionner aléatoirement 2 produits par catégorie
         const selectedProducts = [];
         
         Object.entries(productsByCategory).forEach(([group_name, groupProducts]) => {
           if (groupProducts.length === 0) {
-            console.warn(`   ⚠️  No products found for ${group_name}`);
             return;
           }
 
-          // Mélanger et prendre 2 aléatoires
           const shuffled = [...groupProducts].sort(() => Math.random() - 0.5);
           const twoRandom = shuffled.slice(0, 2);
           selectedProducts.push(...twoRandom);
         });
 
-        // 5. Mélanger les 6 produits finaux (2×3 catégories)
         const mixed = selectedProducts.sort(() => Math.random() - 0.5);
-        
-        console.log(`✅ ${mixed.length} produits Best Seller chargés`);
-        if (mixed.length === 0) {
-          console.warn('⚠️  No products matched the categories!');
-        }
         
         setProducts(mixed);
         setLoading(false);
       } catch (error) {
-        console.error('❌ Erreur lors du chargement des produits:', error);
+        console.error('Erreur lors du chargement des produits:', error);
         setProducts([]);
         setLoading(false);
       }
@@ -90,7 +61,6 @@ const BestSellerSection = () => {
     fetchProducts();
   }, []);
 
-  // ── Loader ──────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <section className="w-full py-8 px-4 bg-white">
@@ -111,7 +81,6 @@ const BestSellerSection = () => {
     );
   }
 
-  // ── Empty state ─────────────────────────────────────────────────────────
   if (products.length === 0) {
     return null;
   }
@@ -131,7 +100,7 @@ const BestSellerSection = () => {
       .grid-container {
         grid-auto-flow: column;
         grid-template-rows: repeat(2, min-content);
-        --col-width: 42%;  /* ✅ ~2 cartes visibles */
+        --col-width: 42%;
       }
       @media (min-width: 768px) {
         .grid-container {
@@ -170,7 +139,6 @@ const BestSellerSection = () => {
 
               <div className="flex flex-col h-full space-y-3">
                 <div className="relative overflow-hidden rounded-xl border border-gray-100 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 bg-white">
-                  {/* ✅ CORRIGÉ: Inversé les prix - original_price affiché, price barré */}
                   <ProductCard
                     slug={product.slug || `product-${product.id}`}
                     image={product.image || product.url}

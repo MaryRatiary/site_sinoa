@@ -23,37 +23,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { categories, loading: categoriesLoading } = useCategories();
 
-  // 🔍 DEBUG: Log les catégories pour voir pourquoi elles ne s'affichent pas
-  useEffect(() => {
-    console.log('🔍 NAVBAR DEBUG:');
-    console.log('   categoriesLoading:', categoriesLoading);
-    console.log('   categories count:', categories.length);
-    console.log('   categories:', categories);
-    
-    if (categories.length > 0) {
-      console.log('   🔗 First category structure:', {
-        id: categories[0].id,
-        name: categories[0].name,
-        slug: categories[0].slug,
-        children: categories[0].children,
-        childrenCount: categories[0].children?.length || 0
-      });
-      
-      // Afficher la structure complète
-      categories.forEach((cat, idx) => {
-        console.log(`   Category ${idx}:`, {
-          id: cat.id,
-          name: cat.name,
-          level: cat.level,
-          parent_id: cat.parent_id,
-          children_count: cat.children?.length || 0
-        });
-      });
-    } else {
-      console.warn('⚠️  No categories loaded!');
-    }
-  }, [categories, categoriesLoading]);
-
   // Mesurer la hauteur de la navbar
   useEffect(() => {
     if (navRef.current) {
@@ -246,7 +215,6 @@ const Navbar = () => {
                 <p className="text-red-500 text-sm">❌ Aucune catégorie chargée</p>
               )}
               {categories.map((category) => {
-                console.log('📍 Rendering category:', category.name, 'has children:', category.children?.length);
                 return (
                   <div key={category.id} className="relative"
                     onMouseEnter={() => { keep(); open(`category-${category.id}`); }}

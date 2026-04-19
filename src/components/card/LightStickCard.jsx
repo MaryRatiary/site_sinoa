@@ -14,12 +14,10 @@ const LightStickCard = () => {
   const [displayProducts, setDisplayProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 1️⃣ Récupérer les IDs des catégories parents
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const allCategories = await categoriesAPI.getAllFlat();
-        console.log('📂 Catégories récupérées:', allCategories.length);
         
         const clothingParent = allCategories.find(
           cat => cat.name === 'Vêtements & Style' && cat.level === 0
@@ -57,21 +55,18 @@ const LightStickCard = () => {
 
         setCategories(newCategories);
         setCategoryIds(newIds);
-        console.log('✅ Catégories chargées:', newCategories);
       } catch (error) {
-        console.error('❌ Erreur lors du chargement des catégories:', error);
+        console.error('Erreur lors du chargement des catégories:', error);
       }
     };
 
     fetchCategories();
   }, []);
 
-  // 2️⃣ Récupérer les produits pour chaque catégorie
   const { products: allProducts, loading: allLoading } = useProducts('?limit=50000');
   const { products: clothingProducts, loading: clothingLoading } = useProductsByCategory(category_ids['clothing']);
   const { products: accessoriesProducts, loading: accessoriesLoading } = useProductsByCategory(category_ids['accessories']);
 
-  // 3️⃣ Filtrer et afficher les produits basés sur la catégorie sélectionnée
   useEffect(() => {
     let filtered = [];
 
@@ -86,10 +81,8 @@ const LightStickCard = () => {
     }
 
     setDisplayProducts(filtered.slice(0, 4));
-    console.log(`📊 ${filtered.length} produits affichés pour: ${selectedCategory}`);
   }, [selectedCategory, clothingProducts, accessoriesProducts, allProducts]);
 
-  // 4️⃣ Vérifier si on est en train de charger
   const isLoading = loading || allLoading || clothingLoading || accessoriesLoading || 
                     (selectedCategory === 'clothing' && clothingLoading) ||
                     (selectedCategory === 'accessories' && accessoriesLoading);
@@ -113,7 +106,6 @@ const LightStickCard = () => {
   return (
     <section className="w-full py-0 md:py-4 px-4 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto">
-        {/* Category Filter */}
         <div className="flex overflow-x-auto pb-6 scrollbar-hide gap-2 md:gap-3 mb-8 md:mb-10 justify-start md:justify-center">
           {categories.map((cat) => (
             <button
@@ -131,7 +123,6 @@ const LightStickCard = () => {
           ))}
         </div>
 
-        {/* Products Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-10 md:mb-12">
           {displayProducts.length > 0 ? (
             displayProducts.map((product, index) => (
@@ -143,7 +134,6 @@ const LightStickCard = () => {
                 <div className="relative p-0.5 rounded-lg md:rounded-xl transition-all duration-500 group-hover:shadow-xl">
                   <div className="absolute inset-0 rounded-lg md:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-gray-900/10 to-transparent pointer-events-none"></div>
                   <div className="bg-white rounded-lg md:rounded-xl overflow-hidden relative border border-gray-100 group-hover:border-gray-300 transition-colors">
-                    {/* ✅ CORRIGÉ: Inverser les prix - original_price affiché, price barré */}
                     <ProductCard
                       id={product.id}
                       slug={product.slug}
@@ -155,7 +145,6 @@ const LightStickCard = () => {
                       isEstimated={product.isEstimated}
                     />
                     
-                    {/* Category Badge */}
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:block">
                       <span className="text-[9px] font-black text-white px-2.5 py-1 rounded-md bg-gray-900 uppercase tracking-wider">
                         {product.category_name || 'Article'}
@@ -172,7 +161,6 @@ const LightStickCard = () => {
           )}
         </div>
 
-        {/* Divider */}
         <div className="flex items-center justify-center gap-4 py-8 md:py-10 border-y border-gray-200">
           <div className="hidden md:block h-px flex-1 bg-gradient-to-r from-transparent to-gray-200"></div>
           <span className="text-xs md:text-sm font-black text-gray-400 uppercase tracking-[0.2em]" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -181,7 +169,6 @@ const LightStickCard = () => {
           <div className="hidden md:block h-px flex-1 bg-gradient-to-l from-transparent to-gray-200"></div>
         </div>
 
-        {/* Call to Action */}
         <div className="mt-8 md:mt-10 text-center">
           <button 
             onClick={() => navigate('/shop')}

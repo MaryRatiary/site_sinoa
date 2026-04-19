@@ -59,7 +59,6 @@ export const categoriesAPI = {
 
   getChildren: (parent_id) => apiCall(`/categories/${parent_id}/children`),
 
-  // ✅ NOUVEAU: Vérifier ce qui sera supprimé avant suppression
   preDeleteCheck: (id) => apiCall(`/categories/${id}/delete-check`),
 
   create: (data) =>
@@ -112,14 +111,12 @@ export const productsAPI = {
       method: 'DELETE',
     }),
 
-  // Images
   addImage: (product_id, imageData) =>
     apiCall(`/products/${product_id}/images`, {
       method: 'POST',
       body: JSON.stringify(imageData),
     }),
 
-  // Tailles
   addSize: (product_id, size, stock) =>
     apiCall(`/products/${product_id}/sizes`, {
       method: 'POST',
@@ -132,7 +129,6 @@ export const productsAPI = {
       body: JSON.stringify({ stock }),
     }),
 
-  // Couleurs
   addColor: (product_id, color_name, color_hex, stock) =>
     apiCall(`/products/${product_id}/colors`, {
       method: 'POST',
@@ -169,25 +165,34 @@ export const cartAPI = {
 
 // ============ CHECKOUT / COMMANDES ============
 export const checkoutAPI = {
-  createOrder: (items, shippingAddress, paymentMethod, shippingDetails = {}) =>
-    apiCall('/checkout', {
+  createOrder: (items, shippingAddress, paymentMethod, shippingDetails = {}) => {
+    // Convertir les items pour correspondre au format attendu par le backend
+    const formattedItems = items.map(item => ({
+      productId: item.product_id || item.productId,
+      quantity: item.quantity,
+      size: item.size,
+      color: item.color,
+    }));
+
+    return apiCall('/checkout', {
       method: 'POST',
       body: JSON.stringify({ 
-        items, 
+        items: formattedItems, 
         shippingAddress, 
         paymentMethod,
-        first_name: shippingDetails.first_name,
-        last_name: shippingDetails.last_name,
+        firstName: shippingDetails.first_name,
+        lastName: shippingDetails.last_name,
         email: shippingDetails.email,
         phone: shippingDetails.phone,
         city: shippingDetails.city,
-        postal_code: shippingDetails.postal_code,
+        postalCode: shippingDetails.postal_code,
         country: shippingDetails.country,
         latitude: shippingDetails.latitude,
         longitude: shippingDetails.longitude,
         notes: shippingDetails.notes
       }),
-    }),
+    });
+  },
 
   getUserOrders: () => apiCall('/checkout'),
 

@@ -13,7 +13,6 @@ export const useCategories = () => {
         const data = await categoriesAPI.getAll();
         setCategories(data);
         setError(null);
-        console.log('✅ Categories loaded:', data.length);
       } catch (err) {
         console.error('❌ Error fetching categories:', err);
         setError(err.message);
@@ -28,7 +27,6 @@ export const useCategories = () => {
   const getCategoryById = (id) =>
     categories.find(cat => cat.id === parseInt(id));
 
-  // ✅ FIXED: Changed from 'parentid' to 'parent_id' (matches backend)
   const getChildCategories = (parent_id) =>
     categories.filter(cat => cat.parent_id === parseInt(parent_id));
 
@@ -53,11 +51,9 @@ export const useChildCategories = (parent_id) => {
     const fetchChildren = async () => {
       try {
         setLoading(true);
-        // ✅ Utilise l'endpoint dédié au lieu de tout récupérer et filtrer côté client
         const data = await categoriesAPI.getChildren(parent_id);
         setChildren(data);
         setError(null);
-        console.log(`✅ Child categories loaded for parent ${parent_id}:`, data.length);
       } catch (err) {
         console.error('❌ Error fetching child categories:', err);
         setError(err.message);
