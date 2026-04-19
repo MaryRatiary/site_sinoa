@@ -5,7 +5,7 @@ import Navbar from "../components/composants/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from "../components/composants/Footer";
 import { useProductBySlug } from "../hooks/useProducts";
-import { useCart } from "../store/CartContext";
+import { useCart } from "../context/CartContext";
 import ReviewsSection from "../components/composants/ReviewsSection";
 import RelatedProducts from "../components/composants/RelatedProduct";
 
@@ -179,7 +179,8 @@ function MarkdownDescription({ markdown }) {
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
+
 
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -306,6 +307,7 @@ export default function ProductDetailPage() {
 
   const rawDescription = typeof product.description === "string" ? product.description : "";
 
+  // ✅ CORRIGÉ: Passer les paramètres correctement
   const handleAddToCart = () => {
     if (product.sizes?.length > 0 && !selectedSize) {
       alert("Veuillez sélectionner une taille");
@@ -315,6 +317,8 @@ export default function ProductDetailPage() {
       alert("Veuillez sélectionner une couleur");
       return;
     }
+    
+    // ✅ Appeler addToCart avec les bons paramètres
     addToCart(
       {
         id: product.id,
@@ -322,8 +326,14 @@ export default function ProductDetailPage() {
         price: product.price,
         image: images[0] || PLACEHOLDER_IMAGE,
       },
-      { quantity, size: selectedSize, color: selectedColor }
+      quantity,  // ✅ quantity en tant que nombre
+      selectedSize,  // ✅ selectedSize
+      selectedColor  // ✅ selectedColor
     );
+    
+    // ✅ Ouvrir le modal du panier immédiatement
+    openCart();
+    
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2200);
   };
@@ -594,8 +604,6 @@ export default function ProductDetailPage() {
                   {images.map((img, idx) => (
                     <button key={idx} 
                       onClick={() => {
-                        // ✅ CORRIGÉ: On change juste currentImageIndex
-                        // La couleur se synchronise automatiquement via le useEffect
                         setCurrentImageIndex(idx);
                       }}
                       className={`thumb-btn aspect-square rounded-2xl overflow-hidden border-2 bg-white ${
@@ -668,10 +676,10 @@ export default function ProductDetailPage() {
                   <div className="flex flex-wrap gap-3">
                     {product.colors
                       .map((color, idx) => ({ color, idx }))
-                      .filter(({ idx }) => idx < images.length) // ✅ NE MONTRER QUE LES COULEURS AVEC UNE PHOTO
+                      .filter(({ idx }) => idx < images.length)
                       .map(({ color, idx }) => {
                         const name = color.color_name || color.name || color;
-                        const colorImage = images[idx]; // Plus de PLACEHOLDER ici
+                        const colorImage = images[idx];
                         const isActive = selectedColor === name;
                         return (
                           <button key={name} onClick={() => {

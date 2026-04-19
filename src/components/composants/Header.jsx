@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, ShoppingBag, ChevronDown, LogOut, LayoutDashboard, Package } from 'lucide-react';
-import { useCart } from '../../store/CartContext';
+import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useCategories } from '../../hooks/useCategories';
 import ExpandSearch from '../forms/ExpandSearch';
 import AnimatedBanner from './AnimatedBanner';
+import CartModal from '../cart/CartModal'; // 👈 NOUVEAU
 
 const Navbar = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false); // 👈 NOUVEAU
   const [isVisible, setIsVisible] = useState(true);
   const [navHeight, setNavHeight] = useState(0);
 
@@ -18,7 +20,8 @@ const Navbar = () => {
   const ticking = useRef(false);
   const timeoutRef = useRef(null);
 
-  const { getItemCount } = useCart();
+  // ✅ CORRECTION 1: Utiliser cartItems au lieu de getItemCount
+  const { cartItems } = useCart();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const { categories, loading: categoriesLoading } = useCategories();
@@ -189,15 +192,19 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Cart */}
-            <Link to="/cart" className="relative hover:text-[#5E2251] transition-colors duration-200">
+            {/* Cart - MODIFIÉ POUR OUVRIR LE MODAL */}
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative hover:text-[#5E2251] transition-colors duration-200"
+            >
               <ShoppingBag size={21} strokeWidth={1.5} />
-              {getItemCount() > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#5E2251] text-white text-[9px] font-black min-w-[18px] min-h-[18px] rounded-full flex items-center justify-center px-1">
-                  {getItemCount()}
+              {/* ✅ CORRECTION 2: Utiliser cartItems.length au lieu de getItemCount() */}
+              {cartItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#5E2251] text-white text-[9px] font-black min-w-[18px] min-h-[18px] rounded-full flex items-center justify-center px-1 animate-pulse">
+                  {cartItems.length}
                 </span>
               )}
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -312,6 +319,9 @@ const Navbar = () => {
           );
         })}
       </nav>
+
+      {/* 👇 NOUVEAU: CartModal */}
+      <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   );
 };

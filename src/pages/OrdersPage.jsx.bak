@@ -158,7 +158,7 @@ export default function OrdersPage() {
                             <div>
                               <p className="text-sm text-gray-600 font-semibold uppercase mb-1">Date</p>
                               <p className="font-semibold text-gray-900">
-                                {new Date(order.created_at).toLocaleDateString('fr-FR', {
+                                {new Date(order.createdat).toLocaleDateString('fr-FR', {
                                   year: 'numeric',
                                   month: 'long',
                                   day: 'numeric',
@@ -172,7 +172,7 @@ export default function OrdersPage() {
                             <DollarSign className="text-green-500 mt-1" size={20} />
                             <div>
                               <p className="text-sm text-gray-600 font-semibold uppercase mb-1">Total</p>
-                              <p className="text-lg font-bold text-green-600">{order.total_price}€</p>
+                              <p className="text-lg font-bold text-green-600">{order.totalprice}€</p>
                             </div>
                           </div>
 
@@ -205,9 +205,9 @@ export default function OrdersPage() {
                             Adresse de livraison
                           </h3>
                           <div className="bg-white rounded-lg p-4 space-y-2 text-gray-700">
-                            <p className="font-semibold">{order.shipping_address}</p>
+                            <p className="font-semibold">{order.shippingaddress}</p>
                             <p>{order.city}</p>
-                            <p>{order.postal_code}</p>
+                            <p>{order.postalcode}</p>
                             <p className="font-semibold text-gray-900">{order.country}</p>
                             {order.latitude && order.longitude && typeof order.latitude === 'number' && typeof order.longitude === 'number' && (
                               <p className="text-xs text-gray-500 font-mono pt-2 border-t">
@@ -229,7 +229,7 @@ export default function OrdersPage() {
                               <div className="flex-1">
                                 <p className="font-semibold text-gray-900">Commande confirmée</p>
                                 <p className="text-sm text-gray-600">
-                                  {new Date(order.created_at).toLocaleDateString('fr-FR', {
+                                  {new Date(order.createdat).toLocaleDateString('fr-FR', {
                                     hour: '2-digit',
                                     minute: '2-digit',
                                   })}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../store/CartContext';
+import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { checkoutAPI } from '../services/api';
 import { Trash2, Plus, Minus, CheckCircle, AlertCircle, Package, CreditCard, Truck, Lock, MapPin, Phone, Mail, Shield } from 'lucide-react';

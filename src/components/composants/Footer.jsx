@@ -20,6 +20,18 @@ export default function Footer() {
     }
   ]
 
+  // ✅ Logos de paiement
+  const paymentLogos = [
+    { name: 'Visa', src: '/paiement/Visa.svg' },
+    { name: 'Mastercard', src: '/paiement/masstercard.svg' },
+    { name: 'American Express', src: '/paiement/amex.svg' },
+    { name: 'PayPal', src: '/paiement/Shop.svg' },
+    { name: 'Apple Pay', src: '/paiement/applepay.svg' },
+    { name: 'Google Pay', src: '/paiement/Gpay.svg' },
+    { name: 'Bancontact', src: '/paiement/bancontact.svg' },
+    { name: 'UnionPay', src: '/paiement/unionPay.svg' },
+  ];
+
   const toggleSection = (title) => {
     // On ne toggle que sur mobile (en dessous de 1024px par exemple)
     if (window.innerWidth < 1024) {
@@ -102,13 +114,32 @@ export default function Footer() {
         </div>
 
         {/* Footer Bottom */}
-        <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-center">
-          <div className="text-[11px] uppercase tracking-widest text-gray-500">
-            &copy; {currentYear} Huntrix Boutique.
+        <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-[11px] uppercase tracking-widest text-gray-500 text-center md:text-left order-2 md:order-1">
+            &copy; {currentYear} Huntrix Boutique. Tous droits réservés.
           </div>
-          <div className="flex items-center gap-3 grayscale opacity-40">
-             <div className="px-2 py-1 border border-white/20 rounded text-[10px] font-bold text-white">VISA</div>
-             <div className="px-2 py-1 border border-white/20 rounded text-[10px] font-bold text-white">PAYPAL</div>
+
+          {/* ✅ Logos de paiement acceptés */}
+          <div className="flex flex-col items-center gap-2 order-1 md:order-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Paiements acceptés</p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {paymentLogos.map((logo) => (
+                <div 
+                  key={logo.name}
+                  className="bg-white/5 rounded-lg p-2 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
+                  title={logo.name}
+                >
+                  <img
+                    src={logo.src}
+                    alt={logo.name}
+                    className="h-5 w-auto object-contain"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

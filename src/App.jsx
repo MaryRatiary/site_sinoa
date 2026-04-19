@@ -1,7 +1,8 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import { CartProvider } from './context/CartContext'
+import { CartProvider, useCart } from './context/CartContext'
+import CartModal from './components/cart/CartModal'
 
 
 // Pages existantes
@@ -12,7 +13,7 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ShopPage from './pages/ShopPage'
 import CartPage from './pages/CartPage'
-import CheckoutPage from './pages/CheckoutPage'
+import CheckoutPage from './components/pages/CheckoutPage'
 import OrdersPage from './pages/OrdersPage'
 import OrderDetailPage from './pages/OrderDetailPage'
 import AdminDashboard from './components/admin/AdminDashboard'
@@ -119,6 +120,18 @@ const AppRoutes = () => {
   );
 };
 
+// ✅ Composant pour afficher le CartModal
+const AppContent = () => {
+  const { isCartOpen, closeCart } = useCart();
+
+  return (
+    <>
+      <AppRoutes />
+      <CartModal isOpen={isCartOpen} onClose={closeCart} />
+    </>
+  );
+};
+
 const App = () => {
   React.useEffect(() => {
     // Initialiser la variable CSS pour le sidebar
@@ -129,7 +142,7 @@ const App = () => {
     <Router>
       <AuthProvider>
         <CartProvider>
-          <AppRoutes />
+          <AppContent />
         </CartProvider>
       </AuthProvider>
     </Router>

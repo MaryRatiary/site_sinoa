@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight, Search, User, ShoppingBag, X, Plus, LogOut, Package, LayoutDashboard } from "lucide-react";
 import { categoriesAPI } from "../../services/api";
-import { useCart } from "../../store/CartContext";
+import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import ExpandSearch from "../forms/ExpandSearch";
 
