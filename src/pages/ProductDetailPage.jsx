@@ -158,6 +158,33 @@ function MarkdownDescription({ markdown }) {
                 ))}
               </ul>
             );
+          case "table":
+            return (
+              <div key={block.key} className="desc-table-wrapper overflow-x-auto -mx-1.5">
+                <table className="desc-table w-full border-collapse min-w-max sm:min-w-full">
+                  <thead>
+                    <tr className="bg-[#5E2251]/8 border-b-2 border-[#5E2251]/30">
+                      {block.headers.map((header, idx) => (
+                        <th key={idx} className="desc-table-header px-3 sm:px-4 py-3 text-left font-bold text-[#5E2251] text-xs sm:text-sm border-r border-[#5E2251]/10 last:border-r-0 whitespace-nowrap sm:whitespace-normal">
+                          <InlineText text={header} />
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {block.rows.map((row, rowIdx) => (
+                      <tr key={rowIdx} className={`border-b border-gray-200/50 ${rowIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'} hover:bg-[#5E2251]/3 transition-colors`}>
+                        {row.map((cell, cellIdx) => (
+                          <td key={cellIdx} className="desc-table-cell px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-700 border-r border-gray-200/30 last:border-r-0">
+                            <InlineText text={cell} />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
           case "p":
             return (
               <p key={block.key} className="desc-p-text">
