@@ -474,8 +474,24 @@ export default function ReviewsSection({ product_id }) {
                 {selectedReview.content}
               </p>
 
-              {/* PRODUCT IMAGES - GALLERY */}
-              {selectedReview.images && selectedReview.images.length > 0 && (
+              {/* PRODUCT IMAGES - GALLERY - FIXED */}
+              {selectedReview.productImage ? (
+                <div className="mb-6 sm:mb-8">
+                  <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
+                    📸 Photo du produit
+                  </p>
+                  <div className="flex justify-center">
+                    <img
+                      src={selectedReview.productImage}
+                      alt="Photo du produit"
+                      className="max-w-full h-auto max-h-96 object-cover rounded-lg border-2 border-[#5E2251] shadow-lg"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/400?text=Photo+Produit';
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : selectedReview.images && selectedReview.images.length > 0 ? (
                 <div className="mb-6 sm:mb-8">
                   <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
                     Photos du produit ({selectedReview.images.length})
@@ -494,7 +510,7 @@ export default function ReviewsSection({ product_id }) {
                     ))}
                   </div>
                 </div>
-              )}
+              ) : null}
 
               {/* MODAL FOOTER */}
               <div className="border-t border-gray-200 pt-4 sm:pt-6 flex items-center gap-4 sm:gap-6">

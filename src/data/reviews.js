@@ -5,14 +5,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=1",
     rating: 5,
     date: "2026-03-15",
-    title: "T-shirt BLACKPINK parfait !",
-    content: "J'ai commandé le t-shirt BLACKPINK Pink edition et c'est absolument magnifique ! Le design est identique aux photos, la qualité du tissu est excellente et le rendu des couleurs est impeccable. Je suis très impressionnée !",
+    title: "Poupées Huntrix Demon Hunters magnifiques !",
+    content: "J'ai commandé les Poupées Huntrix Demon Hunters et c'est absolument incroyable ! Le design des personnages Rumi, Mira et Zoey est fidèle, la qualité du PVC est excellente et les finitions sont impeccables.",
     verified: true,
     helpful: 24,
-    productImage: "/photo review/t-shirt blackpinfk.jpg",
-    product: "T-shirt BLACKPINK",
-    productUrl: "https://huntrix.com/products/blackpink-pink-edition-tshirt",
-    prompt: "Professional product photography of a BLACKPINK pink edition t-shirt laid flat on a white background, showing the front design with the group's logo in vibrant colors, with a delivery box partially visible in the corner. High quality, clean lighting, 500x500px"
+    productImage: "/photo review/Poupées Huntrix Demon Hunters.jpeg",
+    product: "Poupées Huntrix Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/poupees-huntrix"
   },
   {
     id: 2,
@@ -20,14 +19,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=2",
     rating: 4,
     date: "2026-03-14",
-    title: "Photocard BTS bien reçue",
-    content: "J'ai reçu le set de 10 photocards BTS Dynamite. Elles sont en super état, pas de plis ni rayures. Un petit bémol sur le packaging qui aurait pu être mieux protégé, mais les cartes sont parfaites !",
+    title: "Calendrier Avent Huntrix bien reçu",
+    content: "J'ai reçu le Calendrier de l'Avent KPop Demon Hunters avec 24 surprises. Chaque jour révèle une pièce unique. Un petit bémol sur le packaging mais le contenu est parfait !",
     verified: true,
     helpful: 18,
-    productImage: "/photo review/carte bts.jpg",
-    product: "Photocards BTS Dynamite",
-    productUrl: "https://huntrix.com/products/bts-dynamite-photocards-set-10",
-    prompt: "Professional photography of a fan-out display of 10 BTS Dynamite photocards arranged in a fan pattern on a clean white background, showing the colorful member cards with Dynamite era styling, next to a cardboard shipping box. High resolution, vibrant colors, 500x500px"
+    productImage: "/photo review/Calendrier de l'Avent KPop Demon Hunters.jpeg",
+    product: "Calendrier de l'Avent KPop Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/calendrier-avent-kpop-demon-hunters"
   },
   {
     id: 3,
@@ -35,14 +33,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=3",
     rating: 5,
     date: "2026-03-13",
-    title: "Lightstick TWICE incroyable !",
-    content: "Le lightstick TWICE officiel que j'ai commandé est fabuleux ! Les couleurs changent parfaitement, la batterie tient longtemps, et le design est exactement comme en concert. Mes amis fans l'adorent aussi !",
+    title: "Baskets LED Demon Hunters incroyables !",
+    content: "Les Baskets LED KPop Demon Hunters sont fabuleux ! Les lumières LED s'activent automatiquement à chaque pas, les couleurs sont éclatantes. Mes enfants les adorent !",
     verified: true,
     helpful: 31,
-    productImage: "/photo review/lightstick.jpg",
-    product: "Lightstick TWICE",
-    productUrl: "https://huntrix.com/products/twice-official-lightstick-deluxe",
-    prompt: "Professional product shot of an official TWICE lightstick glowing with pink and purple LED lights, held vertically with a delivery box in the background, white clean background. The lightstick should show the group's official design and colors. High quality lighting, 500x500px"
+    productImage: "/photo review/Baskets LED KPop Demon Hunters.jpeg",
+    product: "Baskets LED KPop Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/baskets-led-kpop-demon-hunters"
   },
   {
     id: 4,
@@ -50,14 +47,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=4",
     rating: 4,
     date: "2026-03-12",
-    title: "Poster STRAY KIDS correct",
-    content: "Les posters STRAY KIDS que j'ai commandés sont de bonne qualité. L'impression est nette et claire. Juste un petit souci avec le tube de livraison qui était légèrement endommagé, mais les posters vont bien.",
+    title: "Montre Réveil Huntrix correcte",
+    content: "La Montre Réveil Huntrix KPop Demon Hunters fonctionne parfaitement ! L'affichage LED est clair, le design futuriste est vraiment cool. Le bracelet aurait pu être plus ajustable.",
     verified: true,
     helpful: 12,
-    productImage: "/photo review/stray kids.jpg",
-    product: "Posters STRAY KIDS",
-    productUrl: "https://huntrix.com/products/stray-kids-poster-collection-4pack",
-    prompt: "Professional flat lay photography of 3-4 STRAY KIDS posters rolled partially out and stacked, showing vibrant K-pop imagery and group member photos, with a cardboard shipping tube and white background. Clean professional lighting, sharp details, 500x500px"
+    productImage: "/photo review/Montre Réveil Huntrix.jpeg",
+    product: "Montre Réveil Huntrix KPop Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/montre-reveil-huntrix"
   },
   {
     id: 5,
@@ -65,14 +61,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=5",
     rating: 5,
     date: "2026-03-11",
-    title: "Coque téléphone NewJeans super !",
-    content: "J'ai acheté la coque NewJeans pour mon iPhone et elle est arrivée très vite ! La protection est excellente, le design ne s'efface pas et c'est vraiment stylé. Je recommande absolument !",
+    title: "Déguisement Cosplay Huntrix super !",
+    content: "Le Déguisement Cosplay Enfant Huntrix Demon Hunters est excellent ! Le design des personnages est fidèle, et le tissu est résistant. Je recommande absolument ce costume !",
     verified: true,
     helpful: 27,
-    productImage: "/photo review/housse telephone.jpg",
-    product: "Coque NewJeans",
-    productUrl: "https://huntrix.com/products/newjeans-iphone-case-premium",
-    prompt: "Professional product photography of a NewJeans iPhone case displayed on a smartphone, showing the front design with the group's pastel-colored logo and aesthetic, placed next to a white packaging box on clean white background. Modern, clean lighting, 500x500px"
+    productImage: "/photo review/Déguisement Cosplay Enfant.webp",
+    product: "Déguisement Cosplay Enfant Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/deguisement-cosplay-enfant-huntrix"
   },
   {
     id: 6,
@@ -80,14 +75,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=6",
     rating: 5,
     date: "2026-03-10",
-    title: "Album SEVENTEEN collector's edition",
-    content: "Collector's edition de SEVENTEEN Seventeen Album - tout y est ! Les photocards bonus, le livret haute qualité, le poster, et le design de boîte est magnifique. Un vrai bijou pour la collection !",
+    title: "Sac à Dos Huntrix spacieux",
+    content: "Le Sac à Dos KPop Huntrix a tout ! Les compartiments multiples, les sangles confortables, et le design spacieux de 35L. C'est devenu mon sac du quotidien !",
     verified: true,
     helpful: 15,
-    productImage: "/photo review/carte livre cd et album FML.jpg",
-    product: "Album SEVENTEEN",
-    productUrl: "https://huntrix.com/products/seventeen-album-collectors-edition",
-    prompt: "Professional flat lay photography of a SEVENTEEN collector's edition album open showing the interior contents: premium album cover, photocards spread out, colorful poster, booklet, all on white background with subtle cardboard box in corner. Luxury photography style, 500x500px"
+    productImage: "/photo review/Sac à Dos KPop Huntrix.webp",
+    product: "Sac à Dos KPop Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/sac-a-dos-kpop-huntrix"
   },
   {
     id: 7,
@@ -95,14 +89,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=7",
     rating: 5,
     date: "2026-03-09",
-    title: "Figurines K-beauty collector pack",
-    content: "J'ai commandé le pack complet de 6 figurines des idoles K-beauty et elles sont incroyables ! Le détail des visages est parfait, les poses sont dynamiques. Les boîtes d'emballage collectionneurs sont très belles !",
+    title: "Figurines Huntrix 5pcs incroyables",
+    content: "Le pack de Figurines Demon Hunters Huntrix 5pcs est incroyable ! Le détail des visages est parfait, les poses sont dynamiques. Les boîtes collectionneurs sont très belles !",
     verified: true,
     helpful: 42,
-    productImage: "/photo review/Figurne idol.jpg",
-    product: "Figurines K-beauty",
-    productUrl: "https://huntrix.com/products/kbeauty-idol-figurines-6pack",
-    prompt: "Professional product photography of 6 K-pop idol figurines arranged in a dynamic display on white background, showing detailed facial features and colorful outfits, with their individual packaging boxes and a larger collector's box visible. Studio lighting, vibrant colors, 500x500px"
+    productImage: "/photo review/Figurines Demon Hunters (5pcs, Mini, etc..jpeg",
+    product: "Figurines Demon Hunters Huntrix 5pcs",
+    productUrl: "https://boutique-kpop.fr/products/figurines-huntrix-5pcs"
   },
   {
     id: 8,
@@ -110,14 +103,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=8",
     rating: 5,
     date: "2026-03-08",
-    title: "Itzy Box merchandising",
-    content: "La box merchandising ITZY complète avec cartes postales et cartes spéciales est arrivée. Tout est de super qualité, les cartes ont des finitions brillantes. Très content de cet achat pour ma collection !",
+    title: "Sweat à Capuche Demon Hunters excellent",
+    content: "Le Sweat à Capuche KPop Huntrix Demon Hunters dépasse les attentes ! Tout est de super qualité, les finitions sont soignées. Très content pour ma garde-robe !",
     verified: true,
     helpful: 38,
-    productImage: "/photo review/Itzy carte.png",
-    product: "Box ITZY",
-    productUrl: "https://huntrix.com/products/itzy-merchandise-box-deluxe",
-    prompt: "Professional flat lay photography of an ITZY merchandise box with contents displayed: colorful cards with glossy finishes, special edition postcards with member photos, arranged artfully on white background. Bright, colorful, merchandise product photography style, 500x500px"
+    productImage: "/photo review/Sweat à Capuche KPop Huntrix.jpeg",
+    product: "Sweat à Capuche KPop Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/sweat-capuche-huntrix"
   },
   {
     id: 9,
@@ -125,14 +117,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=9",
     rating: 4,
     date: "2026-03-07",
-    title: "ITZY Set complet parfait",
-    content: "L'ensemble ITZY que j'ai commandé avec cartes et sacs est arrivé en parfait état ! La qualité du packaging est exceptionnelle et tous les articles sont comme décrits. Je recommande vivement ce set !",
+    title: "Peluche Derpy Demon Hunters parfaite",
+    content: "La Peluche Derpy Demon Hunters est arrivée en parfait état ! La douceur est incroyable et tous les détails sont comme décrits. Je recommande cette peluche adorable !",
     verified: true,
     helpful: 35,
-    productImage: "/photo review/itzy carte et scas KPO.png",
-    product: "Set ITZY complet",
-    productUrl: "https://huntrix.com/products/itzy-complete-set-cards-bags",
-    prompt: "Professional flat lay photography of a complete ITZY set including cards and small bags, arranged artfully on white background, showing all items clearly. High-end merchandise photography with studio lighting, 500x500px"
+    productImage: "/photo review/Peluche Derpy Demon Hunters.jpeg",
+    product: "Peluche Derpy Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/peluche-derpy"
   },
   {
     id: 10,
@@ -140,14 +131,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=10",
     rating: 5,
     date: "2026-03-06",
-    title: "Ensemble BTS Album + Cartes",
-    content: "J'ai acheté l'ensemble BTS avec album CD et cartes photocards premium et c'est simplement parfait ! La qualité audio du CD est excellente et les cartes sont magnifiquement imprimées. Mes copains fans l'adorent !",
+    title: "Veilleuse Huntrix ambiance magique",
+    content: "La Veilleuse Kpop Demon Hunters Huntrix est simplement parfaite ! Les 16 couleurs créent l'ambiance idéale, le design futuriste est excellent. Mes amis l'adorent !",
     verified: true,
     helpful: 29,
-    productImage: "/photo review/Itzy carte.png",
-    product: "Ensemble BTS Album",
-    productUrl: "https://huntrix.com/products/bts-album-premium-photocards-set",
-    prompt: "Professional product photography of a BTS album set with CD case open showing the disc and booklet, accompanied by premium photocards arranged beside it, on clean white background. High-end music product photography, 500x500px"
+    productImage: "/photo review/Veilleuse Kpop Demon Hunters.jpeg",
+    product: "Veilleuse Kpop Demon Hunters Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/veilleuse-kpop-demon-hunters"
   },
   {
     id: 11,
@@ -155,14 +145,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=11",
     rating: 5,
     date: "2026-03-05",
-    title: "Sweatshirt ENHYPEN excellent !",
-    content: "Le sweatshirt ENHYPEN que j'ai acheté est d'une qualité supérieure. Le tissu est confortable, les couleurs sont vives et le design est fidèle. C'est devenu mon vêtement préféré !",
+    title: "Gourde Demon Hunters excellente !",
+    content: "La Gourde KPop Demon Hunters pour Enfant est d'une qualité supérieure. Le plastique est léger et durable, le design est parfait pour les enfants. Leur gourde préférée !",
     verified: true,
     helpful: 21,
-    productImage: "/photo review/sweatshirt.jpg",
-    product: "Sweatshirt ENHYPEN",
-    productUrl: "https://huntrix.com/products/enhypen-comfort-sweatshirt-unisex",
-    prompt: "Professional product photography of an ENHYPEN sweatshirt displayed on a mannequin or laid flat, showing vibrant color and group branding, on white background"
+    productImage: "/photo review/Gourde KPop Demon Hunters.jpeg",
+    product: "Gourde KPop Demon Hunters Enfant",
+    productUrl: "https://boutique-kpop.fr/products/gourde-demon-hunters-enfant"
   },
   {
     id: 12,
@@ -170,14 +159,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=12",
     rating: 5,
     date: "2026-03-04",
-    title: "Mousepad K-pop top quality",
-    content: "J'ai commandé le mousepad K-pop avec le design des groupes populaires. L'anti-dérapant fonctionne parfaitement, l'impression est ultra précise et ça a transformé mon setup de bureau !",
+    title: "Costume Rumi Huntrix qualité top",
+    content: "Le Costume de Cosplay Rumi Huntrix avec perruque est extraordinaire ! Les matériaux sont respirants, l'ajustement est parfait. Ça a transformé mon look cosplay !",
     verified: true,
     helpful: 16,
-    productImage: "/photo review/mousepad.jpg",
-    product: "Mousepad K-pop",
-    productUrl: "https://huntrix.com/products/kpop-gaming-mousepad-premium",
-    prompt: "Professional product photography of a gaming mousepad with K-pop designs, displayed on a clean desk setup with gaming peripherals visible"
+    productImage: "/photo review/Costumes Cosplay.jpeg",
+    product: "Costume Cosplay Rumi Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/costume-rumi-huntrix"
   },
   {
     id: 13,
@@ -185,14 +173,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=13",
     rating: 5,
     date: "2026-03-03",
-    title: "Bracelet BLACKPINK incroyable",
-    content: "Le bracelet BLACKPINK que j'ai reçu est magnifique ! Les couleurs correspondent à chaque membre, le matériau est durable et il est arrivé dans une belle boîte cadeau. Je l'adore !",
+    title: "Baskets Montantes Demon Hunters incroyables",
+    content: "Les Baskets Montantes Kpop Demon Hunters sont magnifiques ! Les matériaux sont de qualité, le design est excellent. Je les adore et les porte tous les jours !",
     verified: true,
     helpful: 33,
-    productImage: "/photo review/bracelet.jpg",
-    product: "Bracelet BLACKPINK",
-    productUrl: "https://huntrix.com/products/blackpink-member-bracelets-set",
-    prompt: "Professional product photography of BLACKPINK member bracelets displayed on a white background with gift packaging visible"
+    productImage: "/photo review/Baskets Montantes.jpeg",
+    product: "Baskets Montantes Kpop Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/baskets-montantes-demon-hunters"
   },
   {
     id: 14,
@@ -200,14 +187,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=14",
     rating: 4,
     date: "2026-03-02",
-    title: "Casquette STRAY KIDS très bien",
-    content: "J'ai acheté la casquette STRAY KIDS et elle est très confortable. L'ajustement est parfait, les broderies sont propres. Mon seul bémol : j'aurais aimé plus de variantes de couleurs.",
+    title: "Couverture Huntrix très confortable",
+    content: "La Couverture Huntrix K-Pop Demon Hunters est très confortable. La flanelle est douce, les impressions sont nettes. J'aurais aimé plus de motifs différents.",
     verified: true,
     helpful: 14,
-    productImage: "/photo review/casquette.jpg",
-    product: "Casquette STRAY KIDS",
-    productUrl: "https://huntrix.com/products/stray-kids-baseball-cap",
-    prompt: "Professional product photography of a STRAY KIDS baseball cap displayed on a white background"
+    productImage: "/photo review/Couverture Huntrix.jpeg",
+    product: "Couverture Huntrix K-Pop Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/couverture-huntrix"
   },
   {
     id: 15,
@@ -215,14 +201,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=15",
     rating: 5,
     date: "2026-03-01",
-    title: "Poster holographique SEVENTEEN",
-    content: "Wow ! Le poster holographique SEVENTEEN arrive à créer un effet 3D magnifique ! L'encadrement s'est bien déroulé et maintenant c'est une véritable décoration murale impressionnante !",
+    title: "T-shirt Huntrix Demon Hunters magnifique",
+    content: "Le T-shirt Blanc KPop Demon Hunters Huntrix Enfant a une impression éclatante ! La qualité est confirmée et c'est un vêtement de collection impressionnant !",
     verified: true,
     helpful: 44,
-    productImage: "/photo review/poster-holo.jpg",
-    product: "Poster holographique SEVENTEEN",
-    productUrl: "https://huntrix.com/products/seventeen-holographic-poster-premium",
-    prompt: "Professional product photography of a holographic SEVENTEEN poster showing the 3D effect, displayed on white background"
+    productImage: "/photo review/T-shirts Huntrix (Blanc, Noir, Rumi).jpeg",
+    product: "T-shirt Blanc KPop Demon Hunters Huntrix Enfant",
+    productUrl: "https://boutique-kpop.fr/products/tshirt-blanc-huntrix"
   },
   {
     id: 16,
@@ -230,14 +215,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=16",
     rating: 5,
     date: "2026-02-28",
-    title: "Porte-clés NewJeans adorable",
-    content: "Les porte-clés NewJeans sont trop mignons ! La qualité de la résine est excellente, les détails sont parfaits. J'en ai acheté plusieurs pour en offrir à mes amies !",
+    title: "Ensemble Pyjama Huntrix adorable",
+    content: "L'Ensemble Pyjama Huntrix pour Enfant est trop mignon ! La qualité du coton est excellente, les détails sont parfaits. J'en ai acheté plusieurs !",
     verified: true,
     helpful: 26,
-    productImage: "/photo review/keychain.jpg",
-    product: "Porte-clés NewJeans",
-    productUrl: "https://huntrix.com/products/newjeans-resin-keychains-set",
-    prompt: "Professional product photography of NewJeans themed keychains in resin on white background"
+    productImage: "/photo review/Ensemble Pyjama.jpeg",
+    product: "Ensemble Pyjama Huntrix Enfant",
+    productUrl: "https://boutique-kpop.fr/products/pyjama-huntrix-enfant"
   },
   {
     id: 17,
@@ -245,14 +229,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=17",
     rating: 5,
     date: "2026-02-27",
-    title: "Album TWICE premium magnifique",
-    content: "L'album TWICE que j'ai acheté est une merveille ! Toutes les photocards sont collées parfaitement, le booklet a des pages épaisses, c'est un achat de collection parfait !",
+    title: "Sweat Enfant Huntrix magnifique",
+    content: "Le Sweat Enfant KPop Huntrix Demon Hunters est une merveille ! Les coutures sont parfaites, le tissu est durable. Un achat de collection parfait !",
     verified: true,
     helpful: 39,
-    productImage: "/photo review/album-twice.jpg",
-    product: "Album TWICE Premium",
-    productUrl: "https://huntrix.com/products/twice-premium-album-special-edition",
-    prompt: "Professional flat lay photography of TWICE premium album with all contents displayed"
+    productImage: "/photo review/Sweat à Capuche KPop Huntrix.jpeg",
+    product: "Sweat Enfant KPop Huntrix Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/sweat-enfant-huntrix"
   },
   {
     id: 18,
@@ -260,14 +243,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=18",
     rating: 4,
     date: "2026-02-26",
-    title: "Bottled water KPOP edition",
-    content: "La bouteille d'eau KPOP edition est sympa pour l'hydratation stylée ! La qualité du verre est bonne, mais j'aurais voulu un joint un peu plus robuste.",
+    title: "Lomo Cards Demon Hunters bien pensé",
+    content: "Les Lomo Cards Demon Hunters 92pcs sont magnifiquement conçues. L'organisation est parfaite. J'aurais aimé plus de poches pour ranger mes affaires.",
     verified: true,
     helpful: 11,
-    productImage: "/photo review/bottle.jpg",
-    product: "Bouteille KPOP Edition",
-    productUrl: "https://huntrix.com/products/kpop-glass-water-bottle-500ml",
-    prompt: "Professional product photography of a K-pop themed water bottle on white background"
+    productImage: "/photo review/Lomo Cards Demon Hunters.jpeg",
+    product: "Lomo Cards Demon Hunters 92pcs",
+    productUrl: "https://boutique-kpop.fr/products/lomo-cards-huntrix"
   },
   {
     id: 19,
@@ -275,14 +257,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=19",
     rating: 5,
     date: "2026-02-25",
-    title: "Sac à dos ENHYPEN parfait",
-    content: "Le sac à dos ENHYPEN est vraiment de qualité ! Les poches sont bien conçues, les sangles sont confortables et le design flashy plaît à tout le monde. Excellent investissement !",
+    title: "Veste Demon Hunters parfaite",
+    content: "La Veste KPop Huntrix Demon Hunters Enfant est de qualité ! Les poches sont bien conçues, l'ajustement est confortable. Le design plaît à tout le monde !",
     verified: true,
     helpful: 37,
-    productImage: "/photo review/backpack.jpg",
-    product: "Sac à dos ENHYPEN",
-    productUrl: "https://huntrix.com/products/enhypen-backpack-school-capacity",
-    prompt: "Professional product photography of ENHYPEN branded backpack displayed on white background"
+    productImage: "/photo review/Veste Demon Hunters.jpeg",
+    product: "Veste KPop Huntrix Demon Hunters Enfant",
+    productUrl: "https://boutique-kpop.fr/products/veste-demon-hunters-enfant"
   },
   {
     id: 20,
@@ -290,14 +271,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=20",
     rating: 5,
     date: "2026-02-24",
-    title: "Sticker pack BLACKPINK incroyable",
-    content: "Le pack de stickers BLACKPINK contient tellement de designs différents ! La qualité d'impression est exceptionnelle, les stickers sont résistants à l'eau. Parfait pour décorer partout !",
+    title: "Poster Huntrix Demon Hunters incroyable",
+    content: "Le Poster KPOP Huntrix Demon Hunters Groupe est incroyable ! Je peux l'afficher de plusieurs manières, le détail est excellent. Collector's item absolument !",
     verified: true,
     helpful: 48,
-    productImage: "/photo review/sticker-pack.jpg",
-    product: "Sticker pack BLACKPINK",
-    productUrl: "https://huntrix.com/products/blackpink-waterproof-sticker-pack-50",
-    prompt: "Professional product photography of BLACKPINK sticker pack displaying various designs on white background"
+    productImage: "/photo review/Poster KPOP Huntrix.jpeg",
+    product: "Poster KPOP Huntrix Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/poster-huntrix-group"
   },
   {
     id: 21,
@@ -305,14 +285,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=21",
     rating: 5,
     date: "2026-02-23",
-    title: "Hoodie SEVENTEEN de rêve",
-    content: "Le hoodie SEVENTEEN est devenu mes vêtements favoris ! Le coton est super doux, le motif avant et arrière sont impeccables. Vraiment un achat dont je ne regrette rien !",
+    title: "T-shirt Blanc Rumi Huntrix de rêve",
+    content: "Le T-shirt Blanc Rumi Huntrix Enfant est devenu le préféré ! Le coton est doux, le motif Rumi est impeccable. Un achat dont je ne regrette rien !",
     verified: true,
     helpful: 31,
-    productImage: "/photo review/hoodie.jpg",
-    product: "Hoodie SEVENTEEN",
-    productUrl: "https://huntrix.com/products/seventeen-premium-hoodie-unisex",
-    prompt: "Professional product photography of SEVENTEEN hoodie laid flat or worn on mannequin with white background"
+    productImage: "/photo review/T-shirts Huntrix (Blanc, Noir, Rumi).jpeg",
+    product: "T-shirt Blanc Rumi Huntrix Enfant",
+    productUrl: "https://boutique-kpop.fr/products/tshirt-rumi-enfant"
   },
   {
     id: 22,
@@ -320,14 +299,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=22",
     rating: 5,
     date: "2026-02-22",
-    title: "Cache-œil ITZY luxe",
-    content: "Le cache-œil ITZY pour dormir est en matière premium ! Très confortable, élastique solide et le design est adorable. Je l'utilise tous les jours !",
+    title: "Montre Demon Hunters luxe",
+    content: "La Montre Demon Hunters Huntrix Enfant est premium ! Très confortable, le bracelet est solide et le design est adorable. Je l'utilise tous les jours !",
     verified: true,
     helpful: 22,
-    productImage: "/photo review/sleep-mask.jpg",
-    product: "Cache-œil ITZY",
-    productUrl: "https://huntrix.com/products/itzy-silk-sleep-mask",
-    prompt: "Professional product photography of ITZY branded sleep mask on white background"
+    productImage: "/photo review/Montre Réveil Huntrix.jpeg",
+    product: "Montre Demon Hunters Huntrix Enfant",
+    productUrl: "https://boutique-kpop.fr/products/montre-demon-hunters-enfant"
   },
   {
     id: 23,
@@ -335,14 +313,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=23",
     rating: 4,
     date: "2026-02-21",
-    title: "Calendrier BTS bien pensé",
-    content: "Le calendrier BTS est magnifiquement conçu avec une photo haute résolution pour chaque mois. Petit défaut : la reliure aurait pu être plus robuste pour tenir une année entière.",
+    title: "Bracelet Huntrix bien pensé",
+    content: "Le Bracelet K-pop Huntrix Demon Hunters est magnifique avec des détails fins. Le bracelet aurait pu être un peu plus ajustable pour petits poignets.",
     verified: true,
     helpful: 19,
-    productImage: "/photo review/calendar.jpg",
-    product: "Calendrier BTS",
-    productUrl: "https://huntrix.com/products/bts-official-calendar-2026",
-    prompt: "Professional product photography of BTS calendar displayed open showing monthly designs on white background"
+    productImage: "/photo review/Costumes Cosplay.jpeg",
+    product: "Bracelet K-pop Huntrix Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/bracelet-huntrix"
   },
   {
     id: 24,
@@ -350,14 +327,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=24",
     rating: 5,
     date: "2026-02-20",
-    title: "Écouteurs STRAY KIDS de fou",
-    content: "Les écouteurs STRAY KIDS combinent style et qualité audio ! Le son est cristallin, le design est unique et la batterie tient plus que prévu. Un achat absolument dingue !",
+    title: "Casquette Huntrix Demon Hunters de fou",
+    content: "La Casquette Huntrix Demon Hunters combine style et confort ! Le design est unique, l'ajustement est parfait. Un achat absolument dingue !",
     verified: true,
     helpful: 45,
-    productImage: "/photo review/earbuds.jpg",
-    product: "Écouteurs STRAY KIDS",
-    productUrl: "https://huntrix.com/products/stray-kids-wireless-earbuds-pro",
-    prompt: "Professional product photography of STRAY KIDS branded wireless earbuds with charging case on white background"
+    productImage: "/photo review/Costumes Cosplay.jpeg",
+    product: "Casquette Huntrix Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/casquette-huntrix"
   },
   {
     id: 25,
@@ -365,14 +341,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=25",
     rating: 5,
     date: "2026-02-19",
-    title: "Plaque murale NewJeans chic",
-    content: "La plaque murale NewJeans que j'ai installée transforme complètement ma chambre ! Les couleurs pastel sont douces, l'acrylique brille légèrement. Vraiment très chic !",
+    title: "Collier Pendant Huntrix chic",
+    content: "Le Collier à Pendentif KPop Demon Hunters transforme mon look ! Les couleurs sont douces, le design brille. Vraiment très chic !",
     verified: true,
     helpful: 28,
-    productImage: "/photo review/wall-plate.jpg",
-    product: "Plaque murale NewJeans",
-    productUrl: "https://huntrix.com/products/newjeans-acrylic-wall-plate",
-    prompt: "Professional product photography of NewJeans acrylic wall plate displayed on white background"
+    productImage: "/photo review/Couverture Huntrix.jpeg",
+    product: "Collier à Pendentif KPop Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/collier-huntrix"
   },
   {
     id: 26,
@@ -380,14 +355,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=26",
     rating: 5,
     date: "2026-02-18",
-    title: "Set de cartes à collectionner TWICE",
-    content: "Le set complet de cartes à collectionner TWICE est arrivé en parfait état ! Rare de trouver tous les membres en excellente condition. Merci Huntrix pour ce service impeccable !",
+    title: "Sweat Rose Huntrix parfait",
+    content: "Le Sweat à Capuche Rose Huntrix Demon Hunters est en parfait état ! Rare de trouver qualité aussi élevée. Merci pour ce service impeccable !",
     verified: true,
     helpful: 52,
-    productImage: "/photo review/card-set.jpg",
-    product: "Set de cartes TWICE",
-    productUrl: "https://huntrix.com/products/twice-complete-trading-card-set",
-    prompt: "Professional photography of complete TWICE trading card collection displayed in fan arrangement"
+    productImage: "/photo review/Sweat à Capuche KPop Huntrix.jpeg",
+    product: "Sweat à Capuche Rose Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/sweat-rose-huntrix"
   },
   {
     id: 27,
@@ -395,14 +369,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=27",
     rating: 4,
     date: "2026-02-17",
-    title: "Lampe LED ENHYPEN très cool",
-    content: "La lampe LED ENHYPEN illumine ma chambre de manière géniale ! Les options de couleur sont nombreuses. Juste le câble d'alimentation aurait pu être plus long.",
+    title: "Trousse Huntrix très cool",
+    content: "La Trousse KPop Demon Hunters illumine mes jours d'école ! Les options de rangement sont nombreuses. La taille aurait pu être plus grande.",
     verified: true,
     helpful: 20,
-    productImage: "/photo review/led-lamp.jpg",
-    product: "Lampe LED ENHYPEN",
-    productUrl: "https://huntrix.com/products/enhypen-led-neon-lamp-rgb",
-    prompt: "Professional product photography of ENHYPEN LED neon lamp glowing on white background"
+    productImage: "/photo review/Ensemble Pyjama.jpeg",
+    product: "Trousse KPop Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/trousse-huntrix"
   },
   {
     id: 28,
@@ -410,14 +383,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=28",
     rating: 5,
     date: "2026-02-16",
-    title: "Trousse BTS pratique et belle",
-    content: "La trousse BTS est devenue ma compagne au bureau ! Spacieuse, bien conçue, avec des matériaux durables. Les motifs de chaque membre sont clairement visibles. Super achat !",
+    title: "Mugs Demon Hunters incroyable",
+    content: "Les Mugs Kpop Demon Hunters Huntrix combinent style et fonction ! La sérigraphie est cristalline, la capacité est généreuse. Un achat absolument dingue !",
     verified: true,
     helpful: 25,
-    productImage: "/photo review/pencil-case.jpg",
-    product: "Trousse BTS",
-    productUrl: "https://huntrix.com/products/bts-pencil-case-utility-pouch",
-    prompt: "Professional product photography of BTS branded pencil case displayed on white background with contents visible"
+    productImage: "/photo review/Lomo Cards Demon Hunters.jpeg",
+    product: "Mugs Kpop Demon Hunters Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/mugs-huntrix"
   },
   {
     id: 29,
@@ -425,14 +397,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=29",
     rating: 5,
     date: "2026-02-15",
-    title: "Figurine articulation STRAY KIDS",
-    content: "Les figurines STRAY KIDS avec articulation sont incroyables ! On peut les positionner de plusieurs manières, le détail des visages est excellent. Collector's item à avoir absolument !",
+    title: "Boîte à Déjeuner Huntrix chic",
+    content: "La Boîte à Déjeuner Huntrix KPop transforme mon expérience ! Les compartiments sont bien pensés, l'acrylique est durable. Très chic !",
     verified: true,
     helpful: 41,
-    productImage: "/photo review/action-figure.jpg",
-    product: "Figurine articulation STRAY KIDS",
-    productUrl: "https://huntrix.com/products/stray-kids-articulated-figurine-deluxe",
-    prompt: "Professional product photography of STRAY KIDS articulated action figures in various poses on white background"
+    productImage: "/photo review/Veste Demon Hunters.jpeg",
+    product: "Boîte à Déjeuner Huntrix KPop",
+    productUrl: "https://boutique-kpop.fr/products/boite-dejeuner-huntrix"
   },
   {
     id: 30,
@@ -440,14 +411,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=30",
     rating: 5,
     date: "2026-02-14",
-    title: "Boîte cadeau SEVENTEEN amour",
-    content: "La boîte cadeau SEVENTEEN pour la Saint-Valentin était parfaite ! Présentée magnifiquement, les produits intérieurs sont tous de haute qualité. Mon ami a adoré ce cadeau !",
+    title: "Sac Bandoulière Huntrix amour",
+    content: "Le Sac à Bandoulière KPop Demon Hunters était parfait ! Présenté magnifiquement, les compartiments sont de haute qualité. Mon ami l'a adoré !",
     verified: true,
     helpful: 34,
-    productImage: "/photo review/gift-box.jpg",
-    product: "Boîte cadeau SEVENTEEN",
-    productUrl: "https://huntrix.com/products/seventeen-deluxe-gift-box-valentine",
-    prompt: "Professional product photography of beautifully packaged SEVENTEEN gift box with premium contents displayed on white background"
+    productImage: "/photo review/Gourde KPop Demon Hunters.jpeg",
+    product: "Sac à Bandoulière KPop Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/sac-bandouliere-huntrix"
   },
   {
     id: 31,
@@ -455,14 +425,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=31",
     rating: 5,
     date: "2026-02-13",
-    title: "Bracelet tissé BLACKPINK cozy",
-    content: "Le bracelet tissé BLACKPINK est adorable et confortable à porter quotidiennement ! Les couleurs ne s'effacent pas et le tissage est bien serré. J'en porte un tous les jours !",
+    title: "Sweat Kawaii Huntrix cozy",
+    content: "Le Sweat Kawaii KPop Huntrix Tie-dye est adorable ! Les couleurs ne s'effacent pas et le tissage est bien serré. J'en porte un tous les jours !",
     verified: true,
     helpful: 29,
-    productImage: "/photo review/woven-bracelet.jpg",
-    product: "Bracelet tissé BLACKPINK",
-    productUrl: "https://huntrix.com/products/blackpink-woven-friendship-bracelet",
-    prompt: "Professional product photography of BLACKPINK woven bracelets displayed on white background"
+    productImage: "/photo review/Peluche Derpy Demon Hunters.jpeg",
+    product: "Sweat Kawaii KPop Huntrix Tie-dye",
+    productUrl: "https://boutique-kpop.fr/products/sweat-kawaii-huntrix"
   },
   {
     id: 32,
@@ -470,14 +439,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=32",
     rating: 4,
     date: "2026-02-12",
-    title: "T-shirt vintage ITZY agréable",
-    content: "Le t-shirt vintage ITZY a un style rétro vraiment cool ! Le tissu est confortable, le print est durable. Ma seule remarque : les tailles semblent légèrement petites.",
+    title: "T-shirt Noir Huntrix agréable",
+    content: "Le T-shirt Noir Demon Hunters Huntrix a un style rébelle cool ! Le tissu est confortable, le print est durable. Les tailles semblent légèrement petites.",
     verified: true,
     helpful: 17,
-    productImage: "/photo review/vintage-tee.jpg",
-    product: "T-shirt vintage ITZY",
-    productUrl: "https://huntrix.com/products/itzy-vintage-style-tshirt",
-    prompt: "Professional product photography of ITZY vintage-style t-shirt displayed on mannequin or laid flat on white background"
+    productImage: "/photo review/T-shirts Huntrix (Blanc, Noir, Rumi).jpeg",
+    product: "T-shirt Noir Demon Hunters Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/tshirt-noir-huntrix"
   },
   {
     id: 33,
@@ -485,14 +453,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=33",
     rating: 5,
     date: "2026-02-11",
-    title: "Poster encadré NewJeans superbe",
-    content: "Le poster encadré NewJeans arrive déjà encadré dans un cadre premium ! Aucune installation n'était nécessaire, c'est prêt à accrocher. La qualité d'impression est magnifique !",
+    title: "Trousse Crayons Huntrix superbe",
+    content: "La Trousse à Crayons GM KPop Demon Huntrix arrive encadrée ! Aucune installation nécessaire, prêt à l'emploi. L'impression est magnifique !",
     verified: true,
     helpful: 46,
-    productImage: "/photo review/framed-poster.jpg",
-    product: "Poster encadré NewJeans",
-    productUrl: "https://huntrix.com/products/newjeans-framed-poster-premium",
-    prompt: "Professional photography of NewJeans framed poster ready to hang displayed on white wall"
+    productImage: "/photo review/Poster KPOP Huntrix.jpeg",
+    product: "Trousse à Crayons GM KPop Demon Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/trousse-crayons-huntrix"
   },
   {
     id: 34,
@@ -500,14 +467,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=34",
     rating: 5,
     date: "2026-02-10",
-    title: "Bague TWICE spéciale",
-    content: "La bague TWICE en argent que j'ai commandée est d'une élégance intemporelle ! Le design discret mais chic, la taille est parfaite. Je la porte tous les jours !",
+    title: "Sweat Noir Huntrix collector",
+    content: "Le Sweat à Capuche Noir Huntrix Demon Hunters est un chef-d'œuvre ! Le polyester, le motif imprimé, les illustrations. C'est une garde-robe parfaite !",
     verified: true,
     helpful: 32,
-    productImage: "/photo review/ring.jpg",
-    product: "Bague TWICE",
-    productUrl: "https://huntrix.com/products/twice-silver-ring-fashion",
-    prompt: "Professional jewelry photography of TWICE themed silver ring displayed on white background"
+    productImage: "/photo review/Sweat à Capuche KPop Huntrix.jpeg",
+    product: "Sweat à Capuche Noir Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/sweat-noir-huntrix"
   },
   {
     id: 35,
@@ -515,14 +481,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=35",
     rating: 5,
     date: "2026-02-09",
-    title: "Casquette de baseball BTS iconic",
-    content: "La casquette de baseball BTS avec la broderie avant et arrière est devenue un basique de mes looks ! L'ajustement est confortable, le tissu de qualité. Vraiment recommandé !",
+    title: "Ensemble Cartable Huntrix iconic",
+    content: "L'Ensemble Cartable & Sac Repas Demon Hunters est devenu un basique ! L'ajustement est confortable, le tissu de qualité. Vraiment recommandé !",
     verified: true,
     helpful: 23,
-    productImage: "/photo review/baseball-cap.jpg",
-    product: "Casquette de baseball BTS",
-    productUrl: "https://huntrix.com/products/bts-embroidered-baseball-cap",
-    prompt: "Professional product photography of BTS baseball cap displayed on white background"
+    productImage: "/photo review/Baskets Montantes.jpeg",
+    product: "Ensemble Cartable Sac Repas Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/cartable-ensemble-huntrix"
   },
   {
     id: 36,
@@ -530,14 +495,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=36",
     rating: 5,
     date: "2026-02-08",
-    title: "Album vinyle SEVENTEEN collector",
-    content: "L'album vinyle SEVENTEEN collector's edition est un chef-d'œuvre ! La qualité du vinyle, la pochette gatefold, les illustrations intérieures. C'est une acquisition audiophile par excellence !",
+    title: "Sweat Fillettes Huntrix collector",
+    content: "Le Sweat KPop Huntrix Fillettes est un chef-d'œuvre ! Le polyester durable, les designs uniques. C'est une acquisition parfaite par excellence !",
     verified: true,
     helpful: 50,
-    productImage: "/photo review/vinyl-record.jpg",
-    product: "Album vinyle SEVENTEEN",
-    productUrl: "https://huntrix.com/products/seventeen-vinyl-collectors-edition",
-    prompt: "Professional product photography of SEVENTEEN vinyl record with collector's edition packaging displayed on white background"
+    productImage: "/photo review/Sac à Dos KPop Huntrix.webp",
+    product: "Sweat KPop Huntrix Fillettes",
+    productUrl: "https://boutique-kpop.fr/products/sweat-huntrix-fillettes"
   },
   {
     id: 37,
@@ -545,14 +509,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=37",
     rating: 4,
     date: "2026-02-07",
-    title: "Tote bag ENHYPEN stylé",
-    content: "Le tote bag ENHYPEN est devenu mon sac du quotidien ! Spacieux, durable, avec un design discret mais reconnaissable. Les coutures sont solides, très bon rapport qualité-prix.",
+    title: "Figurines Mini Demon Hunters stylé",
+    content: "Le Sac Bandoulière KPop Demon Hunters Huntrix Enfant est mon quotidien ! Spacieux, durable, design reconnaissable. Les coutures sont solides !",
     verified: true,
     helpful: 18,
-    productImage: "/photo review/tote-bag.jpg",
-    product: "Tote bag ENHYPEN",
-    productUrl: "https://huntrix.com/products/enhypen-canvas-tote-bag",
-    prompt: "Professional product photography of ENHYPEN tote bag displayed empty or partially filled on white background"
+    productImage: "/photo review/Figurines Demon Hunters (5pcs, Mini, etc..jpeg",
+    product: "Figurines Mini Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/figurines-mini-huntrix"
   },
   {
     id: 38,
@@ -560,14 +523,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=38",
     rating: 5,
     date: "2026-02-06",
-    title: "Carnet BLACKPINK inspirant",
-    content: "Le carnet BLACKPINK avec citations inspirantes est devenu mon journal préféré ! Les pages sont épaisses, les designs sont différents pour chaque fille. Super pour la motivation !",
+    title: "Gourde Thermique KPop inspirant",
+    content: "La Gourde KPop Demon Hunters Huntrix avec citations est devenue mon journal ! Les pages épaisses, designs différents. Super pour le style !",
     verified: true,
     helpful: 27,
-    productImage: "/photo review/notebook.jpg",
-    product: "Carnet BLACKPINK",
-    productUrl: "https://huntrix.com/products/blackpink-inspirational-notebook",
-    prompt: "Professional product photography of BLACKPINK branded notebook displayed open on white background"
+    productImage: "/photo review/Montre Réveil Huntrix.jpeg",
+    product: "Gourde KPop Demon Hunters Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/gourde-thermique-huntrix"
   },
   {
     id: 39,
@@ -575,14 +537,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=39",
     rating: 5,
     date: "2026-02-05",
-    title: "Manchettes ITZY confortables",
-    content: "Les manchettes ITZY en coton sont super confortables et douces ! Parfaites pour l'hiver, elles gardent les poignets au chaud sans être étouffantes. Un accessoire pratique et stylé !",
+    title: "Baskets Enfant Huntrix confortables",
+    content: "Les Baskets Huntrix Demon Hunters Enfant en coton sont super confortables ! Parfaites pour l'école, sans être étouffantes. Accessoire pratique et stylé !",
     verified: true,
     helpful: 24,
-    productImage: "/photo review/wrist-cuffs.jpg",
-    product: "Manchettes ITZY",
-    productUrl: "https://huntrix.com/products/itzy-cotton-wrist-cuffs",
-    prompt: "Professional product photography of ITZY branded wrist cuffs displayed on white background"
+    productImage: "/photo review/Baskets LED KPop Demon Hunters.jpeg",
+    product: "Baskets Huntrix Demon Hunters Enfant",
+    productUrl: "https://boutique-kpop.fr/products/baskets-enfant-huntrix"
   },
   {
     id: 40,
@@ -590,14 +551,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=40",
     rating: 5,
     date: "2026-02-04",
-    title: "Miroir portatif STRAY KIDS beau",
-    content: "Le miroir portatif STRAY KIDS avec led est un accessoire de beauté parfait ! L'éclairage est doux et homogène, le design est mignon. Je l'emporte partout avec moi !",
+    title: "Costume Rumi Complet Beau",
+    content: "Le Costume Cosplay Rumi Huntrix avec plusieurs options est beau ! L'impression est haute résolution, les couleurs ne bavurent pas. Absolument génial !",
     verified: true,
     helpful: 36,
-    productImage: "/photo review/compact-mirror.jpg",
-    product: "Miroir portatif STRAY KIDS",
-    productUrl: "https://huntrix.com/products/stray-kids-led-compact-mirror",
-    prompt: "Professional product photography of STRAY KIDS LED compact mirror displayed open on white background"
+    productImage: "/photo review/Costumes Cosplay.jpeg",
+    product: "Costume Cosplay Rumi Huntrix Complet",
+    productUrl: "https://boutique-kpop.fr/products/costume-rumi-complet"
   },
   {
     id: 41,
@@ -605,14 +565,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=41",
     rating: 5,
     date: "2026-02-03",
-    title: "Puzzle K-pop 1000 pièces",
-    content: "Le puzzle K-pop de 1000 pièces avec tous les groupes populaires a été un vrai défi ! La qualité du carton est excellente, l'image finale est spectaculaire. Recommandé pour les fans !",
+    title: "Baskets Montantes Enfant Huntrix",
+    content: "Les Baskets Montantes Noir Demon Hunters Enfant gardent pieds chauds ! La qualité du carton est excellente, l'image finale spectaculaire. Recommandé !",
     verified: true,
     helpful: 40,
-    productImage: "/photo review/puzzle.jpg",
-    product: "Puzzle K-pop",
-    productUrl: "https://huntrix.com/products/kpop-jigsaw-puzzle-1000pieces",
-    prompt: "Professional product photography of completed K-pop puzzle on white background"
+    productImage: "/photo review/Baskets Montantes.jpeg",
+    product: "Baskets Montantes Noir Demon Hunters Enfant",
+    productUrl: "https://boutique-kpop.fr/products/baskets-montantes-enfant"
   },
   {
     id: 42,
@@ -620,14 +579,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=42",
     rating: 4,
     date: "2026-02-02",
-    title: "Bouillotte thermique NEWJEANS",
-    content: "La bouillotte thermique NewJeans garde la chaleur longtemps ! Le design est adorable et l'utilisation est très confortable l'hiver. Légèrement petite pour mes attentes.",
+    title: "Baskets Montantes KPop Demon Hunters",
+    content: "Les Baskets Montantes KPop Demon Hunters gardent chaleur longtemps ! Le design est adorable et confortable l'hiver. Légèrement petite.",
     verified: true,
     helpful: 13,
-    productImage: "/photo review/hot-water-bottle.jpg",
-    product: "Bouillotte NewJeans",
-    productUrl: "https://huntrix.com/products/newjeans-thermal-heat-bag",
-    prompt: "Professional product photography of NewJeans branded hot water bottle displayed on white background"
+    productImage: "/photo review/Baskets LED KPop Demon Hunters.jpeg",
+    product: "Baskets Montantes KPop Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/baskets-montantes-kpop"
   },
   {
     id: 43,
@@ -635,14 +593,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=43",
     rating: 5,
     date: "2026-02-01",
-    title: "Bidon réutilisable BTS écolo",
-    content: "Le bidon réutilisable BTS en acier inoxydable est parfait pour rester hydraté toute la journée ! Les couleurs et designs de chaque membre sont magnifiques. Eco-friendly et stylé !",
+    title: "Figurines Mini Collection Ecolo",
+    content: "Les Figurines Kpop Demon Hunters mini durables sont parfaites ! Les couleurs designs magnifiques. Eco-friendly et stylé !",
     verified: true,
     helpful: 43,
-    productImage: "/photo review/water-bottle.jpg",
-    product: "Bidon réutilisable BTS",
-    productUrl: "https://huntrix.com/products/bts-stainless-steel-water-bottle",
-    prompt: "Professional product photography of BTS eco-friendly water bottle displayed on white background"
+    productImage: "/photo review/Figurines Demon Hunters (5pcs, Mini, etc..jpeg",
+    product: "Figurines Mini Demon Hunters Collection",
+    productUrl: "https://boutique-kpop.fr/products/figurines-mini-collection"
   },
   {
     id: 44,
@@ -650,14 +607,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=44",
     rating: 5,
     date: "2026-01-31",
-    title: "Affiche pop art SEVENTEEN géniale",
-    content: "L'affiche pop art SEVENTEEN avec les couleurs vives est devenue la pièce maîtresse de ma décoration ! L'impression est haute résolution, les couleurs ne bavurent pas. Absolument géniale !",
+    title: "Figurines Huntrix 5pcs Adorable",
+    content: "Les Figurines Demon Hunters Huntrix 5pcs ultra détaillées ! Parfait pour câlins collection, qualité premium. Partout dans chambre !",
     verified: true,
     helpful: 47,
-    productImage: "/photo review/pop-art.jpg",
-    product: "Affiche pop art SEVENTEEN",
-    productUrl: "https://huntrix.com/products/seventeen-pop-art-poster",
-    prompt: "Professional product photography of vibrant SEVENTEEN pop art poster displayed on white background"
+    productImage: "/photo review/Figurines Demon Hunters (5pcs, Mini, etc..jpeg",
+    product: "Figurines Demon Hunters Huntrix 5pcs",
+    productUrl: "https://boutique-kpop.fr/products/figurines-5pcs-huntrix"
   },
   {
     id: 45,
@@ -665,14 +621,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=45",
     rating: 5,
     date: "2026-01-30",
-    title: "Serre-tête ENHYPEN pratique",
-    content: "Le serre-tête ENHYPEN est très confortable pour les long journées ! Élastique bien ajusté, ne fait pas mal à la tête et le design est très élégant. Indispensable !",
+    title: "Sweat Kawaii Tie-dye Huntrix",
+    content: "Le Sweat Kawaii KPop Huntrix Tie-dye super stylé ! L'affichage motif clair, batterie longue, design minimaliste. Adoré !",
     verified: true,
     helpful: 30,
-    productImage: "/photo review/headband.jpg",
-    product: "Serre-tête ENHYPEN",
-    productUrl: "https://huntrix.com/products/enhypen-comfortable-headband",
-    prompt: "Professional product photography of ENHYPEN branded headband displayed on white background"
+    productImage: "/photo review/Sweat à Capuche KPop Huntrix.jpeg",
+    product: "Sweat Kawaii Tie-dye Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/sweat-kawaii-tiedye"
   },
   {
     id: 46,
@@ -680,14 +635,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=46",
     rating: 5,
     date: "2026-01-29",
-    title: "Diffuseur aromathérapie TWICE magique",
-    content: "Le diffuseur aromathérapie TWICE avec lumière ambiante est magique ! Les vapeurs sentent bon, la lumière crée une atmosphère relaxante. Parfait pour méditer en écoutant TWICE !",
+    title: "Album Huntrix Demon Hunters",
+    content: "L'Album Huntrix Demon Hunters avec le groupe magique ! Les images brille lumière crée atmosphère. Parfait détente !",
     verified: true,
     helpful: 51,
-    productImage: "/photo review/diffuser.jpg",
-    product: "Diffuseur TWICE",
-    productUrl: "https://huntrix.com/products/twice-aromatherapy-diffuser-led",
-    prompt: "Professional product photography of TWICE branded diffuser with LED light on white background"
+    productImage: "/photo review/Poster KPOP Huntrix.jpeg",
+    product: "Album Huntrix Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/album-huntrix-demon"
   },
   {
     id: 47,
@@ -695,14 +649,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=47",
     rating: 4,
     date: "2026-01-28",
-    title: "Chaussettes BLACKPINK douces",
-    content: "Les chaussettes BLACKPINK sont super douces et confortables ! Les motifs de chaque membre sur des chaussettes différentes. Le seul bémol : les élastiques pourraient être plus résistants.",
+    title: "Chaussettes Huntrix Douces",
+    content: "Les Chaussettes Huntrix super douces ! Les motifs personnages chaussettes différentes. Élastiques résistants.",
     verified: true,
     helpful: 15,
-    productImage: "/photo review/socks.jpg",
-    product: "Chaussettes BLACKPINK",
-    productUrl: "https://huntrix.com/products/blackpink-comfort-socks-set",
-    prompt: "Professional product photography of BLACKPINK themed socks collection displayed on white background"
+    productImage: "/photo review/Ensemble Pyjama.jpeg",
+    product: "Chaussettes Huntrix Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/chaussettes-huntrix"
   },
   {
     id: 48,
@@ -710,14 +663,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=48",
     rating: 5,
     date: "2026-01-27",
-    title: "Aimants collection STRAY KIDS",
-    content: "Les aimants STRAY KIDS pour décorer le frigo sont adorables ! Suffisamment forts, les images sont claires et précises. J'en collectionne chaque semaine de nouvelles sortes !",
+    title: "Aimants Huntrix Collection",
+    content: "Les Aimants Huntrix décorer frigo adorables ! Suffisamment forts, images claires. Collectionne semaine nouvelles !",
     verified: true,
     helpful: 26,
-    productImage: "/photo review/magnets.jpg",
-    product: "Aimants STRAY KIDS",
-    productUrl: "https://huntrix.com/products/stray-kids-fridge-magnets-collection",
-    prompt: "Professional product photography of STRAY KIDS magnets displayed on white background"
+    productImage: "/photo review/Lomo Cards Demon Hunters.jpeg",
+    product: "Aimants Huntrix Demon Hunters",
+    productUrl: "https://boutique-kpop.fr/products/aimants-huntrix"
   },
   {
     id: 49,
@@ -725,14 +677,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=49",
     rating: 5,
     date: "2026-01-26",
-    title: "Coussin peluche ITZY adorable",
-    content: "Le coussin peluche ITZY est ultra doux et adorable ! Parfait pour les câlins, la qualité de la peluche est premium. Je l'ai partout dans ma chambre maintenant !",
+    title: "Cousin Peluche Huntrix Adorable",
+    content: "Le Coussin Peluche Huntrix ultra doux adorable ! Parfait câlins, qualité peluche premium. Partout chambre !",
     verified: true,
     helpful: 49,
-    productImage: "/photo review/plushie-pillow.jpg",
-    product: "Coussin peluche ITZY",
-    productUrl: "https://huntrix.com/products/itzy-plushie-cushion-soft",
-    prompt: "Professional product photography of soft ITZY plushie cushion displayed on white background"
+    productImage: "/photo review/Peluche Derpy Demon Hunters.jpeg",
+    product: "Coussin Peluche Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/coussin-peluche-huntrix"
   },
   {
     id: 50,
@@ -740,14 +691,13 @@ const reviews = [
     avatar: "https://i.pravatar.cc/150?img=50",
     rating: 5,
     date: "2026-01-25",
-    title: "Montre numérique NewJeans chic",
-    content: "La montre numérique NewJeans est super stylée et fonctionnelle ! L'affichage est clair, la batterie tient longtemps, et le design minimaliste pastel fait toute la différence. Adoré !",
+    title: "Montre Numérique Huntrix Chic",
+    content: "La Montre Numérique Huntrix super stylée fonctionnelle ! L'affichage clair, batterie longtemps, design minimaliste Huntrix. Adoré !",
     verified: true,
     helpful: 53,
-    productImage: "/photo review/digital-watch.jpg",
-    product: "Montre NewJeans",
-    productUrl: "https://huntrix.com/products/newjeans-digital-watch-minimalist",
-    prompt: "Professional product photography of NewJeans digital watch displayed on white background"
+    productImage: "/photo review/Veilleuse Kpop Demon Hunters.jpeg",
+    product: "Montre Numérique Huntrix",
+    productUrl: "https://boutique-kpop.fr/products/montre-numerique-huntrix"
   }
 ];
 
