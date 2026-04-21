@@ -169,6 +169,7 @@ export const checkoutAPI = {
     // Convertir les items pour correspondre au format attendu par le backend
     const formattedItems = items.map(item => ({
       productId: item.product_id || item.productId,
+      variantId: item.variantId,
       quantity: item.quantity,
       size: item.size,
       color: item.color,

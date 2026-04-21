@@ -190,30 +190,7 @@ export function ProductCard2({ product, className = "" }) {
             </div>
           )}
 
-          {/* Action buttons */}
-          <div className="absolute bottom-0 inset-x-0 translate-y-full group-hover:translate-y-0 transition-all duration-300 bg-gradient-to-t from-black/80 to-transparent pt-8 pb-4 px-4 flex gap-2 justify-center">
-            <button
-              onClick={handleAdd}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300 ${
-                added
-                  ? "bg-green-500 text-white"
-                  : "bg-[#5E2251] text-white hover:bg-[#4A1940] active:scale-95"
-              }`}
-            >
-              <ShoppingBag size={18} />
-              <span className="hidden sm:inline">{added ? "Ajouté" : "Ajouter"}</span>
-            </button>
-            <button
-              onClick={handleWish}
-              className={`py-2.5 px-4 rounded-lg transition-all duration-300 ${
-                wished
-                  ? "bg-red-500 text-white"
-                  : "bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
-              }`}
-            >
-              <Heart size={18} fill={wished ? "currentColor" : "none"} />
-            </button>
-          </div>
+
         </div>
 
         {/* ============ INFO SECTION ============ */}

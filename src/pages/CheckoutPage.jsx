@@ -180,7 +180,8 @@ export default function CheckoutPage() {
     setLoading(true);
     try {
       const items = cartItems.map((item) => ({
-        product_id: item.id,
+        product_id: item.productId || item.id,
+        variantId: item.variantId,
         quantity: item.quantity,
         size: item.size,
         color: item.color,

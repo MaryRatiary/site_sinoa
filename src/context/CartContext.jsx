@@ -31,8 +31,8 @@ export const CartProvider = ({ children }) => {
   };
 
   // ✅ Ajouter un produit au panier
-  const addToCart = (product, quantity = 1, size = null, color = null) => {
-    console.log('➕ addToCart appelé:', { product, quantity, size, color });
+  const addToCart = (product, quantity = 1, size = null, color = null, variantId = null) => {
+    console.log('➕ addToCart appelé:', { product, quantity, size, color, variantId });
     
     if (!product || !product.id) {
       console.error('❌ Produit invalide:', product);
@@ -62,6 +62,7 @@ export const CartProvider = ({ children }) => {
         console.log('🆕 Nouvel article ajouté au panier');
         const newItem = {
           id: product.id,
+          variantId: variantId || product.variantId || (product.variants && product.variants[0]?.id),
           name: product.name || product.title || 'Produit',
           price: parseFloat(product.price) || 0,
           image: product.image || '',

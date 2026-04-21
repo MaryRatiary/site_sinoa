@@ -92,11 +92,34 @@ const ProductDetailModal = ({ product, onClose }) => {
       return;
     }
 
+    // Trouver le variant ID correspondant
+    let variantId = null;
+    if (fullProduct.variants && fullProduct.variants.length > 0) {
+      if (selectedSize || selectedColor) {
+        const matchingVariant = fullProduct.variants.find(v => {
+          const matchSize = !selectedSize || 
+            v.option1 === selectedSize || 
+            v.option2 === selectedSize || 
+            v.option3 === selectedSize;
+          const matchColor = !selectedColor || 
+            v.option1 === selectedColor || 
+            v.option2 === selectedColor || 
+            v.option3 === selectedColor;
+          return matchSize && matchColor;
+        });
+        if (matchingVariant) variantId = matchingVariant.id;
+      }
+      
+      // Fallback au premier variant si rien n'est trouvé
+      if (!variantId) variantId = fullProduct.variants[0].id;
+    }
+
     addToCart(
       product,
       quantity,
       selectedSize,
-      selectedColor
+      selectedColor,
+      variantId
     );
 
     setIsAdded(true);

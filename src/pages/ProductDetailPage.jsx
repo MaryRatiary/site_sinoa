@@ -6,195 +6,73 @@ import RespNav from "../components/resp/RespNav";
 import Footer from "../components/composants/Footer";
 import { useProductBySlug } from "../hooks/useProducts";
 import { useCart } from "../context/CartContext";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import ReviewsSection from "../components/composants/ReviewsSection";
 import RelatedProducts from "../components/composants/RelatedProduct";
 
 const PLACEHOLDER_IMAGE = "https://via.placeholder.com/500?text=Image+non+disponible";
 
-// Inline bold/italic parser ──────────────────────────────────────────────
-function parseInline(text) {
-  const parts = [];
-  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*)/g;
-  let last = 0;
-  let match;
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > last) parts.push({ type: "text", content: text.slice(last, match.index) });
-    if (match[2]) parts.push({ type: "bold", content: match[2] });
-    else if (match[3]) parts.push({ type: "italic", content: match[3] });
-    last = match.index + match[0].length;
-  }
-  if (last < text.length) parts.push({ type: "text", content: text.slice(last) });
-  return parts.length > 0 ? parts : [{ type: "text", content: text }];
-}
 
-function InlineText({ text }) {
-  const parts = parseInline(text);
-  return (
-    <>
-      {parts.map((p, i) => {
-        if (p.type === "bold") return <strong key={i} className="font-semibold text-[#5E2251]">{p.content}</strong>;
-        if (p.type === "italic") return <em key={i} className="italic text-gray-500">{p.content}</em>;
-        return <span key={i}>{p.content}</span>;
-      })}
-    </>
-  );
-}
-
-// ── Markdown block parser ──────────────────────────────────────────────────
-function parseMarkdown(markdown) {
-  if (!markdown || typeof markdown !== "string") return [];
-  const lines = markdown.split("\n");
-  const elements = [];
-  let listBuffer = [];
-  let i = 0;
-
-  const flushList = () => {
-    if (listBuffer.length > 0) {
-      elements.push({ type: "ul", items: [...listBuffer] });
-      listBuffer = [];
-    }
-  };
-
-  while (i < lines.length) {
-    const line = lines[i];
-    const t = line.trim();
-
-    if (t.startsWith("|") && t.endsWith("|")) {
-      flushList();
-      
-      const tableLines = [];
-      while (i < lines.length && lines[i].trim().startsWith("|") && lines[i].trim().endsWith("|")) {
-        tableLines.push(lines[i].trim());
-        i++;
-      }
-      i--;
-
-      if (tableLines.length >= 2) {
-        const headerCells = tableLines[0]
-          .split("|")
-          .slice(1, -1)
-          .map(cell => cell.trim());
-
-        const bodyRows = tableLines
-          .slice(2)
-          .map(row =>
-            row
-              .split("|")
-              .slice(1, -1)
-              .map(cell => cell.trim())
-          );
-
-        elements.push({
-          type: "table",
-          headers: headerCells,
-          rows: bodyRows,
-          key: i,
-        });
-      }
-    } else if (!t) {
-      flushList();
-    } else if (t.startsWith("### ")) {
-      flushList();
-      elements.push({ type: "h3", text: t.slice(4), key: i });
-    } else if (t.startsWith("## ")) {
-      flushList();
-      elements.push({ type: "h2", text: t.slice(3), key: i });
-    } else if (t.startsWith("# ")) {
-      flushList();
-      elements.push({ type: "h1", text: t.slice(2), key: i });
-    } else if (/^[-*•]\s/.test(t)) {
-      listBuffer.push({ text: t.replace(/^[-*•]\s/, ""), key: i });
-    } else {
-      flushList();
-      elements.push({ type: "p", text: t, key: i });
-    }
-
-    i++;
-  }
-  flushList();
-  return elements;
-}
 
 // ── Styled markdown renderer ───────────────────────────────────────────────
 function MarkdownDescription({ markdown }) {
-  const blocks = parseMarkdown(markdown);
-  if (!blocks.length) return null;
+  if (!markdown) return null;
+
+  // Nettoyer le markdown si Shopify l'a entouré de balises HTML (fréquent)
+  const cleanMarkdown = markdown
+    .replace(/<p>/g, '')
+    .replace(/<\/p>/g, '\n')
+    .replace(/<br\s*\/?>/g, '\n')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
 
   return (
-    <div className="desc-body space-y-6">
-      {blocks.map((block) => {
-        switch (block.type) {
-          case "h1":
-            return (
-              <div key={block.key} className="desc-h1">
-                <h2 className="desc-h1-text"><InlineText text={block.text} /></h2>
-              </div>
-            );
-          case "h2":
-            return (
-              <div key={block.key} className="desc-h2-wrap">
-                <span className="desc-h2-dot" />
-                <h3 className="desc-h2-text"><InlineText text={block.text} /></h3>
-              </div>
-            );
-          case "h3":
-            return (
-              <p key={block.key} className="desc-h3-text">
-                <InlineText text={block.text} />
-              </p>
-            );
-          case "ul":
-            return (
-              <ul key={block.items[0]?.key} className="desc-ul space-y-2">
-                {block.items.map((item) => (
-                  <li key={item.key} className="desc-li">
-                    <span className="desc-li-icon">
-                      <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                        <circle cx="4" cy="4" r="3" fill="#5E2251" opacity="0.7" />
-                      </svg>
-                    </span>
-                    <span className="desc-li-text"><InlineText text={item.text} /></span>
-                  </li>
-                ))}
-              </ul>
-            );
-          case "table":
-            return (
-              <div key={block.key} className="desc-table-wrapper overflow-x-auto -mx-1.5">
-                <table className="desc-table w-full border-collapse min-w-max sm:min-w-full">
-                  <thead>
-                    <tr className="bg-[#5E2251]/8 border-b-2 border-[#5E2251]/30">
-                      {block.headers.map((header, idx) => (
-                        <th key={idx} className="desc-table-header px-3 sm:px-4 py-3 text-left font-bold text-[#5E2251] text-xs sm:text-sm border-r border-[#5E2251]/10 last:border-r-0 whitespace-nowrap sm:whitespace-normal">
-                          <InlineText text={header} />
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {block.rows.map((row, rowIdx) => (
-                      <tr key={rowIdx} className={`border-b border-gray-200/50 ${rowIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'} hover:bg-[#5E2251]/3 transition-colors`}>
-                        {row.map((cell, cellIdx) => (
-                          <td key={cellIdx} className="desc-table-cell px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-700 border-r border-gray-200/30 last:border-r-0">
-                            <InlineText text={cell} />
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            );
-          case "p":
-            return (
-              <p key={block.key} className="desc-p-text">
-                <InlineText text={block.text} />
-              </p>
-            );
-          default:
-            return null;
-        }
-      })}
+    <div className="desc-body prose prose-slate max-w-none">
+      <ReactMarkdown 
+        remarkPlugins={[remarkGfm]}
+        components={{
+          h1: ({node, ...props}) => (
+            <div className="desc-h1">
+              <h1 className="desc-h1-text" {...props} />
+            </div>
+          ),
+          h2: ({node, ...props}) => (
+            <div className="desc-h2-wrap">
+              <span className="desc-h2-dot" />
+              <h2 className="desc-h2-text" {...props} />
+            </div>
+          ),
+          h3: ({node, ...props}) => <h3 className="desc-h3-text" {...props} />,
+          p: ({node, ...props}) => <p className="desc-p-text" {...props} />,
+          ul: ({node, ...props}) => (
+            <ul className="desc-ul space-y-2" {...props} />
+          ),
+          li: ({node, ...props}) => (
+            <li className="desc-li">
+              <span className="desc-li-icon">
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                  <circle cx="4" cy="4" r="3" fill="#5E2251" opacity="0.7" />
+                </svg>
+              </span>
+              <span className="desc-li-text" {...props} />
+            </li>
+          ),
+          table: ({node, ...props}) => (
+            <div className="desc-table-wrapper overflow-x-auto -mx-1.5">
+              <table className="desc-table w-full border-collapse min-w-max sm:min-w-full" {...props} />
+            </div>
+          ),
+          thead: ({node, ...props}) => <thead className="bg-[#5E2251]/8 border-b-2 border-[#5E2251]/30" {...props} />,
+          th: ({node, ...props}) => <th className="desc-table-header px-3 sm:px-4 py-3 text-left font-bold text-[#5E2251] text-xs sm:text-sm border-r border-[#5E2251]/10 last:border-r-0 whitespace-nowrap sm:whitespace-normal" {...props} />,
+          tr: ({node, ...props}) => <tr className="border-b border-gray-200/50 hover:bg-[#5E2251]/3 transition-colors" {...props} />,
+          td: ({node, ...props}) => <td className="desc-table-cell px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-700 border-r border-gray-200/30 last:border-r-0" {...props} />,
+        }}
+      >
+        {cleanMarkdown}
+      </ReactMarkdown>
     </div>
   );
 }
@@ -368,16 +246,11 @@ export default function ProductDetailPage() {
 
     // ✅ Appeler addToCart avec l'image spécifique du variant si elle existe
     addToCart(
-      {
-        ...dbProduct,
-        id: selectedVariant?.id || dbProduct.id,
-        price: selectedVariant?.price || dbProduct.price,
-        image: selectedVariant?.image_url || dbProduct.image || dbProduct.images?.[0]
-      },
+      dbProduct,
       quantity,
       selectedSize,
       selectedColor,
-      selectedModel
+      selectedVariant?.id
     );
     
     // ✅ Ouvrir le modal du panier immédiatement
@@ -813,16 +686,7 @@ export default function ProductDetailPage() {
                     <span>Panier</span>
                   </button>
                   
-                  <button
-                    onClick={() => {
-                      handleAddToCart();
-                      navigate('/checkout');
-                    }}
-                    className="flex-1 bg-black hover:bg-gray-800 text-white font-bold h-12 rounded-2xl transition-all flex items-center justify-center gap-2 group shadow-lg active:scale-95 border border-gray-800"
-                  >
-                    <Star size={18} className="text-yellow-400 group-hover:rotate-12 transition-transform" />
-                    <span>Acheter</span>
-                  </button>
+
                 </div>
               </div>
 
