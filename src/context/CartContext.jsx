@@ -51,21 +51,30 @@ export const CartProvider = ({ children }) => {
       let newItems;
       if (existingItem) {
         // Augmenter la quantité
-        console.log('✏️ Article existant, augmentation quantité');
+        const selectedVariant = variantId ? product.variants?.find(v => v.id === variantId) : null;
         newItems = prevItems.map((item) =>
           item.id === product.id && item.size === size && item.color === color
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { 
+                ...item, 
+                quantity: item.quantity + quantity,
+                image: selectedVariant?.image_url || item.image,
+                price: selectedVariant ? (parseFloat(selectedVariant.price) || item.price) : item.price
+              }
             : item
         );
       } else {
         // Ajouter un nouvel article
         console.log('🆕 Nouvel article ajouté au panier');
+        
+        // Trouver le variant pour l'image et le prix spécifiques
+        const selectedVariant = variantId ? product.variants?.find(v => v.id === variantId) : null;
+        
         const newItem = {
           id: product.id,
           variantId: variantId || product.variantId || (product.variants && product.variants[0]?.id),
           name: product.name || product.title || 'Produit',
-          price: parseFloat(product.price) || 0,
-          image: product.image || '',
+          price: selectedVariant ? (parseFloat(selectedVariant.price) || parseFloat(product.price) || 0) : (parseFloat(product.price) || 0),
+          image: selectedVariant?.image_url || product.image || '',
           quantity: Math.max(1, parseInt(quantity) || 1),
           size: size || null,
           color: color || null,
