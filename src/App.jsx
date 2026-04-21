@@ -28,18 +28,18 @@ import BestSellersPage from './pages/BestSellersPage'
 // Composant pour les routes protégées (authentification requise)
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Chargement...</div>;
-  
+
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 // Composant pour les routes protégées (admin)
 const AdminRoute = ({ children }) => {
   const { isAdmin, loading } = useAuth();
-  
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Chargement...</div>;
-  
+
   return isAdmin() ? children : <Navigate to="/" replace />;
 };
 
@@ -53,70 +53,66 @@ const AppRoutes = () => {
       <Route path="/shop" element={<ShopPage />} />
       <Route path="/cart" element={<CartPage />} />
       <Route path="/best-sellers" element={<BestSellersPage />} />
-      
+
       {/* Routes pour les produits statiques - AVANT les routes dynamiques */}
       <Route path="/staticcategory/:categoryType" element={<StaticCategoryPage />} />
-      
+
       {/* Route pour les produits individuels (lightstick, huntrix, groupes, bestsellers) */}
       <Route path="/product/:slug" element={<ProductDetailPage />} />
-      
+
       {/* Route dynamique pour les catégories */}
       <Route path="/category/:slug" element={<DynamicProductPage />} />
-      
+
       {/* Routes protégées (authentification requise) */}
-      <Route 
-        path="/checkout" 
-        element={
-          <ProtectedRoute>
-            <CheckoutPage />
-          </ProtectedRoute>
-        } 
+      <Route
+        path="/checkout"
+        element={<CheckoutPage />}
       />
-      
-      <Route 
-        path="/orders" 
+
+      <Route
+        path="/orders"
         element={
           <ProtectedRoute>
             <OrdersPage />
           </ProtectedRoute>
-        } 
+        }
       />
 
-      <Route 
-        path="/order/:orderId" 
+      <Route
+        path="/order/:orderId"
         element={
           <ProtectedRoute>
             <OrderDetailPage />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Routes admin */}
-      <Route 
-        path="/admin/dashboard" 
+      <Route
+        path="/admin/dashboard"
         element={
           <AdminRoute>
             <AdminDashboard />
           </AdminRoute>
-        } 
+        }
       />
 
-      <Route 
-        path="/admin/catalog" 
+      <Route
+        path="/admin/catalog"
         element={
           <AdminRoute>
             <AdminCatalog />
           </AdminRoute>
-        } 
+        }
       />
 
-      <Route 
-        path="/admin/management" 
+      <Route
+        path="/admin/management"
         element={
           <AdminRoute>
             <AdminManagementPage />
           </AdminRoute>
-        } 
+        }
       />
     </Routes>
   );

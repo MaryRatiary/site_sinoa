@@ -68,7 +68,7 @@ export default function CategoryPage() {
         setCategory(categoryData);
 
         // Charger tous les produits
-        const allProductsResponse = await fetch(`/api/products?limit=50000`);
+        const allProductsResponse = await fetch(`/api/products?limit=250`);
         if (!allProductsResponse.ok) {
           throw new Error('Erreur lors du chargement des produits');
         }

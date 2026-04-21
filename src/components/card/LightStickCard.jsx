@@ -63,7 +63,7 @@ const LightStickCard = () => {
     fetchCategories();
   }, []);
 
-  const { products: allProducts, loading: allLoading } = useProducts('?limit=50000');
+  const { products: allProducts, loading: allLoading } = useProducts('?limit=250');
   const { products: clothingProducts, loading: clothingLoading } = useProductsByCategory(category_ids['clothing']);
   const { products: accessoriesProducts, loading: accessoriesLoading } = useProductsByCategory(category_ids['accessories']);
 

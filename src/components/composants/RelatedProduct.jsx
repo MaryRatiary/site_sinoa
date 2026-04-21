@@ -12,7 +12,7 @@ const RelatedProducts = ({ currentProductId }) => {
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
-  const { products } = useProducts('?limit=50000');
+  const { products } = useProducts('?limit=250');
 
   useEffect(() => {
     if (!products || products.length === 0) {

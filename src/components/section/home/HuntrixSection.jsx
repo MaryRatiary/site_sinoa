@@ -15,7 +15,7 @@ const HuntrixSection = () => {
       try {
         setLoading(true);
 
-        const allProducts = await productsAPI.getAll('?limit=50000');
+        const allProducts = await productsAPI.getAll('?limit=250');
         
         if (!allProducts || allProducts.length === 0) {
           setProducts([]);

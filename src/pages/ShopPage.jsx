@@ -49,7 +49,7 @@ export default function ShopPage() {
   useEffect(() => {
     const fetchDb = async () => {
       try {
-        const data = await productsAPI.getAll('?limit=50000');
+        const data = await productsAPI.getAll('?limit=250');
         setDbProducts(data || []);
       } catch {
         setDbProducts([]);

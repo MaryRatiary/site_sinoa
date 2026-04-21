@@ -56,7 +56,7 @@ export default function BestSellersPage() {
     const fetchBestsellers = async () => {
       try {
         setDbLoading(true);
-        const allProducts = await productsAPI.getAll('?limit=50000');
+        const allProducts = await productsAPI.getAll('?limit=250');
         
         if (!allProducts || allProducts.length === 0) {
           setDbProducts([]);

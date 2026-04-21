@@ -10,7 +10,7 @@ export const useProducts = (query = '') => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const finalQuery = query || '?limit=50000';
+        const finalQuery = query || '?limit=250';
         const data = await productsAPI.getAll(finalQuery);
         
         if (!Array.isArray(data)) {
@@ -125,7 +125,7 @@ export const useProductsByCategory = (category_id) => {
         
         const category_ids = getAllCategoryIdsRecursive(category_id, allCategoriesFlat);
         
-        const allProducts = await productsAPI.getAll('?limit=50000');
+        const allProducts = await productsAPI.getAll('?limit=250');
         
         if (!Array.isArray(allProducts)) {
           console.warn('⚠️ Products API returned non-array');

@@ -260,28 +260,7 @@ export default function CheckoutPage() {
     { id: 2, name: 'Confirmation', icon: CheckCircle },
   ];
 
-  if (!isAuthenticated) {
-    return (
-      <LayoutWrapper>
-        <div className="min-h-screen bg-gray-50 py-12 sm:py-16 mt-16 sm:mt-20 px-4 flex items-center justify-center">
-          <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-10 max-w-md w-full text-center animate-fadeIn">
-            <AlertCircle size={40} className="sm:w-16 sm:h-16 mx-auto mb-4 text-[#5E2251]" />
-            <h1 className="text-xl sm:text-2xl font-bold mb-3">Veuillez vous connecter</h1>
-            <p className="text-gray-500 mb-8 text-xs sm:text-sm">
-              Vous devez être connecté pour procéder au paiement.
-            </p>
-            <button
-              onClick={() => navigate('/login')}
-              className="bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-2 px-6 sm:py-3 sm:px-8 rounded-xl transition text-sm sm:text-base"
-            >
-              Se connecter
-            </button>
-          </div>
-        </div>
-        <Footer />
-      </LayoutWrapper>
-    );
-  }
+  // Suppression du bloc de redirection forcée pour permettre le checkout invité
 
   return (
     <LayoutWrapper>

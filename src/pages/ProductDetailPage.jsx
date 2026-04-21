@@ -212,6 +212,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [wished, setWished] = useState(false);
@@ -244,31 +245,39 @@ export default function ProductDetailPage() {
         if (dbProduct.colors?.length > 0) {
           setSelectedColor(dbProduct.colors[0].color_name || dbProduct.colors[0]);
         }
+        if (dbProduct.models?.length > 0) {
+          setSelectedModel(dbProduct.models[0]);
+        }
         setCurrentImageIndex(0);
       }
     }
   }, [dbProduct, dbLoading]);
 
-  // ✅ AMÉLIORÉ: Synchronisation selectedColor avec currentImageIndex
-  // Quand l'image change, on cherche la couleur correspondante
+  // ✅ SYNC: selectedColor/Model avec currentImageIndex
   useEffect(() => {
-    if (!dbProduct?.colors || !dbProduct?.colors.length) return;
-    
-    // Si currentImageIndex est dans le range des couleurs
-    if (currentImageIndex < dbProduct.colors.length) {
-      const correspondingColor = dbProduct.colors[currentImageIndex];
-      if (correspondingColor) {
-        const color_name = correspondingColor.color_name || correspondingColor.name || correspondingColor;
-        setSelectedColor(color_name);
-      } else {
-        setSelectedColor(null);
+    if (!dbProduct?.variants || dbLoading || (!selectedColor && !selectedSize && !selectedModel)) return;
+
+    // Trouver le variant qui match EXACTEMENT la sélection actuelle
+    // On privilégie un variant qui a une IMAGE spécifique
+    const matchingVariant = dbProduct.variants.find(v => {
+      const matchColor = !selectedColor || v.option1 === selectedColor || v.option2 === selectedColor || v.option3 === selectedColor;
+      const matchSize = !selectedSize || v.option1 === selectedSize || v.option2 === selectedSize || v.option3 === selectedSize;
+      const matchModel = !selectedModel || v.option1 === selectedModel || v.option2 === selectedModel || v.option3 === selectedModel;
+      return matchColor && matchSize && matchModel && v.image_id;
+    }) || dbProduct.variants.find(v => {
+      const matchColor = !selectedColor || v.option1 === selectedColor || v.option2 === selectedColor || v.option3 === selectedColor;
+      const matchSize = !selectedSize || v.option1 === selectedSize || v.option2 === selectedSize || v.option3 === selectedSize;
+      const matchModel = !selectedModel || v.option1 === selectedModel || v.option2 === selectedModel || v.option3 === selectedModel;
+      return matchColor && matchSize && matchModel;
+    });
+
+    if (matchingVariant && matchingVariant.image_url) {
+      const imgIndex = dbProduct.images.indexOf(matchingVariant.image_url);
+      if (imgIndex !== -1 && imgIndex !== currentImageIndex) {
+        setCurrentImageIndex(imgIndex);
       }
-    } else {
-      // currentImageIndex est au-delà des couleurs disponibles
-      // (ex: 4 couleurs mais 6 photos) → on désélectionne la couleur
-      setSelectedColor(null);
     }
-  }, [currentImageIndex, dbProduct?.colors]);
+  }, [selectedColor, selectedSize, selectedModel, dbProduct, dbLoading]);
 
   // ── Guards ──────────────────────────────────────────────────────────────
   if (loading) {
@@ -344,18 +353,31 @@ export default function ProductDetailPage() {
       alert("Veuillez sélectionner une couleur");
       return;
     }
+    if (product.models?.length > 0 && !selectedModel) {
+      alert("Veuillez sélectionner un modèle");
+      return;
+    }
     
-    // ✅ Appeler addToCart avec les bons paramètres
+    // Trouver le variant exact
+    const selectedVariant = dbProduct?.variants?.find(v => {
+      const matchColor = !selectedColor || v.option1 === selectedColor || v.option2 === selectedColor || v.option3 === selectedColor;
+      const matchSize = !selectedSize || v.option1 === selectedSize || v.option2 === selectedSize || v.option3 === selectedSize;
+      const matchModel = !selectedModel || v.option1 === selectedModel || v.option2 === selectedModel || v.option3 === selectedModel;
+      return matchColor && matchSize && matchModel;
+    });
+
+    // ✅ Appeler addToCart avec l'image spécifique du variant si elle existe
     addToCart(
       {
-        id: product.id,
-        name: product.name || product.title,
-        price: product.price,
-        image: images[0] || PLACEHOLDER_IMAGE,
+        ...dbProduct,
+        id: selectedVariant?.id || dbProduct.id,
+        price: selectedVariant?.price || dbProduct.price,
+        image: selectedVariant?.image_url || dbProduct.image || dbProduct.images?.[0]
       },
-      quantity,  // ✅ quantity en tant que nombre
-      selectedSize,  // ✅ selectedSize
-      selectedColor  // ✅ selectedColor
+      quantity,
+      selectedSize,
+      selectedColor,
+      selectedModel
     );
     
     // ✅ Ouvrir le modal du panier immédiatement
@@ -747,31 +769,61 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
+              {/* Models */}
+              {product.models?.filter(m => m && m !== "").length > 0 && (
+                <div className={visible ? 'anim-3' : ''}>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400 mb-3">
+                    Modèle — <span className="text-gray-800 normal-case tracking-normal font-semibold text-[11px] break-words">{selectedModel}</span>
+                  </p>
+                  <div className="size-options-container">
+                    {product.models.map((model) => {
+                      const isActive = selectedModel === model;
+                      return (
+                        <button key={model} onClick={() => setSelectedModel(model)}
+                          className={`size-btn py-2.5 px-3 rounded-xl border-2 font-semibold text-xs sm:text-sm ${
+                            isActive ? 'active' : 'border-gray-200 text-gray-600 bg-white'
+                          }`}
+                          title={model}>
+                          {model}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Quantity + Cart */}
-              <div className={`flex gap-3 items-stretch ${visible ? 'anim-4' : ''}`}>
-                <div className="flex items-center rounded-2xl border-2 border-gray-100 bg-white overflow-hidden shadow-sm">
-                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                    className="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors text-xl font-light">
-                    −
+              <div className={`flex flex-col sm:flex-row gap-3 items-stretch ${visible ? 'anim-4' : ''}`}>
+                <div className="flex items-center rounded-2xl border-2 border-gray-100 bg-white overflow-hidden shadow-sm h-12">
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-full flex items-center justify-center hover:bg-gray-50 text-gray-500 transition-colors">
+                    <ChevronLeft size={16} />
                   </button>
-                  <span className="w-10 text-center font-bold text-gray-900 text-base">{quantity}</span>
-                  <button onClick={() => setQuantity(q => q + 1)}
-                    className="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors text-xl font-light">
-                    +
+                  <span className="w-10 text-center font-bold text-gray-800 text-sm">{quantity}</span>
+                  <button onClick={() => setQuantity(quantity + 1)} className="w-10 h-full flex items-center justify-center hover:bg-gray-50 text-gray-500 transition-colors">
+                    <ChevronRight size={16} />
                   </button>
                 </div>
 
-                <button onClick={handleAddToCart}
-                  className={`cart-btn flex-1 h-12 flex items-center justify-center gap-2.5 rounded-2xl font-bold text-sm tracking-wide ${
-                    addedToCart
-                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'
-                      : 'bg-[#5E2251] text-white'
-                  }`}>
-                  {addedToCart
-                    ? <>✓ Ajouté au panier</>
-                    : <><ShoppingBag size={17} /> Ajouter au panier</>
-                  }
-                </button>
+                <div className="flex flex-1 gap-3">
+                  <button
+                    onClick={handleAddToCart}
+                    className="flex-1 bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold h-12 rounded-2xl transition-all flex items-center justify-center gap-2 group shadow-lg shadow-[#5E2251]/20 active:scale-95"
+                  >
+                    <ShoppingBag size={18} className="group-hover:scale-110 transition-transform" />
+                    <span>Panier</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      handleAddToCart();
+                      navigate('/checkout');
+                    }}
+                    className="flex-1 bg-black hover:bg-gray-800 text-white font-bold h-12 rounded-2xl transition-all flex items-center justify-center gap-2 group shadow-lg active:scale-95 border border-gray-800"
+                  >
+                    <Star size={18} className="text-yellow-400 group-hover:rotate-12 transition-transform" />
+                    <span>Acheter</span>
+                  </button>
+                </div>
               </div>
 
               {/* Stock */}

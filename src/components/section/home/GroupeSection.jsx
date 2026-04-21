@@ -13,7 +13,7 @@ const GroupSection = () => {
   const [hoveredIdx, setHoveredIdx] = useState(null);
 
   const navigate = useNavigate();
-  const { products } = useProducts('?limit=50000');
+  const { products } = useProducts('?limit=250');
 
   useEffect(() => {
     if (!products || products.length === 0) {
