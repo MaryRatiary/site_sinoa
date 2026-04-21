@@ -221,7 +221,7 @@ const Navbar = () => {
               {categories.length === 0 && (
                 <p className="text-red-500 text-sm">❌ Aucune catégorie chargée</p>
               )}
-              {categories.map((category) => {
+              {categories.filter(cat => cat.level === 0).map((category) => {
                 return (
                   <div key={category.id} className="relative"
                     onMouseEnter={() => { keep(); open(`category-${category.id}`); }}
@@ -244,7 +244,7 @@ const Navbar = () => {
         </div>
 
         {/* MEGA MENU */}
-        {categories.map((category) => {
+        {categories.filter(cat => cat.level === 0).map((category) => {
           const isActive = activeMenu === `category-${category.id}`;
           if (!isActive || !category.children?.length) return null;
           const isSimple = category.children.every(c => !c.children?.length);
