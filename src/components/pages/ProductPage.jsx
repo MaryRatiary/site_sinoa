@@ -186,7 +186,7 @@ export default function ProductPage() {
             <div key={product.id} className="flex flex-col">
               <ProductCard2 product={product} />
               {/* Rating */}
-              {product.rating && (
+              {product.rating > 0 && (
                 <div className="mt-3 flex items-center gap-2">
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (

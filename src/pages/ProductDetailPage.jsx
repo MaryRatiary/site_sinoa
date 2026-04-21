@@ -656,7 +656,7 @@ export default function ProductDetailPage() {
                   className="text-3xl md:text-4xl font-black text-gray-900 leading-[1.1] tracking-tight">
                   {product.name || product.title}
                 </h1>
-                {product.rating && (
+                {product.rating > 0 && (
                   <div className="flex items-center gap-3 mt-3">
                     <div className="flex gap-0.5">
                       {[...Array(5)].map((_, i) => (
@@ -694,7 +694,7 @@ export default function ProductDetailPage() {
               <div className="h-px bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100" />
 
               {/* Colors - Small Circles with Images */}
-              {product.colors?.length > 0 && (
+              {product.colors?.filter(c => c && c.color_name !== "" && c !== "").length > 0 && (
                 <div className={visible ? 'anim-3' : ''}>
                   <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400 mb-3">
                     Couleur — <span className="text-gray-800 normal-case tracking-normal font-semibold">{selectedColor}</span>
@@ -724,7 +724,7 @@ export default function ProductDetailPage() {
               )}
 
               {/* Sizes */}
-              {product.sizes?.length > 0 && (
+              {product.sizes?.filter(s => s && s.size !== "" && s !== "").length > 0 && (
                 <div className={visible ? 'anim-3' : ''}>
                   <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400 mb-3">
                     Taille — <span className="text-gray-800 normal-case tracking-normal font-semibold text-[11px] break-words">{selectedSize}</span>
