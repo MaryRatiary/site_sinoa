@@ -202,6 +202,13 @@ export const checkoutAPI = {
     apiCall(`/checkout/${orderId}/cancel`, {
       method: 'PUT',
     }),
+
+  // ✨ NOUVEAU: Créer un checkout Shopify sécurisé via le backend
+  shopifyCheckout: (items, orderId) =>
+    apiCall('/shopify-checkout', {
+      method: 'POST',
+      body: JSON.stringify({ items, orderId }),
+    }),
 };
 
 // ============ DASHBOARD ADMIN ============
@@ -222,3 +229,4 @@ export const dashboardAPI = {
       body: JSON.stringify({ status, paymentStatus, trackingNumber, notes }),
     }),
 };
+

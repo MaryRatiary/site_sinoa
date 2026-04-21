@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { checkoutAPI } from '../../services/api';
+// Import supprimé - utilise le backend pour Shopify
 import {
   CheckCircle, AlertCircle, CreditCard,
   Truck, Lock, MapPin, Phone, Mail, Shield,
@@ -109,6 +110,37 @@ const inputCls =
 /* ─────────────────────────────────────────
    Main CheckoutPage
 ───────────────────────────────────────── */
+
+// ========== FONCTION POUR CHARGER CONFIG SHOPIFY SÉCURISÉE ==========
+const fetchShopifyConfig = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Non authentifié');
+
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/shopify-checkout/config`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Configuration Shopify non disponible');
+    }
+
+    const data = await response.json();
+    return data.config;
+  } catch (error) {
+    console.error('Erreur chargement config Shopify:', error);
+    throw error;
+  }
+};
+
+// ============== COMPOSANT CHECKOUT PAGE ==============
+
 export default function CheckoutPage() {
   const { cartItems, getTotalPrice, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
@@ -154,19 +186,20 @@ export default function CheckoutPage() {
   const tax = (afterDiscount * 0.20).toFixed(2);
   const total = (afterDiscount + shipping + parseFloat(tax)).toFixed(2);
 
-  const handleCheckout = async (e) => {
+    const handleCheckout = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
       const items = cartItems.map((item) => ({
-        product_id: item.id,
+        productId: item.product_id || item.id,
         quantity: item.quantity,
         size: item.size,
         color: item.color,
       }));
 
-      const order = await checkoutAPI.createOrder(
+      // Créer la commande via le backend
+      const response = await checkoutAPI.createOrder(
         items,
         formData.shippingAddress,
         formData.paymentMethod,
@@ -183,12 +216,39 @@ export default function CheckoutPage() {
         }
       );
 
-      setSuccessOrderId(order.order?.id || 'CMD-' + Date.now());
-      setSuccess(true);
-      clearCart();
-      setTimeout(() => navigate('/'), 3000);
+      const order = response.order;
+      
+      // Si le paiement est via Shopify, créer le checkout Shopify
+      if (formData.paymentMethod === 'shopify') {
+        try {
+          // Créer le checkout via la route sécurisée du backend
+          const shopifyCheckoutResponse = await checkoutAPI.shopifyCheckout(
+            items,
+            order.id
+          );
+
+          if (shopifyCheckoutResponse.checkoutUrl) {
+            clearCart();
+            // Rediriger vers Shopify Checkout
+            window.location.href = shopifyCheckoutResponse.checkoutUrl;
+            return;
+          }
+        } catch (shopifyError) {
+          console.error('❌ Erreur Shopify:', shopifyError);
+          setError('Erreur lors de la création du checkout Shopify. Veuillez réessayer.');
+          setLoading(false);
+          return;
+        }
+      } else {
+        // Pour les autres méthodes de paiement
+        setSuccessOrderId(order?.id || 'CMD-' + Date.now());
+        setSuccess(true);
+        clearCart();
+        setTimeout(() => navigate('/'), 3000);
+      }
     } catch (err) {
       setError(err.message || 'Erreur lors de la commande');
+      console.error('Erreur checkout:', err);
     } finally {
       setLoading(false);
     }
@@ -352,6 +412,7 @@ export default function CheckoutPage() {
                         { id: 'card',   label: 'Carte' },
                         { id: 'paypal', label: 'PayPal' },
                         { id: 'apple',  label: 'Apple' },
+                        { id: 'shopify', label: 'Shopify' },
                       ].map((m) => (
                         <button
                           key={m.id}
@@ -458,6 +519,29 @@ export default function CheckoutPage() {
                         <p className="text-gray-700 font-semibold text-xs sm:text-sm">Apple Pay prêt</p>
                       </div>
                     )}
+
+                    {/* Shopify Checkout */}
+                    {formData.paymentMethod === 'shopify' && (
+                      <div className="px-4 sm:px-6 py-8 sm:py-10 text-center animate-fadeIn">
+                        <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-[#5E2251]/10 rounded-full mb-4">
+                          <CreditCard size={24} className="sm:w-8 sm:h-8 text-[#5E2251]" />
+                        </div>
+                        <p className="text-gray-700 font-semibold text-xs sm:text-sm mb-2">Paiement Shopify Sécurisé</p>
+                        <p className="text-gray-500 text-xs mb-4">Configuré via Netlify - Vos données sont protégées</p>
+                        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-xs">
+                          <p className="font-semibold mb-2">🔒 Moyens de paiement disponibles :</p>
+                          <ul className="text-left space-y-1">
+                            <li>✓ Carte bancaire (Visa, Mastercard, American Express)</li>
+                            <li>✓ Apple Pay</li>
+                            <li>✓ Google Pay</li>
+                            <li>✓ Autres méthodes Shopify</li>
+                          </ul>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-3">Paiement traité de manière sécurisée par Shopify</p>
+                      </div>
+                    )}
+
+                    
                   </div>
 
                   <div className="flex gap-3">
@@ -511,6 +595,7 @@ export default function CheckoutPage() {
                         {formData.paymentMethod === 'card' && `Carte •••• ${formData.cardNumber.slice(-4)}`}
                         {formData.paymentMethod === 'paypal' && 'PayPal'}
                         {formData.paymentMethod === 'apple' && 'Apple Pay'}
+                        {formData.paymentMethod === 'shopify' && 'Shopify Checkout'}
                       </p>
                     </div>
 
