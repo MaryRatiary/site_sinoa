@@ -24,6 +24,8 @@ import DynamicProductPage from './pages/DynamicProductPage'
 import StaticCategoryPage from './pages/StaticCategoryPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import BestSellersPage from './pages/BestSellersPage'
+import SearchPage from './pages/SearchPage'
+
 
 // Composant pour les routes protégées (authentification requise)
 const ProtectedRoute = ({ children }) => {
@@ -53,6 +55,8 @@ const AppRoutes = () => {
       <Route path="/shop" element={<ShopPage />} />
       <Route path="/cart" element={<CartPage />} />
       <Route path="/best-sellers" element={<BestSellersPage />} />
+      <Route path="/search" element={<SearchPage />} />
+
 
       {/* Routes pour les produits statiques - AVANT les routes dynamiques */}
       <Route path="/staticcategory/:categoryType" element={<StaticCategoryPage />} />

@@ -1,23 +1,41 @@
 import { useState, useRef } from "react";
 import { Search, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function ExpandSearch() {
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
+  const navigate = useNavigate();
 
   const isExpanded = focused || value.length > 0;
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && value.trim()) {
+      const searchUrl = `/search?q=${encodeURIComponent(value.trim())}`;
+      console.log(`🚀 [DEBUG] ExpandSearch navigating to: ${searchUrl}`);
+      navigate(searchUrl);
+      setFocused(false);
+      inputRef.current?.blur();
+    }
+  };
 
   const handleIconClick = () => {
     if (!isExpanded) {
       inputRef.current?.focus();
+    } else if (value.trim()) {
+      const searchUrl = `/search?q=${encodeURIComponent(value.trim())}`;
+      console.log(`🚀 [DEBUG] ExpandSearch (icon click) navigating to: ${searchUrl}`);
+      navigate(searchUrl);
     }
   };
+
 
   const handleClear = () => {
     setValue("");
     inputRef.current?.blur();
   };
+
 
   return (
     <div className={`transition-all duration-300 ${isExpanded ? "flex-1 mx-2" : ""}`}>
@@ -48,6 +66,7 @@ export default function ExpandSearch() {
           onChange={(e) => setValue(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
+          onKeyDown={handleSearch}
           className={`
             h-10 rounded-[10px] outline-none border text-sm
             text-gray-700 placeholder-gray-400
@@ -58,6 +77,7 @@ export default function ExpandSearch() {
             }
           `}
         />
+
 
         {/* Clear button — appears when expanded */}
         {isExpanded && (

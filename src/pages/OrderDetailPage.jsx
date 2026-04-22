@@ -53,8 +53,90 @@ import Footer from '../components/composants/Footer';
 //   );
 // };
 
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+/* ─────────────────────────────────────────
+   Générateur de reçu PDF
+───────────────────────────────────────── */
+const generateReceiptPDF = (order) => {
+  const doc = new jsPDF();
+  
+  // En-tête
+  doc.setFontSize(22);
+  doc.setTextColor(94, 34, 81); // #5E2251
+  doc.text('SINOA KPOP - Facture', 14, 20);
+  
+  doc.setFontSize(12);
+  doc.setTextColor(100);
+  doc.text(`Numéro de commande : ${order.id}`, 14, 30);
+  doc.text(`Date : ${new Date(order.createdat).toLocaleDateString('fr-FR')}`, 14, 38);
+
+  // Informations client
+  doc.setFontSize(14);
+  doc.setTextColor(50);
+  doc.text('Informations Client :', 14, 50);
+  doc.setFontSize(11);
+  doc.text(`${order.first_name || ''} ${order.last_name || ''}`, 14, 58);
+  doc.text(order.email || '-', 14, 65);
+  doc.text(order.phone || '-', 14, 72);
+
+  // Adresse
+  doc.setFontSize(14);
+  doc.text('Adresse de livraison :', 110, 50);
+  doc.setFontSize(11);
+  doc.text(order.shippingaddress || '-', 110, 58);
+  doc.text(`${order.postalcode || ''} ${order.city || ''}`, 110, 65);
+  doc.text(order.country || '-', 110, 72);
+
+  // Paiement
+  doc.text(`Mode de paiement : ${(order.paymentmethod || 'N/A').toUpperCase()}`, 14, 85);
+  doc.text(`Statut : ${(order.paymentstatus || 'En attente').toUpperCase()}`, 14, 92);
+
+  // Tableau des articles
+  const tableData = (order.items || []).map(item => {
+    let details = [];
+    if (item.color) details.push(`Couleur: ${item.color}`);
+    if (item.size) details.push(`Taille: ${item.size}`);
+    const detailsStr = details.length ? `\n(${details.join(' • ')})` : '';
+
+    return [
+      `${item.name}${detailsStr}`,
+      item.quantity,
+      `€${parseFloat(item.price).toFixed(2)}`,
+      `€${(parseFloat(item.price) * item.quantity).toFixed(2)}`
+    ];
+  });
+
+  doc.autoTable({
+    startY: 100,
+    head: [['Produit', 'Quantité', 'Prix Unitaire', 'Total']],
+    body: tableData,
+    theme: 'striped',
+    headStyles: { fillColor: [94, 34, 81] },
+    styles: { fontSize: 10 }
+  });
+
+  // Totaux
+  const finalY = doc.lastAutoTable.finalY + 10;
+  const subtotal = (order.items || []).reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+  
+  doc.text(`Sous-total: €${subtotal.toFixed(2)}`, 130, finalY);
+  doc.setFontSize(14);
+  doc.setTextColor(0);
+  doc.text(`TOTAL TTC: €${parseFloat(order.totalprice).toFixed(2)}`, 130, finalY + 14);
+
+  // Pied de page
+  doc.setFontSize(10);
+  doc.setTextColor(150);
+  doc.text('Merci de votre achat chez Sinoa !', 105, 280, { align: 'center' });
+
+  doc.save(`Facture_Sinoa_${order.id}.pdf`);
+};
+
 // Timeline Component
 const OrderTimeline = ({ status, created_at }) => {
+
   const stages = [
     { key: 'pending', label: 'Commande confirmée', icon: CheckCircle, days: 0 },
     { key: 'processing', label: 'En traitement', icon: Clock, days: '1-2' },
@@ -514,7 +596,10 @@ export default function OrderDetailPage() {
 
               {/* Action Buttons */}
               <div className="flex gap-3">
-                <button className="flex-1 bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                <button 
+                  onClick={() => generateReceiptPDF(order)}
+                  className="flex-1 bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2"
+                >
                   <Download size={20} />
                   Télécharger la facture
                 </button>
