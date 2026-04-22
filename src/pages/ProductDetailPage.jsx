@@ -237,20 +237,45 @@ export default function ProductDetailPage() {
     }
     
     // Trouver le variant exact
-    const selectedVariant = dbProduct?.variants?.find(v => {
-      const matchColor = !selectedColor || v.option1 === selectedColor || v.option2 === selectedColor || v.option3 === selectedColor;
-      const matchSize = !selectedSize || v.option1 === selectedSize || v.option2 === selectedSize || v.option3 === selectedSize;
-      const matchModel = !selectedModel || v.option1 === selectedModel || v.option2 === selectedModel || v.option3 === selectedModel;
+    console.log('🔍 Recherche de variante pour:', { selectedColor, selectedSize, selectedModel });
+    console.log('📦 Variantes disponibles:', product.variants?.length);
+
+    const selectedVariant = product.variants?.find(v => {
+      // Nettoyer les valeurs pour comparer (insensible à la casse)
+      const v1 = v.option1?.trim().toLowerCase();
+      const v2 = v.option2?.trim().toLowerCase();
+      const v3 = v.option3?.trim().toLowerCase();
+      
+      const sColor = selectedColor?.trim().toLowerCase();
+      const sSize = selectedSize?.trim().toLowerCase();
+      const sModel = selectedModel?.trim().toLowerCase();
+
+      // Vérifier si chaque option sélectionnée correspond à l'une des 3 options du variant
+      const matchColor = !sColor || v1 === sColor || v2 === sColor || v3 === sColor;
+      const matchSize = !sSize || v1 === sSize || v2 === sSize || v3 === sSize;
+      const matchModel = !sModel || v1 === sModel || v2 === sModel || v3 === sModel;
+      
       return matchColor && matchSize && matchModel;
     });
 
+    if (selectedVariant) {
+      console.log('✅ Variante trouvée:', selectedVariant.id, selectedVariant.title);
+    } else {
+      console.warn('⚠️ Aucune variante correspondante trouvée ! Liste des variantes:', 
+        product.variants?.map(v => `${v.option1} / ${v.option2} / ${v.option3}`));
+    }
+
     // ✅ Appeler addToCart avec l'image spécifique du variant si elle existe
     addToCart(
-      dbProduct,
+      {
+        ...product,
+        image: selectedVariant?.image_url || product.image
+      },
       quantity,
       selectedSize,
       selectedColor,
-      selectedVariant?.id
+      selectedVariant?.id || (product.variants && product.variants[0]?.id),
+      selectedModel
     );
     
     // ✅ Ouvrir le modal du panier immédiatement
@@ -604,7 +629,8 @@ export default function ProductDetailPage() {
                         const isActive = selectedColor === name;
                         return (
                           <button key={name} onClick={() => {
-                            setSelectedColor(name);
+                            const colorString = typeof color === 'string' ? color : (color.color_name || color.name);
+                            setSelectedColor(colorString);
                             setCurrentImageIndex(idx);
                           }}
                             title={name}
@@ -626,10 +652,13 @@ export default function ProductDetailPage() {
                   </p>
                   <div className="size-options-container">
                     {product.sizes.map((size) => {
-                      const val = typeof size === "string" ? size : size.size;
+                      const val = typeof size === "string" ? size : (size.size || size.name);
                       const isActive = selectedSize === val;
                       return (
-                        <button key={val} onClick={() => setSelectedSize(val)}
+                        <button key={val} onClick={() => {
+                          const sizeString = typeof size === 'string' ? size : (size.size || size.name);
+                          setSelectedSize(sizeString);
+                        }}
                           className={`size-btn py-2.5 px-3 rounded-xl border-2 font-semibold text-xs sm:text-sm ${
                             isActive ? 'active' : 'border-gray-200 text-gray-600 bg-white'
                           }`}

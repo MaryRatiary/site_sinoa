@@ -31,8 +31,8 @@ export const CartProvider = ({ children }) => {
   };
 
   // ✅ Ajouter un produit au panier
-  const addToCart = (product, quantity = 1, size = null, color = null, variantId = null) => {
-    console.log('➕ addToCart appelé:', { product, quantity, size, color, variantId });
+  const addToCart = (product, quantity = 1, size = null, color = null, variantId = null, model = null) => {
+    console.log('➕ addToCart appelé:', { product, quantity, size, color, variantId, model });
     
     if (!product || !product.id) {
       console.error('❌ Produit invalide:', product);
@@ -40,12 +40,13 @@ export const CartProvider = ({ children }) => {
     }
 
     setCartItems(prevItems => {
-      // Chercher un article existant avec le même id, size et color
+      // Chercher un article existant avec le même id, size, color et model
       const existingItem = prevItems.find(
         (item) =>
           item.id === product.id &&
           item.size === size &&
-          item.color === color
+          item.color === color &&
+          item.model === model
       );
 
       let newItems;
@@ -53,7 +54,7 @@ export const CartProvider = ({ children }) => {
         // Augmenter la quantité
         const selectedVariant = variantId ? product.variants?.find(v => v.id === variantId) : null;
         newItems = prevItems.map((item) =>
-          item.id === product.id && item.size === size && item.color === color
+          item.id === product.id && item.size === size && item.color === color && item.model === model
             ? { 
                 ...item, 
                 quantity: item.quantity + quantity,
@@ -78,6 +79,7 @@ export const CartProvider = ({ children }) => {
           quantity: Math.max(1, parseInt(quantity) || 1),
           size: size || null,
           color: color || null,
+          model: model || null,
         };
         newItems = [...prevItems, newItem];
       }

@@ -13,11 +13,96 @@ import { FaPaypal, FaApple, FaCcVisa } from 'react-icons/fa';
 import LayoutWrapper from '../composants/LayoutWrapper';
 import AddressSelector from '../composants/AddressSelector';
 import Footer from '../composants/Footer';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+/* ─────────────────────────────────────────
+   Générateur de reçu PDF
+───────────────────────────────────────── */
+const generateReceiptPDF = (orderId, formData, cartItems, subtotal, discountAmount, shipping, tax, total) => {
+  const doc = new jsPDF();
+  
+  // En-tête
+  doc.setFontSize(22);
+  doc.setTextColor(94, 34, 81); // #5E2251
+  doc.text('SINOA KPOP - Facture', 14, 20);
+  
+  doc.setFontSize(12);
+  doc.setTextColor(100);
+  doc.text(`Numéro de commande : ${orderId}`, 14, 30);
+  doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')}`, 14, 38);
+
+  // Informations client
+  doc.setFontSize(14);
+  doc.setTextColor(50);
+  doc.text('Informations Client :', 14, 50);
+  doc.setFontSize(11);
+  doc.text(`${formData.first_name} ${formData.last_name}`, 14, 58);
+  doc.text(formData.email, 14, 65);
+  doc.text(formData.phone || '-', 14, 72);
+
+  // Adresse
+  doc.setFontSize(14);
+  doc.text('Adresse de livraison :', 110, 50);
+  doc.setFontSize(11);
+  doc.text(formData.shippingAddress, 110, 58);
+  doc.text(`${formData.postal_code} ${formData.city}`, 110, 65);
+  doc.text(formData.country, 110, 72);
+
+  // Paiement
+  doc.text(`Mode de paiement : ${formData.paymentMethod.toUpperCase()}`, 14, 85);
+  if (formData.paymentMethod === 'card') {
+    doc.text(`Carte : **** **** **** ${formData.cardNumber.slice(-4) || 'XXXX'}`, 14, 92);
+  }
+
+  // Tableau des articles
+  const tableData = cartItems.map(item => {
+    let details = [];
+    if (item.color) details.push(`Couleur: ${item.color}`);
+    if (item.size) details.push(`Taille: ${item.size}`);
+    if (item.model) details.push(`Modèle: ${item.model}`);
+    const detailsStr = details.length ? `\n(${details.join(' • ')})` : '';
+
+    return [
+      `${item.name}${detailsStr}`,
+      item.quantity,
+      `€${item.price.toFixed(2)}`,
+      `€${(item.price * item.quantity).toFixed(2)}`
+    ];
+  });
+
+  doc.autoTable({
+    startY: 100,
+    head: [['Produit', 'Quantité', 'Prix Unitaire', 'Total']],
+    body: tableData,
+    theme: 'striped',
+    headStyles: { fillColor: [94, 34, 81] },
+    styles: { fontSize: 10 }
+  });
+
+  // Totaux
+  const finalY = doc.lastAutoTable.finalY + 10;
+  doc.text(`Sous-total: €${subtotal.toFixed(2)}`, 130, finalY);
+  if (discountAmount > 0) doc.text(`Réduction: -€${discountAmount.toFixed(2)}`, 130, finalY + 8);
+  doc.text(`Livraison: ${shipping === 0 ? 'Gratuite' : `€${shipping.toFixed(2)}`}`, 130, finalY + 16);
+  doc.text(`TVA (20%): €${tax}`, 130, finalY + 24);
+  
+  doc.setFontSize(14);
+  doc.setTextColor(0);
+  doc.text(`TOTAL TTC: €${total}`, 130, finalY + 34);
+
+  // Pied de page
+  doc.setFontSize(10);
+  doc.setTextColor(150);
+  doc.text('Merci de votre achat chez Sinoa !', 105, 280, { align: 'center' });
+
+  doc.save(`Facture_Sinoa_${orderId}.pdf`);
+};
 
 /* ─────────────────────────────────────────
    Success Modal
 ───────────────────────────────────────── */
-const SuccessModal = ({ orderId, onClose }) => (
+const SuccessModal = ({ orderId, formData, cartItems, subtotal, discountAmount, shipping, tax, total, onClose }) => (
   <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl animate-scaleIn">
       <div className="mb-5 flex justify-center">
@@ -31,15 +116,21 @@ const SuccessModal = ({ orderId, onClose }) => (
         <p className="text-xs text-gray-500 mb-1">Numéro de commande</p>
         <p className="text-lg sm:text-xl font-bold text-[#5E2251]">{orderId}</p>
       </div>
-      <p className="text-gray-500 text-xs mb-6">
-        Un email de confirmation avec les détails de votre commande vous sera envoyé.
-      </p>
-      <button
-        onClick={onClose}
-        className="w-full bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-2 px-4 sm:py-3 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-[#5E2251]/30 text-sm sm:text-base"
-      >
-        Retour à l'accueil
-      </button>
+      
+      <div className="flex flex-col gap-3">
+        <button
+          onClick={() => generateReceiptPDF(orderId, formData, cartItems, subtotal, discountAmount, shipping, tax, total)}
+          className="w-full bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-2 px-4 sm:py-3 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-[#5E2251]/30 text-sm sm:text-base flex items-center justify-center gap-2"
+        >
+          📄 Télécharger la facture (PDF)
+        </button>
+        <button
+          onClick={onClose}
+          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 sm:py-3 rounded-xl transition-all duration-200 text-sm sm:text-base"
+        >
+          Retour à l'accueil
+        </button>
+      </div>
     </div>
   </div>
 );
@@ -193,9 +284,11 @@ export default function CheckoutPage() {
     try {
       const items = cartItems.map((item) => ({
         productId: item.product_id || item.id,
+        variantId: item.variantId,
         quantity: item.quantity,
         size: item.size,
         color: item.color,
+        model: item.model,
       }));
 
       // Créer la commande via le backend
@@ -243,8 +336,9 @@ export default function CheckoutPage() {
         // Pour les autres méthodes de paiement
         setSuccessOrderId(order?.id || 'CMD-' + Date.now());
         setSuccess(true);
+        // On ne vide plus le panier immédiatement s'il faut les données pour la facture PDF
+        // Mais c'est ok car ils sont sauvés localement ou en state de SuccessModal
         clearCart();
-        setTimeout(() => navigate('/'), 3000);
       }
     } catch (err) {
       setError(err.message || 'Erreur lors de la commande');
@@ -585,8 +679,15 @@ export default function CheckoutPage() {
                       </h3>
                       <div className="space-y-1">
                         {cartItems.map((item) => (
-                          <div key={`${item.id}-${item.size}-${item.color}`} className="flex justify-between text-xs sm:text-sm">
-                            <span className="text-gray-600">{item.name} ×{item.quantity}</span>
+                          <div key={`${item.id}-${item.size}-${item.color}-${item.model}`} className="flex justify-between text-xs sm:text-sm">
+                            <span className="text-gray-600">
+                              {item.name} ×{item.quantity}
+                              <div className="flex flex-wrap gap-x-2 gap-y-1 mt-1">
+                                {item.color && <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">Couleur: {item.color}</span>}
+                                {item.size && <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">Taille: {item.size}</span>}
+                                {item.model && <span className="text-[10px] bg-[#5E2251]/5 text-[#5E2251] px-1.5 py-0.5 rounded font-medium">Modèle: {item.model}</span>}
+                              </div>
+                            </span>
                             <span className="font-semibold text-gray-800">€{(item.price * item.quantity).toFixed(2)}</span>
                           </div>
                         ))}
@@ -642,7 +743,12 @@ export default function CheckoutPage() {
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="text-xs sm:text-sm font-semibold text-gray-800 truncate">{item.name}</p>
-                        <p className="text-xs text-gray-400">×{item.quantity}</p>
+                        <div className="text-[10px] text-gray-400 flex flex-wrap gap-x-1.5 mt-0.5">
+                          <span>×{item.quantity}</span>
+                          {item.color && <span>• {item.color}</span>}
+                          {item.size && <span>• {item.size}</span>}
+                          {item.model && <span>• {item.model}</span>}
+                        </div>
                       </div>
                       <p className="text-xs sm:text-sm font-bold text-gray-700 flex-shrink-0">
                         €{(item.price * item.quantity).toFixed(2)}
@@ -711,6 +817,13 @@ export default function CheckoutPage() {
       {success && (
         <SuccessModal
           orderId={successOrderId}
+          formData={formData}
+          cartItems={cartItems}
+          subtotal={subtotal}
+          discountAmount={discountAmount}
+          shipping={shipping}
+          tax={tax}
+          total={total}
           onClose={() => {
             setSuccess(false);
             navigate('/');

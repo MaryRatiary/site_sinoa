@@ -173,6 +173,7 @@ export const checkoutAPI = {
       quantity: item.quantity,
       size: item.size,
       color: item.color,
+      model: item.model,
     }));
 
     return apiCall('/checkout', {
