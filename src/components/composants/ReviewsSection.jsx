@@ -86,7 +86,7 @@ const RatingGauge = ({ reviews, averageRating }) => {
   );
 };
 
-export default function ReviewsSection({ product_id }) {
+export default function ReviewsSection({ product_id, category_name }) {
   const [displayedReviews, setDisplayedReviews] = useState([]);
   const [selectedReview, setSelectedReview] = useState(null);
   const [showFormModal, setShowFormModal] = useState(false);
@@ -97,7 +97,7 @@ export default function ReviewsSection({ product_id }) {
   const loadReviews = async () => {
     try {
       setLoading(true);
-      const data = await reviewsAPI.getProductReviews(product_id, 50, 0);
+      const data = await reviewsAPI.getCategoryReviews(category_name, 50, 0);
       setAllReviews(data.reviews || []);
       setDisplayedReviews(data.reviews || []);
       setAverageRating(data.average || 0);
@@ -112,8 +112,8 @@ export default function ReviewsSection({ product_id }) {
   };
 
   useEffect(() => {
-    if (product_id) loadReviews();
-  }, [product_id]);
+    if (category_name) loadReviews();
+  }, [category_name]);
 
   const handleReviewSuccess = () => {
     loadReviews(); // Recharger les avis depuis l'API !
@@ -487,6 +487,7 @@ export default function ReviewsSection({ product_id }) {
       {showFormModal && (
         <ReviewFormModal
           product_id={product_id}
+          category_name={category_name}
           onClose={() => setShowFormModal(false)}
           onSuccess={handleReviewSuccess}
         />

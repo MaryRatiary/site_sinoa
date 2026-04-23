@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, Upload, Star, AlertCircle } from 'lucide-react';
 import { reviewsAPI } from '../../services/api';
 
-export const ReviewFormModal = ({ product_id, onClose, onSuccess }) => {
+export const ReviewFormModal = ({ product_id, category_name, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     author: '',
     email: '',
@@ -84,7 +84,8 @@ export const ReviewFormModal = ({ product_id, onClose, onSuccess }) => {
         rating: parseInt(formData.rating),
         title: formData.title.trim(),
         content: formData.content.trim(),
-        images: base64Images
+        images: base64Images,
+        category_name: category_name
       };
 
       const response = await reviewsAPI.createReview(product_id, reviewData);

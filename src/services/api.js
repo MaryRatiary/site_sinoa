@@ -146,6 +146,9 @@ export const productsAPI = {
 export const reviewsAPI = {
   getProductReviews: (productId, limit = 10, offset = 0) => 
     apiCall(`/reviews/product/${productId}?limit=${limit}&offset=${offset}`),
+    
+  getCategoryReviews: (categoryName, limit = 10, offset = 0) => 
+    apiCall(`/reviews/category/${encodeURIComponent(categoryName)}?limit=${limit}&offset=${offset}`),
   
   createReview: (productId, data) => 
     apiCall(`/reviews/product/${productId}`, {
