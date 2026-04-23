@@ -202,7 +202,7 @@ export default function ReviewsSection({ product_id, category_name }) {
                   <div className="w-1/4 flex-shrink-0 border-r border-gray-100 overflow-hidden">
                     {review.images && review.images.length > 0 ? (
                       <img
-                        src={review.images[0]?.image_url || review.images[0]}
+                        src={review.images[0]?.image_url || review.images[0]?.imageUrl || (typeof review.images[0] === 'string' ? review.images[0] : '')}
                         alt="Photo"
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -450,7 +450,7 @@ export default function ReviewsSection({ product_id, category_name }) {
                     {selectedReview.images.map((img, idx) => (
                       <img
                         key={idx}
-                        src={img.image_url || img}
+                        src={img?.image_url || img?.imageUrl || (typeof img === 'string' ? img : '')}
                         alt={`Photo ${idx + 1}`}
                         className="w-full h-48 object-cover rounded-lg border-2 border-[#5E2251]"
                         onError={(e) => {
