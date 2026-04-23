@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Star, ThumbsUp, MessageCircle, ChevronRight, X } from "lucide-react";
 import { ReviewFormModal } from "./ReviewFormModal";
-import reviews from "../../data/reviews"; // ✅ Importer les données statiques
+import { reviewsAPI } from "../../services/api";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -13,11 +13,7 @@ const anonymizeName = (name) => {
   return `${firstLetter}${asterisks}${lastLetter}`;
 };
 
-// 🔀 Fonction pour obtenir des avis aléatoires
-const getRandomReviews = (allReviews, count) => {
-  const shuffled = [...allReviews].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
-};
+
 
 // 📊 Composant Jauge d'étoiles COMPACT
 const RatingGauge = ({ reviews, averageRating }) => {
@@ -96,79 +92,52 @@ export default function ReviewsSection({ product_id }) {
   const [showFormModal, setShowFormModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [averageRating, setAverageRating] = useState(0);
-  const [itemsPerPage] = useState(4);
   const [allReviews, setAllReviews] = useState([]);
 
-  useEffect(() => {
-    // ✅ Utiliser les données statiques au lieu d'un appel API
-    const loadReviews = () => {
-      try {
-        setLoading(true);
-        
-        // Utiliser les reviews statiques
-        const loadedReviews = [...reviews];
-        
-        // Calculer la moyenne des notes
-        const avgRating = loadedReviews.length > 0
-          ? loadedReviews.reduce((sum, r) => sum + r.rating, 0) / loadedReviews.length
-          : 0;
-        
-        setAllReviews(loadedReviews);
-        // Charger les premiers avis
-        setDisplayedReviews(getRandomReviews(loadedReviews, itemsPerPage));
-        setAverageRating(avgRating);
-      } catch (err) {
-        console.error('Erreur chargement avis:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadReviews();
-  }, [itemsPerPage]);
-
-  // 🔀 Charger de nouveaux avis aléatoires au lieu d'ajouter
-  const handleLoadNext = () => {
-    const newReviews = getRandomReviews(allReviews, itemsPerPage);
-    setDisplayedReviews(newReviews);
-    
-    // Animation: scroll vers le haut pour voir les nouveaux avis
-    setTimeout(() => {
-      document.querySelector('.reviews-container')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  };
-
-  const handleReviewSuccess = () => {
-    // Si vous voulez ajouter un nouvel avis à la liste statique
-    const loadReviews = () => {
-      try {
-        const loadedReviews = [...reviews];
-        const avgRating = loadedReviews.length > 0
-          ? loadedReviews.reduce((sum, r) => sum + r.rating, 0) / loadedReviews.length
-          : 0;
-        
-        setAllReviews(loadedReviews);
-        setDisplayedReviews(getRandomReviews(loadedReviews, itemsPerPage));
-        setAverageRating(avgRating);
-      } catch (err) {
-        console.error('Erreur rechargement avis:', err);
-      }
-    };
-    loadReviews();
-  };
-
-  const handleMarkHelpful = (reviewId) => {
-    // Mettre à jour les avis localement
-    const updatedDisplayedReviews = displayedReviews.map(r =>
-      r.id === reviewId ? { ...r, helpful: r.helpful + 1 } : r
-    );
-    
-    setDisplayedReviews(updatedDisplayedReviews);
-    
-    if (selectedReview?.id === reviewId) {
-      setSelectedReview({ ...selectedReview, helpful: selectedReview.helpful + 1 });
+  const loadReviews = async () => {
+    try {
+      setLoading(true);
+      const data = await reviewsAPI.getProductReviews(product_id, 50, 0);
+      setAllReviews(data.reviews || []);
+      setDisplayedReviews(data.reviews || []);
+      setAverageRating(data.average || 0);
+    } catch (err) {
+      console.error('Erreur chargement avis dynamiques:', err);
+      // Fallback
+      setAllReviews([]);
+      setDisplayedReviews([]);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (product_id) loadReviews();
+  }, [product_id]);
+
+  const handleReviewSuccess = () => {
+    loadReviews(); // Recharger les avis depuis l'API !
+  };
+
+  const handleMarkHelpful = async (reviewId) => {
+    try {
+      const res = await reviewsAPI.markHelpful(reviewId);
+      
+      const updatedDisplayedReviews = displayedReviews.map(r =>
+        r.id === reviewId ? { ...r, helpful: res.helpful } : r
+      );
+      
+      setDisplayedReviews(updatedDisplayedReviews);
+      
+      if (selectedReview?.id === reviewId) {
+        setSelectedReview({ ...selectedReview, helpful: res.helpful });
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  };
+
+
 
   if (loading && allReviews.length === 0) {
     return (
@@ -322,26 +291,7 @@ export default function ReviewsSection({ product_id }) {
               ))}
             </div>
 
-            {/* LOAD MORE BUTTON - CHARGER NOUVEAUX AVIS */}
-            <div className="flex justify-center mt-5 sm:mt-6">
-              <button
-                onClick={handleLoadNext}
-                className="
-                  px-6 sm:px-8 py-2 sm:py-2.5
-                  bg-[#5E2251]
-                  text-white
-                  font-bold
-                  rounded-lg
-                  hover:bg-[#7a2d64]
-                  transition-all duration-300
-                  text-xs sm:text-sm
-                  shadow-md hover:shadow-lg
-                  hover:-translate-y-0.5
-                "
-              >
-                🔄 Charger d'autres avis
-              </button>
-            </div>
+
           </div>
         </>
       ) : (

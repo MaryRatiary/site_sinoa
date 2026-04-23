@@ -8,6 +8,7 @@ import { useProductBySlug } from "../hooks/useProducts";
 import { useCart } from "../context/CartContext";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import ReviewsSection from "../components/composants/ReviewsSection";
 import RelatedProducts from "../components/composants/RelatedProduct";
 
@@ -20,37 +21,46 @@ function MarkdownDescription({ markdown }) {
   if (!markdown) return null;
 
   // Nettoyer le markdown si Shopify l'a entouré de balises HTML (fréquent)
+  // On garde les balises car rehypeRaw va les traiter correctement
   const cleanMarkdown = markdown
-    .replace(/<p>/g, '')
-    .replace(/<\/p>/g, '\n')
-    .replace(/<br\s*\/?>/g, '\n')
+    .replace(/<meta[^>]*>/gi, '')
+    .replace(/<\/?span[^>]*>/gi, '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>\s*<p[^>]*>/gi, '\n\n')
+    .replace(/<\/?p[^>]*>/gi, '\n')
     .replace(/&nbsp;/g, ' ')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&');
+    .replace(/&amp;/g, '&')
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/\|\s*\n+\s*\|/g, '|\n|')
+    .trim();
 
   return (
     <div className="desc-body prose prose-slate max-w-none">
-      <ReactMarkdown 
+      <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
         components={{
-          h1: ({node, ...props}) => (
+          h1: ({ node, ...props }) => (
             <div className="desc-h1">
               <h1 className="desc-h1-text" {...props} />
             </div>
           ),
-          h2: ({node, ...props}) => (
+          h2: ({ node, ...props }) => (
             <div className="desc-h2-wrap">
               <span className="desc-h2-dot" />
               <h2 className="desc-h2-text" {...props} />
             </div>
           ),
-          h3: ({node, ...props}) => <h3 className="desc-h3-text" {...props} />,
-          p: ({node, ...props}) => <p className="desc-p-text" {...props} />,
-          ul: ({node, ...props}) => (
+          h3: ({ node, ...props }) => <h3 className="desc-h3-text" {...props} />,
+          p: ({ node, ...props }) => <p className="desc-p-text whitespace-pre-wrap" {...props} />,
+          ul: ({ node, ...props }) => (
             <ul className="desc-ul space-y-2" {...props} />
           ),
-          li: ({node, ...props}) => (
+          li: ({ node, ...props }) => (
             <li className="desc-li">
               <span className="desc-li-icon">
                 <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
@@ -60,15 +70,16 @@ function MarkdownDescription({ markdown }) {
               <span className="desc-li-text" {...props} />
             </li>
           ),
-          table: ({node, ...props}) => (
+          table: ({ node, ...props }) => (
             <div className="desc-table-wrapper overflow-x-auto -mx-1.5">
               <table className="desc-table w-full border-collapse min-w-max sm:min-w-full" {...props} />
             </div>
           ),
-          thead: ({node, ...props}) => <thead className="bg-[#5E2251]/8 border-b-2 border-[#5E2251]/30" {...props} />,
-          th: ({node, ...props}) => <th className="desc-table-header px-3 sm:px-4 py-3 text-left font-bold text-[#5E2251] text-xs sm:text-sm border-r border-[#5E2251]/10 last:border-r-0 whitespace-nowrap sm:whitespace-normal" {...props} />,
-          tr: ({node, ...props}) => <tr className="border-b border-gray-200/50 hover:bg-[#5E2251]/3 transition-colors" {...props} />,
-          td: ({node, ...props}) => <td className="desc-table-cell px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-700 border-r border-gray-200/30 last:border-r-0" {...props} />,
+          thead: ({ node, ...props }) => <thead className="bg-[#5E2251]/8 border-b-2 border-[#5E2251]/30" {...props} />,
+          tbody: ({ node, ...props }) => <tbody className="bg-white" {...props} />,
+          th: ({ node, ...props }) => <th className="desc-table-header px-3 sm:px-4 py-3 text-left font-bold text-[#5E2251] text-xs sm:text-sm border-r border-[#5E2251]/10 last:border-r-0 whitespace-nowrap sm:whitespace-normal" {...props} />,
+          tr: ({ node, ...props }) => <tr className="border-b border-gray-200/50 hover:bg-[#5E2251]/3 transition-colors" {...props} />,
+          td: ({ node, ...props }) => <td className="desc-table-cell px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-700 border-r border-gray-200/30 last:border-r-0" {...props} />,
         }}
       >
         {cleanMarkdown}
@@ -124,7 +135,7 @@ export default function ProductDetailPage() {
           setSelectedColor(dbProduct.colors[0].color_name || dbProduct.colors[0]);
         }
         if (dbProduct.models?.length > 0) {
-          setSelectedModel(dbProduct.models[0]);
+          setSelectedModel(typeof dbProduct.models[0] === 'string' ? dbProduct.models[0] : (dbProduct.models[0].model || dbProduct.models[0].name));
         }
         setCurrentImageIndex(0);
       }
@@ -196,7 +207,7 @@ export default function ProductDetailPage() {
 
   // ── Computed values ──────────────────────────────────────────────────────
   const images = product.images?.filter(Boolean) || [product.image || product.url].filter(Boolean);
-  
+
   // currentImageIndex est la source de vérité unique
   // Afficher l'image à currentImageIndex
   const currentImage = images.length > 0 ? images[currentImageIndex] : PLACEHOLDER_IMAGE;
@@ -208,16 +219,16 @@ export default function ProductDetailPage() {
     ? Math.round(((numOriginalPrice - numPrice) / numOriginalPrice) * 100)
     : null;
 
-    // ✅ CORRIGÉ: Les flèches changent juste currentImageIndex (la couleur se synchro via useEffect)
-    const nextImage = () => {
-      if (images.length <= 1) return;
-      setCurrentImageIndex(prev => (prev + 1) % images.length);
-    };
-    
-    const prevImage = () => {
-      if (images.length <= 1) return;
-      setCurrentImageIndex(prev => (prev - 1 + images.length) % images.length);
-    }; 
+  // ✅ CORRIGÉ: Les flèches changent juste currentImageIndex (la couleur se synchro via useEffect)
+  const nextImage = () => {
+    if (images.length <= 1) return;
+    setCurrentImageIndex(prev => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    if (images.length <= 1) return;
+    setCurrentImageIndex(prev => (prev - 1 + images.length) % images.length);
+  };
 
   const rawDescription = typeof product.description === "string" ? product.description : "";
 
@@ -235,7 +246,7 @@ export default function ProductDetailPage() {
       alert("Veuillez sélectionner un modèle");
       return;
     }
-    
+
     // Trouver le variant exact
     console.log('🔍 Recherche de variante pour:', { selectedColor, selectedSize, selectedModel });
     console.log('📦 Variantes disponibles:', product.variants?.length);
@@ -245,7 +256,7 @@ export default function ProductDetailPage() {
       const v1 = v.option1?.trim().toLowerCase();
       const v2 = v.option2?.trim().toLowerCase();
       const v3 = v.option3?.trim().toLowerCase();
-      
+
       const sColor = selectedColor?.trim().toLowerCase();
       const sSize = selectedSize?.trim().toLowerCase();
       const sModel = selectedModel?.trim().toLowerCase();
@@ -254,14 +265,14 @@ export default function ProductDetailPage() {
       const matchColor = !sColor || v1 === sColor || v2 === sColor || v3 === sColor;
       const matchSize = !sSize || v1 === sSize || v2 === sSize || v3 === sSize;
       const matchModel = !sModel || v1 === sModel || v2 === sModel || v3 === sModel;
-      
+
       return matchColor && matchSize && matchModel;
     });
 
     if (selectedVariant) {
       console.log('✅ Variante trouvée:', selectedVariant.id, selectedVariant.title);
     } else {
-      console.warn('⚠️ Aucune variante correspondante trouvée ! Liste des variantes:', 
+      console.warn('⚠️ Aucune variante correspondante trouvée ! Liste des variantes:',
         product.variants?.map(v => `${v.option1} / ${v.option2} / ${v.option3}`));
     }
 
@@ -277,10 +288,10 @@ export default function ProductDetailPage() {
       selectedVariant?.id || (product.variants && product.variants[0]?.id),
       selectedModel
     );
-    
+
     // ✅ Ouvrir le modal du panier immédiatement
     openCart();
-    
+
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2200);
   };
@@ -473,6 +484,40 @@ export default function ProductDetailPage() {
           align-items: center;
         }
         .desc-li-text { flex: 1; }
+
+        /* Styles pour les tableaux dans la description */
+        .desc-table-wrapper {
+          margin: 1.5rem 0;
+          background: white;
+          border-radius: 12px;
+          border: 1px solid rgba(0,0,0,0.06);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+          overflow-x: auto;
+        }
+        .desc-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 14px;
+        }
+        .desc-table-header {
+          background: rgba(94,34,81,0.05) !important;
+          color: #5E2251 !important;
+          font-weight: 700 !important;
+          text-align: left;
+          padding: 12px 16px;
+          border-bottom: 2px solid rgba(94,34,81,0.1);
+        }
+        .desc-table-cell {
+          padding: 12px 16px;
+          border-bottom: 1px solid rgba(0,0,0,0.04);
+          color: #4a4a4a;
+        }
+        .desc-table tr:last-child .desc-table-cell {
+          border-bottom: none;
+        }
+        .desc-table tr:hover {
+          background: rgba(94,34,81,0.02);
+        }
       `}</style>
 
       <div className="pdp-root">
@@ -549,13 +594,12 @@ export default function ProductDetailPage() {
               {images.length > 1 && (
                 <div className="grid grid-cols-5 gap-2">
                   {images.map((img, idx) => (
-                    <button key={idx} 
+                    <button key={idx}
                       onClick={() => {
                         setCurrentImageIndex(idx);
                       }}
-                      className={`thumb-btn aspect-square rounded-2xl overflow-hidden border-2 bg-white ${
-                        currentImageIndex === idx ? 'active border-[#5E2251]' : 'border-transparent hover:border-gray-200'
-                      }`}>
+                      className={`thumb-btn aspect-square rounded-2xl overflow-hidden border-2 bg-white ${currentImageIndex === idx ? 'active border-[#5E2251]' : 'border-transparent hover:border-gray-200'
+                        }`}>
                       <img src={img} alt="" className="w-full h-full object-cover"
                         onError={(e) => { e.target.src = PLACEHOLDER_IMAGE; }} />
                     </button>
@@ -584,7 +628,7 @@ export default function ProductDetailPage() {
                           className={i < Math.floor(product.rating) ? 'fill-amber-400 text-amber-400' : 'fill-gray-200 text-gray-200'} />
                       ))}
                     </div>
-                   
+
                   </div>
                 )}
               </div>
@@ -659,9 +703,8 @@ export default function ProductDetailPage() {
                           const sizeString = typeof size === 'string' ? size : (size.size || size.name);
                           setSelectedSize(sizeString);
                         }}
-                          className={`size-btn py-2.5 px-3 rounded-xl border-2 font-semibold text-xs sm:text-sm ${
-                            isActive ? 'active' : 'border-gray-200 text-gray-600 bg-white'
-                          }`}
+                          className={`size-btn py-2.5 px-3 rounded-xl border-2 font-semibold text-xs sm:text-sm ${isActive ? 'active' : 'border-gray-200 text-gray-600 bg-white'
+                            }`}
                           title={val}>
                           {val}
                         </button>
@@ -678,15 +721,15 @@ export default function ProductDetailPage() {
                     Modèle — <span className="text-gray-800 normal-case tracking-normal font-semibold text-[11px] break-words">{selectedModel}</span>
                   </p>
                   <div className="size-options-container">
-                    {product.models.map((model) => {
-                      const isActive = selectedModel === model;
+                    {product.models.map((modelObj, idx) => {
+                      const val = typeof modelObj === "string" ? modelObj : (modelObj.model || modelObj.name);
+                      const isActive = selectedModel === val;
                       return (
-                        <button key={model} onClick={() => setSelectedModel(model)}
-                          className={`size-btn py-2.5 px-3 rounded-xl border-2 font-semibold text-xs sm:text-sm ${
-                            isActive ? 'active' : 'border-gray-200 text-gray-600 bg-white'
-                          }`}
-                          title={model}>
-                          {model}
+                        <button key={val || idx} onClick={() => setSelectedModel(val)}
+                          className={`size-btn py-2.5 px-3 rounded-xl border-2 font-semibold text-xs sm:text-sm ${isActive ? 'active' : 'border-gray-200 text-gray-600 bg-white'
+                            }`}
+                          title={val}>
+                          {val}
                         </button>
                       );
                     })}
@@ -714,7 +757,7 @@ export default function ProductDetailPage() {
                     <ShoppingBag size={18} className="group-hover:scale-110 transition-transform" />
                     <span>Panier</span>
                   </button>
-                  
+
 
                 </div>
               </div>
@@ -722,17 +765,15 @@ export default function ProductDetailPage() {
               {/* Stock */}
               {product.stock !== undefined && (
                 <div className={`flex items-center gap-2 ${visible ? 'anim-4' : ''}`}>
-                  <div className={`w-2 h-2 rounded-full ${
-                    product.stock > 10 ? 'bg-emerald-400' : product.stock > 0 ? 'bg-amber-400' : 'bg-red-400'
-                  }`} />
-                  <p className={`text-xs font-medium ${
-                    product.stock > 10 ? 'text-emerald-600' : product.stock > 0 ? 'text-amber-600' : 'text-red-500'
-                  }`}>
+                  <div className={`w-2 h-2 rounded-full ${product.stock > 10 ? 'bg-emerald-400' : product.stock > 0 ? 'bg-amber-400' : 'bg-red-400'
+                    }`} />
+                  <p className={`text-xs font-medium ${product.stock > 10 ? 'text-emerald-600' : product.stock > 0 ? 'text-amber-600' : 'text-red-500'
+                    }`}>
                     {product.stock > 10
                       ? `En stock — ${product.stock} disponibles`
                       : product.stock > 0
-                      ? `Plus que ${product.stock} en stock !`
-                      : 'Rupture de stock'}
+                        ? `Plus que ${product.stock} en stock !`
+                        : 'Rupture de stock'}
                   </p>
                 </div>
               )}
@@ -762,8 +803,8 @@ export default function ProductDetailPage() {
                   <div className="desc-title-row">
                     <div className="desc-title-icon">
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M1.5 1.5h4.8l6 6a1 1 0 010 1.41l-3.4 3.4a1 1 0 01-1.41 0l-6-6V1.5z" stroke="white" strokeWidth="1.3" strokeLinejoin="round"/>
-                        <circle cx="4.5" cy="4.5" r="0.8" fill="white"/>
+                        <path d="M1.5 1.5h4.8l6 6a1 1 0 010 1.41l-3.4 3.4a1 1 0 01-1.41 0l-6-6V1.5z" stroke="white" strokeWidth="1.3" strokeLinejoin="round" />
+                        <circle cx="4.5" cy="4.5" r="0.8" fill="white" />
                       </svg>
                     </div>
                     <span className="desc-title-label">Description du produit</span>

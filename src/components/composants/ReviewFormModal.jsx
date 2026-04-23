@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Upload, Star, AlertCircle } from 'lucide-react';
+import { reviewsAPI } from '../../services/api';
 
 export const ReviewFormModal = ({ product_id, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -86,18 +87,7 @@ export const ReviewFormModal = ({ product_id, onClose, onSuccess }) => {
         images: base64Images
       };
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/reviews/product/${product_id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(reviewData)
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Erreur lors de la création de l\'avis');
-      }
+      const response = await reviewsAPI.createReview(product_id, reviewData);
 
       setSuccess(true);
       setTimeout(() => {

@@ -142,6 +142,24 @@ export const productsAPI = {
     }),
 };
 
+// ============ REVIEWS ============
+export const reviewsAPI = {
+  getProductReviews: (productId, limit = 10, offset = 0) => 
+    apiCall(`/reviews/product/${productId}?limit=${limit}&offset=${offset}`),
+  
+  createReview: (productId, data) => 
+    apiCall(`/reviews/product/${productId}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  markHelpful: (reviewId) => 
+    apiCall(`/reviews/${reviewId}/helpful`, { method: 'PUT' }),
+
+  markNotHelpful: (reviewId) => 
+    apiCall(`/reviews/${reviewId}/not-helpful`, { method: 'PUT' }),
+};
+
 // ============ CART ============
 export const cartAPI = {
   addToCart: (product_id, quantity, size, color) =>
