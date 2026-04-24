@@ -18,7 +18,7 @@ const anonymizeName = (name) => {
 // 📊 Composant Jauge d'étoiles COMPACT
 const RatingGauge = ({ reviews, averageRating }) => {
   const totalReviews = reviews.length;
-  
+
   // Compter les avis par nombre d'étoiles
   const ratingCounts = {
     5: reviews.filter(r => r.rating === 5).length,
@@ -31,7 +31,7 @@ const RatingGauge = ({ reviews, averageRating }) => {
   return (
     <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 mb-3 sm:mb-4">
       <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200 shadow-sm overflow-hidden h-[100px] sm:h-[100px] flex items-center">
-        
+
         {/* LEFT - Moyenne */}
         <div className="flex-shrink-0 px-3 sm:px-4 py-2 sm:py-3 border-r border-gray-100 flex flex-col items-center justify-center h-full min-w-[80px] sm:min-w-[100px] bg-gradient-to-br from-yellow-50 to-white">
           <div className="text-2xl sm:text-3xl font-black text-gray-900">
@@ -56,7 +56,7 @@ const RatingGauge = ({ reviews, averageRating }) => {
           {[5, 4, 3].map((stars) => {
             const count = ratingCounts[stars];
             const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
-            
+
             return (
               <div key={stars} className="flex items-center gap-2">
                 {/* Label */}
@@ -122,17 +122,17 @@ export default function ReviewsSection({ product_id, category_name }) {
   const handleMarkHelpful = async (reviewId) => {
     try {
       const res = await reviewsAPI.markHelpful(reviewId);
-      
+
       const updatedDisplayedReviews = displayedReviews.map(r =>
         r.id === reviewId ? { ...r, helpful: res.helpful } : r
       );
-      
+
       setDisplayedReviews(updatedDisplayedReviews);
-      
+
       if (selectedReview?.id === reviewId) {
         setSelectedReview({ ...selectedReview, helpful: res.helpful });
       }
-    } catch(err) {
+    } catch (err) {
       console.error(err);
     }
   };
@@ -149,7 +149,7 @@ export default function ReviewsSection({ product_id, category_name }) {
 
   return (
     <div className="w-full">
-      
+
       {/* HEADER */}
       <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 mb-4 sm:mb-6">
         <div className="flex items-center justify-between">
@@ -197,7 +197,7 @@ export default function ReviewsSection({ product_id, category_name }) {
                     flex
                   "
                 >
-                  
+
                   {/* IMAGES LEFT SIDE - 1/4 width */}
                   <div className="w-1/4 flex-shrink-0 border-r border-gray-100 overflow-hidden">
                     {review.images && review.images.length > 0 ? (
@@ -227,7 +227,7 @@ export default function ReviewsSection({ product_id, category_name }) {
 
                   {/* CONTENT RIGHT SIDE - 3/4 width */}
                   <div className="flex-1 p-2 sm:p-2.5 flex flex-col justify-between">
-                    
+
                     {/* TOP - AUTHOR & RATING */}
                     <div>
                       <div className="flex items-start gap-1.5 mb-1">
@@ -240,7 +240,7 @@ export default function ReviewsSection({ product_id, category_name }) {
                           </h3>
                         </div>
                       </div>
-                      
+
                       {/* RATING STARS */}
                       <div className="flex gap-0.5">
                         {[...Array(5)].map((_, i) => (
@@ -269,7 +269,7 @@ export default function ReviewsSection({ product_id, category_name }) {
 
                     {/* BOTTOM - ACTIONS */}
                     <div className="flex items-center gap-1.5">
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleMarkHelpful(review.id);
@@ -330,7 +330,7 @@ export default function ReviewsSection({ product_id, category_name }) {
             </p>
           </div>
 
-          <button 
+          <button
             onClick={() => setShowFormModal(true)}
             className="
             w-full sm:w-auto
@@ -361,7 +361,7 @@ export default function ReviewsSection({ product_id, category_name }) {
             overflow-y-auto
             shadow-2xl
           ">
-            
+
             {/* MODAL HEADER */}
             <div className="sticky top-0 bg-gradient-to-r from-[#5E2251] to-[#8B3A62] text-white p-4 sm:p-6 flex items-center justify-between">
               <h2 className="text-lg sm:text-xl font-bold">Avis détaillé</h2>
@@ -380,7 +380,7 @@ export default function ReviewsSection({ product_id, category_name }) {
 
             {/* MODAL CONTENT */}
             <div className="p-4 sm:p-6 md:p-8">
-              
+
               {/* AUTHOR INFO */}
               <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6 pb-4 sm:pb-6 border-b border-gray-200">
                 <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full border-3 border-[#5E2251] bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
@@ -464,7 +464,7 @@ export default function ReviewsSection({ product_id, category_name }) {
 
               {/* MODAL FOOTER */}
               <div className="border-t border-gray-200 pt-4 sm:pt-6 flex items-center gap-4 sm:gap-6">
-                <button 
+                <button
                   onClick={() => handleMarkHelpful(selectedReview.id)}
                   className="flex items-center gap-1.5 sm:gap-2 text-gray-700 hover:text-[#5E2251] font-semibold transition-colors text-xs sm:text-base group"
                 >

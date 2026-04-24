@@ -127,14 +127,6 @@ const SuccessModal = ({ orderId, invoiceUrl, formData, cartItems, subtotal, disc
             Payer avec Shopify
           </a>
         )}
-
-        <button
-          onClick={() => generateReceiptPDF(orderId, formData, cartItems, subtotal, discountAmount, shipping, tax, total)}
-          className="w-full bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-3 px-4 rounded-xl transition-all duration-200"
-        >
-          📄 Télécharger la facture (PDF)
-        </button>
-
         <button
           onClick={onClose}
           className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition-all duration-200"
