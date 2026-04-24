@@ -84,6 +84,12 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
       
       const staticProductData = staticReviewsData.find(item => item.slug === slug);
       const staticReviewsList = staticProductData ? staticProductData.commentaires : [];
+      
+      console.log('--- REVIEWS DEBUG ---');
+      console.log('Searched slug:', slug);
+      console.log('Static product found:', !!staticProductData);
+      console.log('Static reviews found:', staticReviewsList.length);
+
       const formattedStaticReviews = staticReviewsList.map(r => ({
         id: `static_${r.id}`,
         author: r.author,

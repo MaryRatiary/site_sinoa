@@ -852,7 +852,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        <ReviewsSection product_id={product.id} category_name={product.category_name} slug={product.slug || product.handle} />
+        <ReviewsSection product_id={product.id} category_name={product.category_name} slug={slug || product.slug || product.handle} />
         <RelatedProducts currentProductId={product.id} />
         <Footer />
       </div>
