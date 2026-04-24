@@ -3,6 +3,8 @@ import { Star, ThumbsUp, MessageCircle, ChevronRight, X } from "lucide-react";
 import { ReviewFormModal } from "./ReviewFormModal";
 import { reviewsAPI } from "../../services/api";
 
+import staticReviewsData from "../../data/commentaires.json";
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const isRecent = (dateStr) => {
@@ -78,13 +80,32 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
     try {
       if (!isManual) setLoading(true);
       const data = await reviewsAPI.getProductReviews(product_id, 50, 0, slug || '');
-      const reviews = data.reviews || [];
-      setAllReviews(reviews);
-      setDisplayedReviews(reviews);
-      setAverageRating(data.average || 0);
+      const dynamicReviews = data.reviews || [];
+      
+      const staticProductData = staticReviewsData.find(item => item.slug === slug);
+      const staticReviewsList = staticProductData ? staticProductData.commentaires : [];
+      const formattedStaticReviews = staticReviewsList.map(r => ({
+        id: `static_${r.id}`,
+        author: r.author,
+        rating: r.star,
+        title: r.title || '',
+        content: r.content,
+        helpful: r.likes_count || 0,
+        verified: r.verified_badge > 0,
+        createdat: r.commented_at,
+        images: (r.resources || []).map(res => res.src)
+      }));
 
-      if (isManual && reviews.length > 0) {
-        setNewReviewId(reviews[0].id);
+      const allMergedReviews = [...dynamicReviews, ...formattedStaticReviews];
+      const sumRatings = allMergedReviews.reduce((sum, r) => sum + (r.rating || 0), 0);
+      const computedAverage = allMergedReviews.length > 0 ? sumRatings / allMergedReviews.length : 0;
+
+      setAllReviews(allMergedReviews);
+      setDisplayedReviews(allMergedReviews);
+      setAverageRating(computedAverage);
+
+      if (isManual && dynamicReviews.length > 0) {
+        setNewReviewId(dynamicReviews[0].id);
         setTimeout(() => setNewReviewId(null), 10000);
       }
     } catch (err) {
