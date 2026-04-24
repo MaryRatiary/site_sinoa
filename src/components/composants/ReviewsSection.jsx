@@ -15,6 +15,46 @@ const isRecent = (dateStr) => {
   return diffInMinutes < 15;
 };
 
+const frenchNames = {
+  'A': ['Alice', 'Amélie', 'Antoine', 'Arthur', 'Aurélie', 'Adrien', 'Alain', 'Agnès', 'Axel', 'Audrey'],
+  'B': ['Bastien', 'Benoît', 'Baptiste', 'Bérénice', 'Blandine', 'Bruno', 'Bernard', 'Brigitte'],
+  'C': ['Camille', 'Clément', 'Céline', 'Chloé', 'Christophe', 'Cédric', 'Carole', 'Christian', 'Claire'],
+  'D': ['David', 'Damien', 'Delphine', 'Diane', 'Denis', 'Didier', 'Dominique', 'Dorian'],
+  'E': ['Elise', 'Emilie', 'Etienne', 'Elodie', 'Eric', 'Emmanuel', 'Estelle', 'Edouard'],
+  'F': ['Fabien', 'Florence', 'François', 'Florian', 'Fanny', 'Franck', 'Fabienne', 'Frédéric'],
+  'G': ['Guillaume', 'Gilles', 'Gaëlle', 'Gérard', 'Géraldine', 'Grégory', 'Gaston'],
+  'H': ['Hugo', 'Hélène', 'Hervé', 'Hubert', 'Henri'],
+  'J': ['Julien', 'Julie', 'Jean', 'Jérôme', 'Justine', 'Jacques', 'Joël', 'Jérémy'],
+  'L': ['Lucas', 'Léa', 'Laurent', 'Lucie', 'Léo', 'Loïc', 'Lionel', 'Laurence'],
+  'M': ['Mathieu', 'Marie', 'Maxime', 'Marion', 'Martin', 'Michel', 'Monique', 'Marc', 'Mélanie'],
+  'N': ['Nicolas', 'Nathalie', 'Noémie', 'Nathan', 'Nina', 'Nadine', 'Norbert'],
+  'P': ['Paul', 'Pierre', 'Pauline', 'Pascal', 'Philippe', 'Patrick', 'Patricia', 'Pascale'],
+  'R': ['Romain', 'Raphaël', 'Rémi', 'Romane', 'Richard', 'René', 'Roland'],
+  'S': ['Sophie', 'Sarah', 'Stéphane', 'Sylvain', 'Sandrine', 'Sébastien', 'Sylvie', 'Simon'],
+  'T': ['Thomas', 'Thibault', 'Thierry', 'Théo', 'Tatiana', 'Tanguy'],
+  'V': ['Vincent', 'Valérie', 'Victor', 'Virginie', 'Valentine', 'Véronique']
+};
+
+const getRandomFrenchName = (originalName) => {
+  if (!originalName) return "Anonyme";
+  
+  // Si le nom contient ***, c'est qu'il est anonymisé
+  if (originalName.includes('***')) {
+    const firstLetter = originalName.charAt(0).toUpperCase();
+    const options = frenchNames[firstLetter] || ['Alexandre', 'Marie', 'Thomas', 'Sophie', 'Lucas', 'Emma', 'Hugo'];
+    
+    // Un petit hash pour être constant pour le même faux nom
+    let hash = 0;
+    for (let i = 0; i < originalName.length; i++) {
+      hash = originalName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % options.length;
+    return options[index];
+  }
+  
+  return originalName;
+};
+
 
 
 // 📊 Composant Jauge d'étoiles COMPACT
@@ -73,6 +113,7 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
   const [loading, setLoading] = useState(true);
   const [averageRating, setAverageRating] = useState(0);
   const [allReviews, setAllReviews] = useState([]);
+  const [lightboxImage, setLightboxImage] = useState(null);
 
   const [newReviewId, setNewReviewId] = useState(null);
 
@@ -187,21 +228,21 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
                 key={review.id}
                 onClick={() => setSelectedReview(review)}
                 className={`
-                  relative text-left bg-white rounded-3xl border transition-all duration-500 overflow-hidden group
-                  ${newReviewId === review.id ? 'border-green-400 ring-4 ring-green-50 shadow-green-100 scale-[1.02] z-10' : 'border-gray-100 shadow-sm'}
+                  relative text-left bg-white rounded-xl sm:rounded-3xl border transition-all duration-500 overflow-hidden group
+                  ${newReviewId === review.id ? 'border-green-400 ring-2 sm:ring-4 ring-green-50 shadow-green-100 scale-[1.02] z-10' : 'border-gray-100 shadow-sm'}
                   hover:shadow-2xl hover:border-purple-200 hover:-translate-y-1
-                  flex h-[160px] sm:h-[180px]
+                  flex flex-row h-[110px] sm:h-[180px]
                 `}
               >
                 {/* NEW BADGE */}
                 {(newReviewId === review.id || isRecent(review.createdat)) && (
-                  <div className="absolute top-3 right-3 z-20 bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg animate-bounce">
+                  <div className="absolute top-1.5 sm:top-3 right-1.5 sm:right-3 z-20 bg-green-500 text-white text-[8px] sm:text-[10px] font-black px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-lg animate-bounce">
                     NOUVEAU
                   </div>
                 )}
 
                 {/* IMAGE */}
-                <div className="w-1/3 sm:w-1/4 flex-shrink-0 relative overflow-hidden bg-gray-50 border-r border-gray-100">
+                <div className="w-[80px] sm:w-1/4 flex-shrink-0 relative overflow-hidden bg-gray-50 border-r border-gray-100">
                   {review.images && review.images.length > 0 ? (
                     <img
                       src={review.images[0]?.imageUrl || review.images[0]?.image_url || (typeof review.images[0] === 'string' ? review.images[0] : '')}
@@ -210,62 +251,62 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
                       onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=K-Pop'; }}
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-purple-50 to-white">
-                      <MessageCircle size={24} className="text-purple-200 mb-2" />
-                      <span className="text-[10px] text-purple-300 font-black uppercase text-center">Avis</span>
+                    <div className="w-full h-full flex flex-col items-center justify-center p-2 sm:p-4 bg-gradient-to-br from-purple-50 to-white">
+                      <MessageCircle size={18} className="text-purple-200 mb-1 sm:mb-2 sm:w-6 sm:h-6" />
+                      <span className="text-[8px] sm:text-[10px] text-purple-300 font-black uppercase text-center">Avis</span>
                     </div>
                   )}
                   {review.images?.length > 1 && (
-                    <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-lg font-bold">
-                      +{review.images.length - 1} photos
+                    <div className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 bg-black/70 backdrop-blur-md text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg font-bold">
+                      +{review.images.length - 1}
                     </div>
                   )}
                 </div>
 
                 {/* CONTENT */}
-                <div className="flex-1 p-5 flex flex-col justify-between">
+                <div className="flex-1 p-2 sm:p-5 flex flex-col justify-between overflow-hidden">
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#5E2251] to-[#8B3A62] flex items-center justify-center text-white font-black text-xs shadow-md">
-                          {review.author?.charAt(0)?.toUpperCase()}
+                    <div className="flex items-center justify-between mb-1.5 sm:mb-3">
+                      <div className="flex items-center gap-1.5 sm:gap-2.5">
+                        <div className="w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-[#5E2251] to-[#8B3A62] flex items-center justify-center text-white font-black text-[9px] sm:text-xs shadow-md">
+                          {(getRandomFrenchName(review.author)).charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-bold text-gray-900 text-sm truncate max-w-[150px]">
-                          {review.author}
+                        <span className="font-bold text-gray-900 text-[10px] sm:text-sm truncate max-w-[90px] sm:max-w-[150px]">
+                          {getRandomFrenchName(review.author)}
                         </span>
                       </div>
                       <div className="flex gap-0.5">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} className={i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-200"} />
+                          <Star key={i} size={8} className={`sm:w-3 sm:h-3 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`} />
                         ))}
                       </div>
                     </div>
 
-                    <h4 className="font-black text-gray-900 text-base line-clamp-1 mb-2 group-hover:text-[#5E2251] transition-colors leading-tight">
+                    <h4 className="font-black text-gray-900 text-xs sm:text-base line-clamp-1 mb-0.5 sm:mb-2 group-hover:text-[#5E2251] transition-colors leading-tight">
                       {review.title}
                     </h4>
-                    <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">
+                    <p className="text-gray-500 text-[9px] sm:text-xs leading-[1.3] sm:leading-relaxed line-clamp-2 sm:line-clamp-3">
                       {review.content}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
-                    <div className="flex items-center gap-4">
-                      <button
+                  <div className="flex items-center justify-between mt-1 sm:mt-4 pt-1.5 sm:pt-3 border-t border-gray-50">
+                    <div className="flex items-center gap-2 sm:gap-4">
+                      <div
                         onClick={(e) => { e.stopPropagation(); handleMarkHelpful(review.id); }}
-                        className="flex items-center gap-1.5 text-gray-400 hover:text-[#5E2251] transition-all"
+                        className="flex items-center gap-1 sm:gap-1.5 text-gray-400 hover:text-[#5E2251] transition-all cursor-pointer"
                       >
-                        <ThumbsUp size={14} className="group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold">{review.helpful || 0}</span>
-                      </button>
+                        <ThumbsUp size={10} className="sm:w-3.5 sm:h-3.5 group-hover:scale-110 transition-transform" />
+                        <span className="text-[9px] sm:text-xs font-bold">{review.helpful || 0}</span>
+                      </div>
                       {review.verified && (
                         <div className="flex items-center gap-1 text-green-500">
-                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-sm animate-pulse"></div>
-                          <span className="text-[10px] font-black uppercase tracking-tight">Vérifié</span>
+                          <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-green-500 shadow-sm animate-pulse"></div>
+                          <span className="text-[7px] sm:text-[10px] font-black uppercase tracking-tight">Vérifié</span>
                         </div>
                       )}
                     </div>
-                    <span className="text-[10px] font-bold text-gray-300">
+                    <span className="text-[8px] sm:text-[10px] font-bold text-gray-300">
                       {new Date(review.createdat).toLocaleDateString()}
                     </span>
                   </div>
@@ -363,13 +404,13 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
 
               {/* AUTHOR INFO */}
               <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6 pb-4 sm:pb-6 border-b border-gray-200">
-                <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full border-3 border-[#5E2251] bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                  {selectedReview.author?.charAt(0)?.toUpperCase()}
+                <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full border-2 sm:border-3 border-[#5E2251] bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0 shadow-inner">
+                  {(getRandomFrenchName(selectedReview.author)).charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1 sm:mb-2 flex-wrap">
-                    <h3 className="font-bold text-base sm:text-lg text-gray-900">
-                      {anonymizeName(selectedReview.author)}
+                  <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2 flex-wrap">
+                    <h3 className="font-bold text-sm sm:text-lg text-gray-900">
+                      {getRandomFrenchName(selectedReview.author)}
                     </h3>
                     {selectedReview.verified && (
                       <span className="text-xs sm:text-sm bg-green-100 text-green-800 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold">
@@ -377,7 +418,9 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-500">{selectedReview.date}</p>
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    {selectedReview.date || (selectedReview.createdat ? new Date(selectedReview.createdat).toLocaleDateString() : '')}
+                  </p>
                 </div>
               </div>
 
@@ -414,7 +457,8 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
                     <img
                       src={selectedReview.productImage}
                       alt="Photo du produit"
-                      className="max-w-full h-auto max-h-96 object-cover rounded-lg border-2 border-[#5E2251] shadow-lg"
+                      className="max-w-full h-auto max-h-96 object-cover rounded-lg border-2 border-[#5E2251] shadow-lg cursor-zoom-in"
+                      onClick={() => setLightboxImage(selectedReview.productImage)}
                       onError={(e) => {
                         e.target.src = 'https://via.placeholder.com/400?text=Photo+Produit';
                       }}
@@ -427,17 +471,21 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
                     Photos du produit ({selectedReview.images.length})
                   </p>
                   <div className="grid grid-cols-2 gap-3">
-                    {selectedReview.images.map((img, idx) => (
-                      <img
-                        key={idx}
-                        src={img?.image_url || img?.imageUrl || (typeof img === 'string' ? img : '')}
-                        alt={`Photo ${idx + 1}`}
-                        className="w-full h-48 object-cover rounded-lg border-2 border-[#5E2251]"
-                        onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/200?text=Photo';
-                        }}
-                      />
-                    ))}
+                    {selectedReview.images.map((img, idx) => {
+                      const imgSrc = img?.image_url || img?.imageUrl || (typeof img === 'string' ? img : '');
+                      return (
+                        <img
+                          key={idx}
+                          src={imgSrc}
+                          alt={`Photo ${idx + 1}`}
+                          className="w-full h-48 object-cover rounded-lg border-2 border-[#5E2251] cursor-zoom-in"
+                          onClick={() => setLightboxImage(imgSrc)}
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/200?text=Photo';
+                          }}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               ) : null}
@@ -471,6 +519,26 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
           onClose={() => setShowFormModal(false)}
           onSuccess={handleReviewSuccess}
         />
+      )}
+
+      {/* LIGHTBOX MODAL */}
+      {lightboxImage && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 cursor-zoom-out" 
+          onClick={() => setLightboxImage(null)}
+        >
+          <button 
+            className="absolute top-4 right-4 text-white hover:text-gray-300 p-2"
+            onClick={(e) => { e.stopPropagation(); setLightboxImage(null); }}
+          >
+            <X size={32} />
+          </button>
+          <img 
+            src={lightboxImage} 
+            className="max-w-full max-h-[90vh] object-contain shadow-2xl" 
+            alt="Enlarged" 
+          />
+        </div>
       )}
     </div>
   );
