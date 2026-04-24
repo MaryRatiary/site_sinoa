@@ -96,7 +96,7 @@ export default function ReviewsSection({ product_id, category_name, slug }) {
 
   useEffect(() => {
     if (product_id) loadReviews();
-  }, [product_id]);
+  }, [product_id, slug]);
 
   const handleReviewSuccess = () => {
     loadReviews(true); 
