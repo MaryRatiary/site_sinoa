@@ -144,8 +144,8 @@ export const productsAPI = {
 
 // ============ REVIEWS ============
 export const reviewsAPI = {
-  getProductReviews: (productId, limit = 10, offset = 0) => 
-    apiCall(`/reviews/product/${productId}?limit=${limit}&offset=${offset}`),
+  getProductReviews: (productId, limit = 10, offset = 0, handle = '') => 
+    apiCall(`/reviews/product/${productId}?limit=${limit}&offset=${offset}&handle=${handle}`),
     
   getCategoryReviews: (categoryName, limit = 10, offset = 0) => 
     apiCall(`/reviews/category/${encodeURIComponent(categoryName)}?limit=${limit}&offset=${offset}`),

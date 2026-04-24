@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingBag, Heart, Star, Package, RotateCcw, Shield, Truck } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ShoppingBag, Star, Package, RotateCcw, Shield, Truck } from "lucide-react";
 import Navbar from "../components/composants/Header";
 import RespNav from "../components/resp/RespNav";
 import Footer from "../components/composants/Footer";
@@ -104,7 +104,6 @@ export default function ProductDetailPage() {
   const [selectedModel, setSelectedModel] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [wished, setWished] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [visible, setVisible] = useState(false);
 
@@ -559,7 +558,40 @@ export default function ProductDetailPage() {
         </div>
 
         {/* ── Main Grid ────────────────────────────────────────────── */}
+        {/* ── Main Grid ────────────────────────────────────────────── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
+          
+          {/* ── MOBILE HEADER (Visible only on mobile) ────────────── */}
+          <div className={`lg:hidden mb-8 ${visible ? 'anim-2' : ''}`}>
+             <div className="flex flex-col gap-4">
+                <div>
+                  {product.brand && (
+                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#5E2251] mb-2">{product.brand}</p>
+                  )}
+                  <h1 style={{ fontFamily: "'Playfair Display', serif" }}
+                    className="text-3xl font-black text-gray-900 leading-tight tracking-tight">
+                    {product.name || product.title}
+                  </h1>
+                </div>
+                
+                <div className="flex items-end gap-3">
+                  <div>
+                    <span className="text-4xl font-black text-gray-900 tracking-tight">
+                      {numPrice.toFixed(2).replace(".", ",")}
+                    </span>
+                    <span className="text-xl font-black text-gray-900 ml-1">€</span>
+                  </div>
+                  {isOnSale && (
+                    <div className="flex flex-col pb-1">
+                      <span className="text-sm text-gray-400 line-through">
+                        {numOriginalPrice.toFixed(2).replace(".", ",")}€
+                      </span>
+                    </div>
+                  )}
+                </div>
+             </div>
+          </div>
+
           <div className={`grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-20 items-start transition-opacity duration-500 ${visible ? 'opacity-100' : 'opacity-0'}`}>
 
             {/* ── LEFT — Images (sticky on desktop) ──────────────── */}
@@ -578,12 +610,6 @@ export default function ProductDetailPage() {
                     </span>
                   )}
                 </div>
-
-                {/* Wishlist */}
-                <button onClick={() => setWished(w => !w)}
-                  className={`wish-btn absolute top-4 right-4 z-20 w-10 h-10 rounded-full border-2 flex items-center justify-center bg-white shadow-md ${wished ? 'wished' : 'border-gray-100'}`}>
-                  <Heart size={17} className={wished ? 'fill-rose-500 text-rose-500' : 'text-gray-400'} />
-                </button>
 
                 <img src={currentImage} alt={product.name || product.title}
                   className="w-full h-full object-contain p-4"
@@ -611,8 +637,8 @@ export default function ProductDetailPage() {
             {/* ── RIGHT — Info (scrolls normally) ────────────────── */}
             <div className="flex flex-col gap-6 lg:pt-2">
 
-              {/* Brand + Title */}
-              <div className={visible ? 'anim-2' : ''}>
+              {/* DESKTOP HEADER (Hidden on mobile) */}
+              <div className={`hidden lg:block ${visible ? 'anim-2' : ''}`}>
                 {product.brand && (
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#5E2251] mb-2">{product.brand}</p>
                 )}
@@ -628,34 +654,33 @@ export default function ProductDetailPage() {
                           className={i < Math.floor(product.rating) ? 'fill-amber-400 text-amber-400' : 'fill-gray-200 text-gray-200'} />
                       ))}
                     </div>
-
                   </div>
                 )}
-              </div>
-
-              {/* Price */}
-              <div className={`flex items-end gap-4 ${visible ? 'anim-2' : ''}`}>
-                <div>
-                  <span className="text-5xl font-black text-gray-900 tracking-tight">
-                    {numPrice.toFixed(2).replace(".", ",")}
-                  </span>
-                  <span className="text-2xl font-black text-gray-900">€</span>
-                </div>
-                {isOnSale && (
-                  <div className="flex flex-col pb-1">
-                    <span className="text-base text-gray-400 line-through">
-                      {numOriginalPrice.toFixed(2).replace(".", ",")}€
+                
+                {/* Price (Desktop) */}
+                <div className="flex items-end gap-4 mt-6">
+                  <div>
+                    <span className="text-5xl font-black text-gray-900 tracking-tight">
+                      {numPrice.toFixed(2).replace(".", ",")}
                     </span>
-                    {discount && (
-                      <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-center">
-                        −{discount}%
-                      </span>
-                    )}
+                    <span className="text-2xl font-black text-gray-900 ml-1">€</span>
                   </div>
-                )}
+                  {isOnSale && (
+                    <div className="flex flex-col pb-1">
+                      <span className="text-base text-gray-400 line-through">
+                        {numOriginalPrice.toFixed(2).replace(".", ",")}€
+                      </span>
+                      {discount && (
+                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-center">
+                          −{discount}%
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="h-px bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100" />
+              <div className="h-0 lg:h-px bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100" />
 
               {/* Colors - Small Circles with Images */}
               {product.colors?.filter(c => c && c.color_name !== "" && c !== "").length > 0 && (
@@ -740,11 +765,13 @@ export default function ProductDetailPage() {
               {/* Quantity + Cart */}
               <div className={`flex flex-col sm:flex-row gap-3 items-stretch ${visible ? 'anim-4' : ''}`}>
                 <div className="flex items-center rounded-2xl border-2 border-gray-100 bg-white overflow-hidden shadow-sm h-12">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-full flex items-center justify-center hover:bg-gray-50 text-gray-500 transition-colors">
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-12 h-full flex items-center justify-center hover:bg-gray-50 text-gray-500 transition-colors border-r border-gray-50">
                     <ChevronLeft size={16} />
                   </button>
-                  <span className="w-10 text-center font-bold text-gray-800 text-sm">{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)} className="w-10 h-full flex items-center justify-center hover:bg-gray-50 text-gray-500 transition-colors">
+                  <div className="flex-1 flex items-center justify-center min-w-[3rem] px-2 h-full">
+                    <span className="font-black text-gray-900 text-sm">{quantity}</span>
+                  </div>
+                  <button onClick={() => setQuantity(quantity + 1)} className="w-12 h-full flex items-center justify-center hover:bg-gray-50 text-gray-500 transition-colors border-l border-gray-50">
                     <ChevronRight size={16} />
                   </button>
                 </div>
@@ -825,7 +852,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        <ReviewsSection product_id={product.id} category_name={product.category_name} />
+        <ReviewsSection product_id={product.id} category_name={product.category_name} slug={product.slug || product.handle} />
         <RelatedProducts currentProductId={product.id} />
         <Footer />
       </div>
