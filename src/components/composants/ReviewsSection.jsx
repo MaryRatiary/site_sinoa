@@ -97,7 +97,7 @@ export default function ReviewsSection({ product_id, category_name }) {
   const loadReviews = async () => {
     try {
       setLoading(true);
-      const data = await reviewsAPI.getCategoryReviews(category_name, 50, 0);
+      const data = await reviewsAPI.getProductReviews(product_id, 50, 0);
       setAllReviews(data.reviews || []);
       setDisplayedReviews(data.reviews || []);
       setAverageRating(data.average || 0);
@@ -112,8 +112,8 @@ export default function ReviewsSection({ product_id, category_name }) {
   };
 
   useEffect(() => {
-    if (category_name) loadReviews();
-  }, [category_name]);
+    if (product_id) loadReviews();
+  }, [product_id]);
 
   const handleReviewSuccess = () => {
     loadReviews(); // Recharger les avis depuis l'API !
