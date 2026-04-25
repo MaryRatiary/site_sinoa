@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
-import { checkoutAPI } from '../services/api';
+import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { checkoutAPI } from '../../services/api';
+// Import supprimé - utilise le backend pour Shopify
 import {
-  AlertCircle, Truck, Lock, MapPin, Phone, Mail, Shield,
-  ChevronLeft, Package, Sparkles, ExternalLink, Loader2
+  CheckCircle, AlertCircle, CreditCard,
+  Truck, Lock, MapPin, Phone, Mail, Shield,
+  ChevronLeft, Package, Sparkles
 } from 'lucide-react';
+import { FaPaypal, FaApple, FaCcVisa } from 'react-icons/fa';
 import LayoutWrapper from '../composants/LayoutWrapper';
 import AddressSelector from '../composants/AddressSelector';
 import Footer from '../composants/Footer';
