@@ -4,209 +4,12 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { checkoutAPI } from '../services/api';
 import {
-  CheckCircle, AlertCircle, CreditCard,
-  Truck, Lock, MapPin, Phone, Mail, Shield,
-  ChevronLeft, Package, Sparkles
+  AlertCircle, Truck, Lock, MapPin, Phone, Mail, Shield,
+  ChevronLeft, Package, Sparkles, ExternalLink, Loader2
 } from 'lucide-react';
-import { FaPaypal, FaApple, FaCcVisa } from 'react-icons/fa';
 import LayoutWrapper from '../composants/LayoutWrapper';
 import AddressSelector from '../composants/AddressSelector';
 import Footer from '../composants/Footer';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-
-/* ─────────────────────────────────────────
-   Générateur de reçu PDF
-───────────────────────────────────────── */
-const generateReceiptPDF = (orderId, formData, cartItems, subtotal, discountAmount, shipping, tax, total) => {
-  const doc = new jsPDF();
-  
-  // En-tête
-  doc.setFontSize(22);
-  doc.setTextColor(94, 34, 81); // #5E2251
-  doc.text('SINOA KPOP - Facture', 14, 20);
-  
-  doc.setFontSize(12);
-  doc.setTextColor(100);
-  doc.text(`Numéro de commande : ${orderId}`, 14, 30);
-  doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')}`, 14, 38);
-
-  // Informations client
-  doc.setFontSize(14);
-  doc.setTextColor(50);
-  doc.text('Informations Client :', 14, 50);
-  doc.setFontSize(11);
-  doc.text(`${formData.first_name} ${formData.last_name}`, 14, 58);
-  doc.text(formData.email, 14, 65);
-  doc.text(formData.phone, 14, 72);
-
-  // Adresse
-  doc.setFontSize(14);
-  doc.text('Adresse de livraison :', 110, 50);
-  doc.setFontSize(11);
-  doc.text(formData.shippingAddress, 110, 58);
-  doc.text(`${formData.postal_code} ${formData.city}`, 110, 65);
-  doc.text(formData.country, 110, 72);
-
-  // Paiement
-  doc.text(`Mode de paiement : ${formData.paymentMethod.toUpperCase()}`, 14, 85);
-  if (formData.paymentMethod === 'card') {
-    doc.text(`Carte : **** **** **** ${formData.cardNumber.slice(-4) || 'XXXX'}`, 14, 92);
-  }
-
-  // Tableau des articles
-  const tableData = cartItems.map(item => {
-    let details = [];
-    if (item.color) details.push(`Couleur: ${item.color}`);
-    if (item.size) details.push(`Taille: ${item.size}`);
-    if (item.model) details.push(`Modèle: ${item.model}`);
-    const detailsStr = details.length ? `\n(${details.join(' • ')})` : '';
-
-    return [
-      `${item.name}${detailsStr}`,
-      item.quantity,
-      `€${item.price.toFixed(2)}`,
-      `€${(item.price * item.quantity).toFixed(2)}`
-    ];
-  });
-
-  doc.autoTable({
-    startY: 100,
-    head: [['Produit', 'Quantité', 'Prix Unitaire', 'Total']],
-    body: tableData,
-    theme: 'striped',
-    headStyles: { fillColor: [94, 34, 81] },
-    styles: { fontSize: 10 }
-  });
-
-  // Totaux
-  const finalY = doc.lastAutoTable.finalY + 10;
-  doc.text(`Sous-total: €${subtotal.toFixed(2)}`, 130, finalY);
-  if (discountAmount > 0) doc.text(`Réduction: -€${discountAmount.toFixed(2)}`, 130, finalY + 8);
-  doc.text(`Livraison: ${shipping === 0 ? 'Gratuite' : `€${shipping.toFixed(2)}`}`, 130, finalY + 16);
-  doc.text(`TVA (20%): €${tax}`, 130, finalY + 24);
-  
-  doc.setFontSize(14);
-  doc.setTextColor(0);
-  doc.text(`TOTAL TTC: €${total}`, 130, finalY + 34);
-
-  // Pied de page
-  doc.setFontSize(10);
-  doc.setTextColor(150);
-  doc.text('Merci de votre achat chez Sinoa !', 105, 280, { align: 'center' });
-
-  doc.save(`Facture_Sinoa_${orderId}.pdf`);
-};
-
-/* ─────────────────────────────────────────
-   Success Modal
-───────────────────────────────────────── */
-const SuccessModal = ({ orderId, invoiceUrl, formData, cartItems, subtotal, discountAmount, shipping, tax, total, onClose }) => (
-  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl animate-scaleIn">
-      <div className="mb-5 flex justify-center">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
-          <CheckCircle size={48} className="text-green-500" />
-        </div>
-      </div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Commande confirmée !</h2>
-      <p className="text-gray-500 mb-6 text-sm">Merci pour votre achat chez Sinoa !</p>
-      
-      <div className="bg-[#5E2251]/5 border border-[#5E2251]/20 rounded-xl p-4 mb-6">
-        <p className="text-xs text-gray-500 mb-1">Numéro de commande</p>
-        <p className="text-xl font-bold text-[#5E2251]">{orderId}</p>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        {invoiceUrl && (
-          <a
-            href={invoiceUrl}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
-          >
-            <Lock size={18} />
-            Payer avec Shopify
-          </a>
-        )}
-        <button
-          onClick={onClose}
-          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition-all duration-200"
-        >
-          Retour à l'accueil
-        </button>
-      </div>
-    </div>
-  </div>
-);
-
-/* ─────────────────────────────────────────
-   Payment Method Card
-───────────────────────────────────────── */
-const PaymentMethodCard = ({ method, isSelected, onClick }) => {
-  const Icon = method.icon;
-  return (
-    <button
-      onClick={onClick}
-      className={`p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2 ${
-        isSelected
-          ? 'border-[#5E2251] bg-[#5E2251]/5 shadow-md shadow-[#5E2251]/10 scale-105'
-          : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50'
-      }`}
-    >
-      <Icon size={28} className={isSelected ? 'text-[#5E2251]' : 'text-gray-500'} />
-      <p className={`font-semibold text-sm ${isSelected ? 'text-[#5E2251]' : 'text-gray-700'}`}>
-        {method.name}
-      </p>
-    </button>
-  );
-};
-
-/* ─────────────────────────────────────────
-   Step Indicator — 3 étapes
-   Livraison → Paiement → Confirmation
-───────────────────────────────────────── */
-const StepIndicator = ({ steps, currentStep }) => (
-  <div className="mb-10">
-    <div className="flex items-center justify-between">
-      {steps.map((step, index) => {
-        const StepIcon = step.icon;
-        const isCompleted = currentStep > step.id;
-        const isActive = currentStep === step.id;
-        return (
-          <div key={step.id} className="flex items-center flex-1">
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-500 ${
-                  isCompleted
-                    ? 'bg-green-500 text-white shadow-md shadow-green-200'
-                    : isActive
-                    ? 'bg-[#5E2251] text-white shadow-lg shadow-[#5E2251]/30 ring-4 ring-[#5E2251]/20'
-                    : 'bg-gray-100 text-gray-400'
-                }`}
-              >
-                {isCompleted ? <CheckCircle size={20} /> : <StepIcon size={18} />}
-              </div>
-              <span
-                className={`mt-2 text-xs sm:text-sm font-semibold text-center hidden sm:block ${
-                  isCompleted ? 'text-green-600' : isActive ? 'text-[#5E2251]' : 'text-gray-400'
-                }`}
-              >
-                {step.name}
-              </span>
-            </div>
-            {index < steps.length - 1 && (
-              <div className="flex-1 mx-2 sm:mx-4 h-1 rounded-full overflow-hidden bg-gray-100">
-                <div
-                  className="h-full bg-gradient-to-r from-[#5E2251] to-green-500 rounded-full transition-all duration-700"
-                  style={{ width: currentStep > step.id ? '100%' : '0%' }}
-                />
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  </div>
-);
 
 /* ─────────────────────────────────────────
    Input helper
@@ -233,15 +36,9 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 3 étapes : 0 = Livraison, 1 = Paiement, 2 = Confirmation
-  const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [successOrderId, setSuccessOrderId] = useState('');
-  const [invoiceUrl, setInvoiceUrl] = useState('');
 
-  // Données transmises par CartModal via navigate('/checkout', { state: {...} })
   const { discount = 0, subtotal: stateSubtotal } = location.state || {};
 
   const [formData, setFormData] = useState({
@@ -255,13 +52,9 @@ export default function CheckoutPage() {
     country: 'France',
     latitude: null,
     longitude: null,
-    paymentMethod: 'card',
-    cardNumber: '',
-    cardExpiry: '',
-    cardCvc: '',
   });
 
-  /* ── Calculs (priorité au subtotal passé par le modal) ── */
+  /* ── Calculs ── */
   const subtotal = stateSubtotal ?? getTotalPrice();
   const discountAmount = (subtotal * discount) / 100;
   const afterDiscount = subtotal - discountAmount;
@@ -269,11 +62,29 @@ export default function CheckoutPage() {
   const tax = (afterDiscount * 0.20).toFixed(2);
   const total = (afterDiscount + shipping + parseFloat(tax)).toFixed(2);
 
-  /* ── Appel API réel ── */
+  /* ── Validation ── */
+  const isFormValid = () => {
+    return (
+      formData.first_name.trim() &&
+      formData.last_name.trim() &&
+      formData.email.trim() &&
+      formData.phone.trim() &&
+      formData.shippingAddress.trim() &&
+      formData.city.trim() &&
+      formData.postal_code.trim()
+    );
+  };
+
+  /* ── Checkout → redirection Shopify ── */
   const handleCheckout = async (e) => {
     e.preventDefault();
+    if (!isFormValid()) {
+      setError('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
     setError('');
     setLoading(true);
+
     try {
       const items = cartItems.map((item) => ({
         product_id: item.productId || item.id,
@@ -284,10 +95,9 @@ export default function CheckoutPage() {
         model: item.model,
       }));
 
-      const order = await checkoutAPI.createOrder(
+      const result = await checkoutAPI.createOrder(
         items,
         formData.shippingAddress,
-        formData.paymentMethod,
         {
           first_name: formData.first_name,
           last_name: formData.last_name,
@@ -301,29 +111,21 @@ export default function CheckoutPage() {
         }
       );
 
-      setSuccessOrderId(order.order?.id || 'CMD-' + Date.now());
-      setInvoiceUrl(order.order?.invoice_url || '');
-      setSuccess(true);
-      clearCart();
+      const shopifyUrl = result?.order?.invoice_url;
 
+      if (shopifyUrl) {
+        clearCart();
+        // Redirection vers le checkout Shopify
+        window.location.href = shopifyUrl;
+      } else {
+        setError('URL de paiement Shopify non reçue. Veuillez réessayer.');
+      }
     } catch (err) {
-      setError(err.message || 'Erreur lors de la commande');
+      setError(err.message || 'Erreur lors de la création de la commande. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
   };
-
-  const steps = [
-    { id: 0, name: 'Livraison', icon: Truck },
-    { id: 1, name: 'Paiement', icon: CreditCard },
-    { id: 2, name: 'Confirmation', icon: CheckCircle },
-  ];
-
-  const paymentMethods = [
-    { id: 'card', name: 'Carte', icon: FaCcVisa },
-    { id: 'paypal', name: 'PayPal', icon: FaPaypal },
-    { id: 'apple', name: 'Apple Pay', icon: FaApple },
-  ];
 
   /* ── Guard non connecté ── */
   if (!isAuthenticated) {
@@ -341,6 +143,28 @@ export default function CheckoutPage() {
               className="bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-3 px-8 rounded-xl transition"
             >
               Se connecter
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </LayoutWrapper>
+    );
+  }
+
+  /* ── Panier vide ── */
+  if (cartItems.length === 0) {
+    return (
+      <LayoutWrapper>
+        <div className="min-h-screen bg-gray-50 py-16 mt-20 flex items-center justify-center">
+          <div className="bg-white rounded-2xl shadow-xl p-10 max-w-md w-full text-center animate-fadeIn">
+            <Package size={52} className="mx-auto mb-4 text-gray-300" />
+            <h1 className="text-2xl font-bold mb-3">Panier vide</h1>
+            <p className="text-gray-500 mb-8 text-sm">Ajoutez des produits avant de passer commande.</p>
+            <button
+              onClick={() => navigate('/')}
+              className="bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-3 px-8 rounded-xl transition"
+            >
+              Continuer les achats
             </button>
           </div>
         </div>
@@ -377,290 +201,119 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {/* Steps */}
-          <StepIndicator steps={steps} currentStep={currentStep} />
+          {/* Info Shopify */}
+          <div className="mb-6 bg-green-50 border border-green-200 rounded-2xl px-5 py-4 flex items-start gap-3 animate-fadeIn">
+            <Shield size={18} className="text-green-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-green-800">Paiement 100% sécurisé par Shopify</p>
+              <p className="text-xs text-green-600 mt-0.5">
+                Vous serez redirigé vers la page de paiement Shopify (Apple Pay, Google Pay, cartes bancaires…)
+              </p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
-            {/* ── Left ── */}
+            {/* ── Formulaire Livraison ── */}
             <div className="lg:col-span-2">
-
-              {/* ÉTAPE 0 — Livraison */}
-              {currentStep === 0 && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn">
-                  <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <div className="w-8 h-8 bg-[#5E2251]/10 rounded-lg flex items-center justify-center">
-                      <Truck size={16} className="text-[#5E2251]" />
-                    </div>
-                    Adresse de livraison
-                  </h2>
-
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Prénom *">
-                        <input
-                          type="text"
-                          value={formData.first_name}
-                          onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-                          className={inputCls}
-                          placeholder="Jean"
-                        />
-                      </Field>
-                      <Field label="Nom *">
-                        <input
-                          type="text"
-                          value={formData.last_name}
-                          onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-                          className={inputCls}
-                          placeholder="Dupont"
-                        />
-                      </Field>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Email *" icon={Mail}>
-                        <input
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className={inputCls}
-                          placeholder="jean@exemple.fr"
-                        />
-                      </Field>
-                      <Field label="Téléphone *" icon={Phone}>
-                        <input
-                          type="tel"
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className={inputCls}
-                          placeholder="+33 6 12 34 56 78"
-                        />
-                      </Field>
-                    </div>
-
-                    {/* AddressSelector gère shippingAddress, city, postal_code, country, latitude, longitude */}
-                    <AddressSelector formData={formData} setFormData={setFormData} />
-
-                    <div className="flex gap-3 pt-4">
-                      <button
-                        type="button"
-                        onClick={() => navigate(-1)}
-                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition text-sm"
-                      >
-                        Retour au panier
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setCurrentStep(1)}
-                        className="flex-1 bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-3 px-4 rounded-xl transition-all hover:shadow-lg hover:shadow-[#5E2251]/30 text-sm flex items-center justify-center gap-2"
-                      >
-                        <CreditCard size={16} />
-                        Paiement
-                      </button>
-                    </div>
+              <form
+                onSubmit={handleCheckout}
+                className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn"
+              >
+                <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <div className="w-8 h-8 bg-[#5E2251]/10 rounded-lg flex items-center justify-center">
+                    <Truck size={16} className="text-[#5E2251]" />
                   </div>
-                </div>
-              )}
+                  Adresse de livraison
+                </h2>
 
-              {/* ÉTAPE 1 — Paiement */}
-              {currentStep === 1 && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn">
-                  <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <div className="w-8 h-8 bg-[#5E2251]/10 rounded-lg flex items-center justify-center">
-                      <CreditCard size={16} className="text-[#5E2251]" />
-                    </div>
-                    Mode de paiement
-                  </h2>
-
-                  <div className="grid grid-cols-3 gap-3 mb-8">
-                    {paymentMethods.map((method) => (
-                      <PaymentMethodCard
-                        key={method.id}
-                        method={method}
-                        isSelected={formData.paymentMethod === method.id}
-                        onClick={() => setFormData({ ...formData, paymentMethod: method.id })}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Field label="Prénom *">
+                      <input
+                        type="text"
+                        value={formData.first_name}
+                        onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                        className={inputCls}
+                        placeholder="Jean"
+                        required
                       />
-                    ))}
+                    </Field>
+                    <Field label="Nom *">
+                      <input
+                        type="text"
+                        value={formData.last_name}
+                        onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                        className={inputCls}
+                        placeholder="Dupont"
+                        required
+                      />
+                    </Field>
                   </div>
 
-                  {formData.paymentMethod === 'card' && (
-                    <div className="space-y-4 mb-8">
-                      <Field label="Numéro de carte *">
-                        <div className="relative">
-                          <input
-                            type="text"
-                            placeholder="1234 5678 9012 3456"
-                            value={formData.cardNumber}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                cardNumber: e.target.value
-                                  .replace(/\s/g, '')
-                                  .replace(/(\d{4})/g, '$1 ')
-                                  .trim(),
-                              })
-                            }
-                            maxLength="19"
-                            className={inputCls + ' pr-12'}
-                          />
-                          <CreditCard size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300" />
-                        </div>
-                      </Field>
-                      <div className="grid grid-cols-2 gap-4">
-                        <Field label="Expiration *">
-                          <input
-                            type="text"
-                            placeholder="MM/AA"
-                            value={formData.cardExpiry}
-                            onChange={(e) => {
-                              let v = e.target.value.replace(/\D/g, '');
-                              if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
-                              setFormData({ ...formData, cardExpiry: v });
-                            }}
-                            maxLength="5"
-                            className={inputCls}
-                          />
-                        </Field>
-                        <Field label="CVC *">
-                          <input
-                            type="text"
-                            placeholder="123"
-                            value={formData.cardCvc}
-                            onChange={(e) => setFormData({ ...formData, cardCvc: e.target.value })}
-                            maxLength="3"
-                            className={inputCls}
-                          />
-                        </Field>
-                      </div>
-                    </div>
-                  )}
-
-                  {formData.paymentMethod === 'paypal' && (
-                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 mb-8 text-center animate-fadeIn">
-                      <FaPaypal size={40} className="mx-auto mb-3 text-blue-600" />
-                      <p className="text-blue-800 font-semibold text-sm">
-                        Vous serez redirigé vers PayPal pour finaliser le paiement
-                      </p>
-                    </div>
-                  )}
-
-                  {formData.paymentMethod === 'apple' && (
-                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8 text-center animate-fadeIn">
-                      <FaApple size={40} className="mx-auto mb-3 text-gray-800" />
-                      <p className="text-gray-700 font-semibold text-sm">Apple Pay prêt</p>
-                    </div>
-                  )}
-
-                  <div className="flex gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setCurrentStep(0)}
-                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition text-sm"
-                    >
-                      Retour
-                    </button>
-                    <button
-                      onClick={() => setCurrentStep(2)}
-                      className="flex-1 bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-3 px-4 rounded-xl transition-all hover:shadow-lg hover:shadow-[#5E2251]/30 text-sm flex items-center justify-center gap-2"
-                    >
-                      <Lock size={16} />
-                      Vérifier la commande
-                    </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Field label="Email *" icon={Mail}>
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className={inputCls}
+                        placeholder="jean@exemple.fr"
+                        required
+                      />
+                    </Field>
+                    <Field label="Téléphone *" icon={Phone}>
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className={inputCls}
+                        placeholder="+33 6 12 34 56 78"
+                        required
+                      />
+                    </Field>
                   </div>
-                </div>
-              )}
 
-              {/* ÉTAPE 2 — Confirmation */}
-              {currentStep === 2 && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn">
-                  <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                      <CheckCircle size={16} className="text-green-600" />
-                    </div>
-                    Vérification de la commande
-                  </h2>
-
-                  <div className="space-y-4 mb-8">
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2 text-sm">
-                        <MapPin size={14} className="text-[#5E2251]" />
-                        Adresse de livraison
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {formData.first_name} {formData.last_name}<br />
-                        {formData.shippingAddress}<br />
-                        {formData.postal_code} {formData.city}, {formData.country}<br />
-                        {formData.phone}
-                      </p>
-                    </div>
-
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2 text-sm">
-                        <CreditCard size={14} className="text-[#5E2251]" />
-                        Paiement
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        {formData.paymentMethod === 'card' &&
-                          `Carte bancaire •••• ${formData.cardNumber.slice(-4)}`}
-                        {formData.paymentMethod === 'paypal' && 'PayPal'}
-                        {formData.paymentMethod === 'apple' && 'Apple Pay'}
-                      </p>
-                    </div>
-
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-sm">
-                        <Package size={14} className="text-[#5E2251]" />
-                        Articles ({cartItems.length})
-                      </h3>
-                      <div className="space-y-2">
-                        {cartItems.map((item) => (
-                          <div
-                            key={`${item.id}-${item.size}-${item.color}-${item.model}`}
-                            className="flex justify-between text-sm"
-                          >
-                            <span className="text-gray-600">
-                              {item.name} ×{item.quantity}
-                              <div className="flex flex-wrap gap-x-2 gap-y-1 mt-1">
-                                {item.color && <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">Couleur: {item.color}</span>}
-                                {item.size && <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">Taille: {item.size}</span>}
-                                {item.model && <span className="text-[10px] bg-[#5E2251]/5 text-[#5E2251] px-1.5 py-0.5 rounded font-medium">Modèle: {item.model}</span>}
-                              </div>
-                            </span>
-                            <span className="font-semibold text-gray-800">
-                              €{(item.price * item.quantity).toFixed(2)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  {/* AddressSelector gère shippingAddress, city, postal_code, country, latitude, longitude */}
+                  <AddressSelector formData={formData} setFormData={setFormData} />
 
                   {error && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-5 flex gap-2 text-sm animate-fadeIn">
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex gap-2 text-sm animate-fadeIn">
                       <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
                       <span>{error}</span>
                     </div>
                   )}
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 pt-4">
                     <button
                       type="button"
-                      onClick={() => setCurrentStep(1)}
+                      onClick={() => navigate(-1)}
                       className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition text-sm"
+                      disabled={loading}
                     >
-                      Retour
+                      Retour au panier
                     </button>
                     <button
-                      onClick={handleCheckout}
+                      type="submit"
                       disabled={loading}
-                      className="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white font-bold py-3 px-4 rounded-xl transition-all hover:shadow-lg hover:shadow-green-500/30 text-sm flex items-center justify-center gap-2"
+                      className="flex-2 bg-[#5E2251] hover:bg-[#4a1a40] disabled:opacity-60 text-white font-bold py-3 px-6 rounded-xl transition-all hover:shadow-lg hover:shadow-[#5E2251]/30 text-sm flex items-center justify-center gap-2 min-w-[200px]"
                     >
-                      <Shield size={16} />
-                      {loading ? 'Traitement...' : 'Confirmer la commande'}
+                      {loading ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Redirection…
+                        </>
+                      ) : (
+                        <>
+                          <Lock size={16} />
+                          Payer avec Shopify
+                          <ExternalLink size={14} className="opacity-70" />
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
-              )}
+              </form>
             </div>
 
             {/* ── Right — Résumé ── */}
@@ -675,7 +328,7 @@ export default function CheckoutPage() {
                 <div className="space-y-3 mb-5 pb-5 border-b border-gray-100">
                   {cartItems.map((item) => (
                     <div
-                      key={`${item.id}-${item.size}-${item.color}`}
+                      key={`${item.id}-${item.size}-${item.color}-${item.model}`}
                       className="flex gap-2 items-center"
                     >
                       {item.image && (
@@ -746,11 +399,12 @@ export default function CheckoutPage() {
                   </div>
                 )}
 
-                <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-xs text-blue-700 flex gap-2 items-start">
-                  <Shield size={14} className="flex-shrink-0 mt-0.5" />
+                {/* Badges paiement */}
+                <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 text-xs text-gray-600 flex gap-2 items-start">
+                  <Shield size={14} className="flex-shrink-0 mt-0.5 text-green-600" />
                   <div>
-                    <p className="font-semibold">Paiement 100% sécurisé</p>
-                    <p className="text-blue-500 mt-0.5">Données chiffrées SSL</p>
+                    <p className="font-semibold text-gray-800">Paiement géré par Shopify</p>
+                    <p className="text-gray-400 mt-0.5">Apple Pay · Google Pay · Cartes bancaires</p>
                   </div>
                 </div>
               </div>
@@ -759,24 +413,6 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {success && (
-        <SuccessModal
-          orderId={successOrderId}
-          invoiceUrl={invoiceUrl}
-          formData={formData}
-          cartItems={cartItems}
-          subtotal={subtotal}
-          discountAmount={discountAmount}
-          shipping={shipping}
-          tax={tax}
-          total={total}
-          onClose={() => {
-            setSuccess(false);
-            navigate('/');
-          }}
-        />
-      )}
-
       <Footer />
 
       <style>{`
@@ -784,12 +420,8 @@ export default function CheckoutPage() {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.94); }
-          to   { opacity: 1; transform: scale(1); }
-        }
-        .animate-fadeIn  { animation: fadeIn  0.3s ease-out forwards; }
-        .animate-scaleIn { animation: scaleIn 0.3s ease-out forwards; }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+        .flex-2 { flex: 2; }
       `}</style>
     </LayoutWrapper>
   );

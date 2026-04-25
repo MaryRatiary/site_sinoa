@@ -186,8 +186,8 @@ export const cartAPI = {
 
 // ============ CHECKOUT / COMMANDES ============
 export const checkoutAPI = {
-  createOrder: (items, shippingAddress, paymentMethod, shippingDetails = {}) => {
-    // Convertir les items pour correspondre au format attendu par le backend
+  // Crée un Draft Order Shopify et retourne invoice_url pour redirection
+  createOrder: (items, shippingAddress, shippingDetails = {}) => {
     const formattedItems = items.map(item => ({
       productId: item.product_id || item.productId,
       variantId: item.variantId,
@@ -199,20 +199,18 @@ export const checkoutAPI = {
 
     return apiCall('/checkout', {
       method: 'POST',
-      body: JSON.stringify({ 
-        items: formattedItems, 
-        shippingAddress, 
-        paymentMethod,
+      body: JSON.stringify({
+        items: formattedItems,
+        shippingAddress,
+        email: shippingDetails.email,
         firstName: shippingDetails.first_name,
         lastName: shippingDetails.last_name,
-        email: shippingDetails.email,
         phone: shippingDetails.phone,
         city: shippingDetails.city,
         postalCode: shippingDetails.postal_code,
         country: shippingDetails.country,
         latitude: shippingDetails.latitude,
         longitude: shippingDetails.longitude,
-        notes: shippingDetails.notes
       }),
     });
   },
@@ -224,13 +222,6 @@ export const checkoutAPI = {
   cancelOrder: (orderId) =>
     apiCall(`/checkout/${orderId}/cancel`, {
       method: 'PUT',
-    }),
-
-  // ✨ NOUVEAU: Créer un checkout Shopify sécurisé via le backend
-  shopifyCheckout: (items, orderId) =>
-    apiCall('/shopify-checkout', {
-      method: 'POST',
-      body: JSON.stringify({ items, orderId }),
     }),
 };
 
