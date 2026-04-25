@@ -127,31 +127,7 @@ export default function CheckoutPage() {
     }
   };
 
-  /* ── Guard non connecté ── */
-  if (!isAuthenticated) {
-    return (
-      <LayoutWrapper>
-        <div className="min-h-screen bg-gray-50 py-16 mt-20 flex items-center justify-center">
-          <div className="bg-white rounded-2xl shadow-xl p-10 max-w-md w-full text-center animate-fadeIn">
-            <AlertCircle size={52} className="mx-auto mb-4 text-[#5E2251]" />
-            <h1 className="text-2xl font-bold mb-3">Veuillez vous connecter</h1>
-            <p className="text-gray-500 mb-8 text-sm">
-              Vous devez être connecté pour procéder au paiement.
-            </p>
-            <button
-              onClick={() => navigate('/login')}
-              className="bg-[#5E2251] hover:bg-[#4a1a40] text-white font-bold py-3 px-8 rounded-xl transition"
-            >
-              Se connecter
-            </button>
-          </div>
-        </div>
-        <Footer />
-      </LayoutWrapper>
-    );
-  }
-
-  /* ── Panier vide ── */
+  / ── */
   if (cartItems.length === 0) {
     return (
       <LayoutWrapper>
