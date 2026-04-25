@@ -7,7 +7,7 @@ import { checkoutAPI } from '../../services/api';
 import {
   CheckCircle, AlertCircle, CreditCard,
   Truck, Lock, MapPin, Phone, Mail, Shield,
-  ChevronLeft, Package, Sparkles
+  ChevronLeft, Package, Sparkles, ExternalLink, Loader2
 } from 'lucide-react';
 import { FaPaypal, FaApple, FaCcVisa } from 'react-icons/fa';
 import LayoutWrapper from '../composants/LayoutWrapper';
@@ -130,7 +130,7 @@ export default function CheckoutPage() {
     }
   };
 
-  / ── */
+  /* ── Panier vide ── */
   if (cartItems.length === 0) {
     return (
       <LayoutWrapper>
