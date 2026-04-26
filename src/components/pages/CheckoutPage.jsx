@@ -124,7 +124,13 @@ export default function CheckoutPage() {
         setError('URL de paiement Shopify non reçue. Veuillez réessayer.');
       }
     } catch (err) {
-      setError(err.message || 'Erreur lors de la création de la commande. Veuillez réessayer.');
+      // Détection d'erreur de rupture de stock
+      const msg = err.message || '';
+      if (msg.includes('rupture') || msg.includes('stock') || msg.includes('disponible')) {
+        setError(`⚠️ ${msg}\n\nVeuillez modifier votre panier et réessayer.`);
+      } else {
+        setError(msg || 'Erreur lors de la création de la commande. Veuillez réessayer.');
+      }
     } finally {
       setLoading(false);
     }

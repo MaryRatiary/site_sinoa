@@ -21,7 +21,7 @@ export const apiCall = async (endpoint, options = {}) => {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'API Error');
+    throw new Error(error.message || error.error || 'API Error');
   }
 
   return response.json();

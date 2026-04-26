@@ -1,14 +1,19 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function ExpandSearch() {
+export default function ExpandSearch({ onToggle }) {
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
   const navigate = useNavigate();
 
   const isExpanded = focused || value.length > 0;
+
+  // Informer le parent quand l'état change
+  useEffect(() => {
+    if (onToggle) onToggle(isExpanded);
+  }, [isExpanded, onToggle]);
 
   const handleSearch = (e) => {
     if (e.key === 'Enter' && value.trim()) {
@@ -38,8 +43,8 @@ export default function ExpandSearch() {
 
 
   return (
-    <div className={`transition-all duration-300 ${isExpanded ? "flex-1 mx-2" : ""}`}>
-      <div className={`relative flex items-center h-10 ${isExpanded ? "w-[260px]" : ""}`}>
+    <div className={`transition-all duration-300 ${isExpanded ? "flex-1" : ""}`}>
+      <div className={`relative flex items-center h-10 ${isExpanded ? "w-full" : ""}`}>
         {/* Icon — rotates on hover when collapsed, becomes inline icon when expanded */}
         <button
           onClick={handleIconClick}
