@@ -186,43 +186,11 @@ export const cartAPI = {
 
 // ============ CHECKOUT / COMMANDES ============
 export const checkoutAPI = {
-  // Crée un Draft Order Shopify et retourne invoice_url pour redirection
-  createOrder: (items, shippingAddress, shippingDetails = {}) => {
-    const formattedItems = items.map(item => ({
-      productId: item.product_id || item.productId,
-      variantId: item.variantId,
-      quantity: item.quantity,
-      size: item.size,
-      color: item.color,
-      model: item.model,
-    }));
+  // Liste les commandes (proxy direct des orders Shopify)
+  getUserOrders: () => apiCall('/orders'),
 
-    return apiCall('/checkout', {
-      method: 'POST',
-      body: JSON.stringify({
-        items: formattedItems,
-        shippingAddress,
-        email: shippingDetails.email,
-        firstName: shippingDetails.first_name,
-        lastName: shippingDetails.last_name,
-        phone: shippingDetails.phone,
-        city: shippingDetails.city,
-        postalCode: shippingDetails.postal_code,
-        country: shippingDetails.country,
-        latitude: shippingDetails.latitude,
-        longitude: shippingDetails.longitude,
-      }),
-    });
-  },
-
-  getUserOrders: () => apiCall('/checkout'),
-
-  getOrderById: (orderId) => apiCall(`/checkout/${orderId}`),
-
-  cancelOrder: (orderId) =>
-    apiCall(`/checkout/${orderId}/cancel`, {
-      method: 'PUT',
-    }),
+  // Récupère une commande spécifique par son ID Shopify
+  getOrderById: (orderId) => apiCall(`/orders/${orderId}`),
 
   // Checkout direct Shopify : envoie les items au back, récupère le checkoutUrl
   // Shopify hosted (cartCreate via Storefront API) et redirige le client.
