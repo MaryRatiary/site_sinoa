@@ -12,8 +12,6 @@ import LandingPage from './components/pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ShopPage from './pages/ShopPage'
-import CartPage from './pages/CartPage'
-import CheckoutPage from './components/pages/CheckoutPage'
 import OrdersPage from './pages/OrdersPage'
 import OrderDetailPage from './pages/OrderDetailPage'
 import AdminDashboard from './components/admin/AdminDashboard'
@@ -53,7 +51,6 @@ const AppRoutes = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/shop" element={<ShopPage />} />
-      <Route path="/cart" element={<CartPage />} />
       <Route path="/best-sellers" element={<BestSellersPage />} />
       <Route path="/search" element={<SearchPage />} />
 
@@ -68,11 +65,6 @@ const AppRoutes = () => {
       <Route path="/category/:slug" element={<DynamicProductPage />} />
 
       {/* Routes protégées (authentification requise) */}
-      <Route
-        path="/checkout"
-        element={<CheckoutPage />}
-      />
-
       <Route
         path="/orders"
         element={
