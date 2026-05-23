@@ -223,6 +223,23 @@ export const checkoutAPI = {
     apiCall(`/checkout/${orderId}/cancel`, {
       method: 'PUT',
     }),
+
+  // Checkout direct Shopify : envoie les items au back, récupère le checkoutUrl
+  // Shopify hosted (cartCreate via Storefront API) et redirige le client.
+  createShopifyCheckout: (items) => {
+    const formattedItems = (items || [])
+      .filter(i => i.variantId)
+      .map(i => ({ variantId: i.variantId, quantity: i.quantity }));
+
+    if (formattedItems.length === 0) {
+      return Promise.reject(new Error('Aucun produit valide dans le panier (variantId Shopify manquant).'));
+    }
+
+    return apiCall('/shopify-checkout', {
+      method: 'POST',
+      body: JSON.stringify({ items: formattedItems }),
+    });
+  },
 };
 
 // ============ DASHBOARD ADMIN ============

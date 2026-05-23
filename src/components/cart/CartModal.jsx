@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import { X, Trash2, Plus, Minus, ShoppingBag, Zap } from 'lucide-react';
+import { checkoutAPI } from '../../services/api';
+import { X, Trash2, Plus, Minus, ShoppingBag, Zap, Loader2 } from 'lucide-react';
 
 const CartModal = ({ isOpen, onClose }) => {
   const { cartItems, removeFromCart, updateQuantity, getTotalPrice } = useCart();
@@ -39,23 +40,25 @@ const getDiscountMessage = () => {
     }, 300);
   };
 
-  const handleCheckout = () => {
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState(null);
+
+  const handleCheckout = async () => {
     if (cartItems.length === 0) {
       alert('Votre panier est vide');
       return;
     }
+    setCheckoutError(null);
+    setIsCheckingOut(true);
     handleClose();
-    setTimeout(() => {
-      navigate('/checkout', {
-        state: {
-          subtotal,
-          discount,
-          discountAmount,
-          total,
-          itemCount,
-        },
-      });
-    }, 300);
+    try {
+      const { checkoutUrl } = await checkoutAPI.createShopifyCheckout(cartItems);
+      window.location.href = checkoutUrl;
+    } catch (err) {
+      setIsCheckingOut(false);
+      setCheckoutError(err.message || 'Erreur lors du checkout');
+      alert(err.message || 'Erreur lors du checkout');
+    }
   };
 
   if (!isOpen) return null;
