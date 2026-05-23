@@ -20,8 +20,13 @@ export const apiCall = async (endpoint, options = {}) => {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || error.error || 'API Error');
+    const error = await response.json().catch(() => ({}));
+    const baseMsg = error.message || error.error || `API Error (${response.status})`;
+    const msg = error.details ? `${baseMsg} — ${error.details}` : baseMsg;
+    const e = new Error(msg);
+    e.status = response.status;
+    e.details = error.details;
+    throw e;
   }
 
   return response.json();
