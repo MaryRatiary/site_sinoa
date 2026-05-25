@@ -31,6 +31,8 @@ import Cgv from './pages/legal/Cgv'
 import Retours from './pages/legal/Retours'
 import Confidentialite from './pages/legal/Confidentialite'
 import MentionsLegales from './pages/legal/MentionsLegales'
+import SuiviColis from './pages/legal/SuiviColis'
+import PlanDuSite from './pages/legal/PlanDuSite'
 
 
 // Composant pour les routes protégées (authentification requise)
@@ -69,6 +71,8 @@ const AppRoutes = () => {
       <Route path="/pages/retours" element={<Retours />} />
       <Route path="/pages/confidentialite" element={<Confidentialite />} />
       <Route path="/pages/mentions-legales" element={<MentionsLegales />} />
+      <Route path="/pages/suivi-colis" element={<SuiviColis />} />
+      <Route path="/pages/plan-du-site" element={<PlanDuSite />} />
 
 
       {/* Routes pour les produits statiques - AVANT les routes dynamiques */}
