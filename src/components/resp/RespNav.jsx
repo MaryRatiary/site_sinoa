@@ -46,45 +46,7 @@ export default function RespNav() {
         setExpandedSubcategory(expandedSubcategory === subcategory_id ? null : subcategory_id);
     };
 
-    // Vérifier si une sous-catégorie a un seul niveau (pas de children)
-    const isSingleLevelCategory = (category) => {
-        return category.children && 
-            category.children.length > 0 && 
-            category.children.every(child => !child.children || child.children.length === 0);
-    };
-
-    // Afficher les sous-catégories en grid (pour catégories simples)
-    const renderGridSubcategories = (children) => {
-        return (
-            <div className="grid grid-cols-2 gap-1 mt-2 pl-2">
-                {children.map((child) => (
-                    <button
-                        key={child.id}
-                        onClick={() => {
-                            setIsMenuOpen(false);
-                            navigate(`/category/${child.slug}`); // ✅ CORRIGÉ: utiliser slug
-                        }}
-                        className="flex flex-col items-center text-center group"
-                    >
-                        {child.image && (
-                            <div className="mb-0.5 overflow-hidden rounded-md border border-gray-200 group-hover:shadow-sm transition-shadow" style={{ width: '150px', height: '150px' }}>
-                                <img
-                                    src={child.image}
-                                    alt={child.name}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                            </div>
-                        )}
-                        <span className="text-[11px] font-semibold text-gray-900 group-hover:text-[#5E2251] transition line-clamp-2">
-                            {child.name}
-                        </span>
-                    </button>
-                ))}
-            </div>
-        );
-    };
-
-    // Afficher les sous-catégories imbriquées avec dropdowns
+    // Afficher les sous-catégories uniquement dans le dropdown responsive
     const renderNestedSubcategories = (children) => {
         return (
             <div className="space-y-3 mt-3 pl-2">
@@ -278,7 +240,6 @@ export default function RespNav() {
                                 categories.map((category) => {
                                     const hasChildren = category.children && category.children.length > 0;
                                     const isExpanded = expandedCategory === category.id;
-                                    const isSingleLevel = isSingleLevelCategory(category);
 
                                     return (
                                         <div key={category.id} className="border-b border-gray-200 pb-4">
@@ -313,16 +274,10 @@ export default function RespNav() {
                                                 )}
                                             </div>
 
-                                            {/* Sous-catégories */}
+                                            {/* Sous-catégories dans le dropdown uniquement */}
                                             {hasChildren && isExpanded && (
                                                 <div>
-                                                    {/* Mode grille pour catégories simples */}
-                                                    {isSingleLevel ? (
-                                                        renderGridSubcategories(category.children)
-                                                    ) : (
-                                                        /* Mode dropdown imbriqué pour catégories complexes */
-                                                        renderNestedSubcategories(category.children)
-                                                    )}
+                                                    {renderNestedSubcategories(category.children)}
                                                 </div>
                                             )}
                                         </div>
