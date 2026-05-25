@@ -34,6 +34,9 @@ import MentionsLegales from './pages/legal/MentionsLegales'
 import SuiviColis from './pages/legal/SuiviColis'
 import PlanDuSite from './pages/legal/PlanDuSite'
 
+// Synchronisation URL React Router ↔ parent (thème Shopify) quand iframé
+import { useUrlSync } from './hooks/useUrlSync'
+
 
 // Composant pour les routes protégées (authentification requise)
 const ProtectedRoute = ({ children }) => {
@@ -54,6 +57,9 @@ const AdminRoute = ({ children }) => {
 };
 
 const AppRoutes = () => {
+  // Sync URL avec le parent (Shopify theme iframe). No-op si pas iframé.
+  useUrlSync();
+
   return (
     <Routes>
       {/* Pages publiques */}

@@ -1,0 +1,55 @@
+<iframe id="kpop-iframe" src="https://kpopshop.netlify.app/" width="100%" style="border:none;display:block;" height="800"></iframe>
+<script>
+  (function () {
+    const iframe = document.getElementById('kpop-iframe');
+    if (!iframe) return;
+
+    function normalizePath(path) {
+      if (!path || typeof path !== 'string') return '/';
+      return path.charAt(0) === '/' ? path : '/' + path;
+    }
+
+    function currentPath() {
+      return normalizePath(window.location.pathname + window.location.search + window.location.hash);
+    }
+
+    function sendCurrentPathToReact(replace = true) {
+      if (!iframe.contentWindow) return;
+      iframe.contentWindow.postMessage({
+        type: 'kpopshop:navigate',
+        source: 'shopify-parent',
+        path: currentPath(),
+        replace
+      }, '*');
+    }
+
+    window.addEventListener('message', (e) => {
+      const data = e.data;
+
+      // Ancien comportement conservé : hauteur automatique de l'iframe
+      if (data?.type === 'kpopshop-height') {
+        iframe.style.height = data.height + 'px';
+        return;
+      }
+
+      // Nouveau : quand React est prêt, on lui donne l'URL Shopify actuelle
+      if (data?.type === 'kpopshop:ready' && data.source === 'react-app') {
+        sendCurrentPathToReact(true);
+        return;
+      }
+
+      // Nouveau : quand React change de page, on change l'URL visible Shopify
+      if (data?.type === 'kpopshop:route-change' && data.source === 'react-app' && typeof data.path === 'string') {
+        const nextPath = normalizePath(data.path);
+        if (nextPath !== currentPath()) {
+          window.history.pushState({ kpopshop: true, path: nextPath }, '', nextPath);
+        }
+      }
+    });
+
+    // Bouton retour / suivant du navigateur
+    window.addEventListener('popstate', () => {
+      sendCurrentPathToReact(false);
+    });
+  })();
+</script>
