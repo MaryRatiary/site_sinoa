@@ -199,7 +199,7 @@ export const checkoutAPI = {
 
   // Checkout direct Shopify : envoie les items au back, récupère le checkoutUrl
   // Shopify hosted (cartCreate via Storefront API) et redirige le client.
-  createShopifyCheckout: (items) => {
+  createShopifyCheckout: (items, discountCode = null) => {
     const formattedItems = (items || [])
       .filter(i => i.variantId)
       .map(i => ({ variantId: i.variantId, quantity: i.quantity }));
@@ -210,9 +210,20 @@ export const checkoutAPI = {
 
     return apiCall('/shopify-checkout', {
       method: 'POST',
-      body: JSON.stringify({ items: formattedItems }),
+      body: JSON.stringify({
+        items: formattedItems,
+        discountCode: discountCode || undefined,
+      }),
     });
   },
+
+  // Valide un code de réduction Shopify avant le checkout
+  // Renvoie { valid, code?, type?, value?, amount?, message? }
+  validateDiscountCode: (code, subtotal) =>
+    apiCall('/shopify-checkout/validate-discount', {
+      method: 'POST',
+      body: JSON.stringify({ code, subtotal }),
+    }),
 };
 
 // ============ DASHBOARD ADMIN ============

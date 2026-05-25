@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { checkoutAPI } from '../../services/api';
-import { X, Trash2, Plus, Minus, ShoppingBag, Zap, Loader2 } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ShoppingBag, Zap, Loader2, Tag, Check, AlertCircle } from 'lucide-react';
 
 const CartModal = ({ isOpen, onClose }) => {
   const { cartItems, removeFromCart, updateQuantity, getTotalPrice } = useCart();
@@ -29,8 +29,63 @@ const getDiscountMessage = () => {
 
   const discount = getDiscount();
   const discountAmount = (subtotal * discount) / 100;
-  const total = subtotal - discountAmount;
   const progressPercentage = Math.min((itemCount / 5) * 100, 100);
+
+  // === Code de réduction Shopify (carte cadeau / promo) ===
+  const [promoCode, setPromoCode] = useState('');
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState(null);
+  const [appliedPromo, setAppliedPromo] = useState(null); // { code, type, value, amount }
+
+  const computePromoAmount = (promo, base) => {
+    if (!promo) return 0;
+    if (promo.type === 'percentage') return (base * promo.value) / 100;
+    if (promo.type === 'fixed_amount') return Math.min(promo.value, base);
+    return 0;
+  };
+
+  const promoAmount = appliedPromo
+    ? computePromoAmount(appliedPromo, subtotal - discountAmount)
+    : 0;
+  const total = Math.max(0, subtotal - discountAmount - promoAmount);
+
+  const handleApplyPromo = async (e) => {
+    e?.preventDefault?.();
+    const code = promoCode.trim();
+    if (!code) return;
+    setPromoLoading(true);
+    setPromoError(null);
+    try {
+      const res = await checkoutAPI.validateDiscountCode(
+        code,
+        subtotal - discountAmount
+      );
+      if (!res.valid) {
+        setPromoError(res.message || 'Code invalide');
+        setAppliedPromo(null);
+      } else {
+        setAppliedPromo({
+          code: res.code,
+          type: res.type,
+          value: res.value,
+          amount: res.amount,
+          deferred: res.deferred || false, // true si validation Shopify impossible côté backend
+        });
+        setPromoError(null);
+      }
+    } catch (err) {
+      setPromoError(err.message || 'Erreur de validation');
+      setAppliedPromo(null);
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoCode('');
+    setPromoError(null);
+  };
 
   const handleClose = () => {
     setIsClosing(true);
@@ -71,7 +126,10 @@ const getDiscountMessage = () => {
     setIsCheckingOut(true);
     handleClose();
     try {
-      const { checkoutUrl } = await checkoutAPI.createShopifyCheckout(cartItems);
+      const { checkoutUrl } = await checkoutAPI.createShopifyCheckout(
+        cartItems,
+        appliedPromo?.code || null
+      );
       redirectToCheckout(checkoutUrl);
     } catch (err) {
       setIsCheckingOut(false);
@@ -355,6 +413,68 @@ const getDiscountMessage = () => {
         {/* Footer avec Résumé - ULTRA COMPACT */}
         {cartItems.length > 0 && (
           <div className="border-t border-gray-200 p-3 space-y-2 bg-white">
+            {/* Code de réduction / Carte cadeau */}
+            <div className="pb-2 border-b border-gray-300">
+              {!appliedPromo ? (
+                <form onSubmit={handleApplyPromo} className="flex gap-1.5">
+                  <div className="relative flex-1">
+                    <Tag size={13} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => {
+                        setPromoCode(e.target.value.toUpperCase())
+                        setPromoError(null)
+                      }}
+                      placeholder="Code promo / carte cadeau"
+                      className="w-full pl-7 pr-2 py-1.5 text-xs border border-gray-300 rounded-md focus:outline-none focus:border-[#5E2251] focus:ring-1 focus:ring-[#5E2251] uppercase tracking-wider"
+                      disabled={promoLoading}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={!promoCode.trim() || promoLoading}
+                    className="px-3 py-1.5 bg-[#5E2251] hover:bg-[#4a1a40] disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-xs font-bold rounded-md transition flex items-center gap-1"
+                  >
+                    {promoLoading ? <Loader2 size={12} className="animate-spin" /> : 'Appliquer'}
+                  </button>
+                </form>
+              ) : (
+                <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-md px-2 py-1.5">
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <Check size={14} className="text-green-600 flex-shrink-0" />
+                    <span className="font-bold text-green-700 uppercase tracking-wider">
+                      {appliedPromo.code}
+                    </span>
+                    {appliedPromo.deferred ? (
+                      <span className="text-green-600 text-[10px] italic">
+                        appliqué au paiement
+                      </span>
+                    ) : (
+                      <span className="text-green-600">
+                        ({appliedPromo.type === 'percentage'
+                          ? `-${appliedPromo.value}%`
+                          : `-${appliedPromo.value}€`})
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleRemovePromo}
+                    className="text-green-700 hover:text-red-600 transition p-0.5"
+                    aria-label="Retirer le code"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+              {promoError && (
+                <div className="flex items-center gap-1 mt-1 text-[11px] text-red-600">
+                  <AlertCircle size={11} />
+                  <span>{promoError}</span>
+                </div>
+              )}
+            </div>
+
             {/* Résumé des Prix - RÉDUIT */}
             <div className="space-y-1 pb-2 border-b border-gray-300">
               <div className="flex justify-between text-xs text-gray-700">
@@ -367,6 +487,17 @@ const getDiscountMessage = () => {
                   <span className="font-bold text-green-700">Réduction {discount}%</span>
                   <span className="font-bold text-green-600">
                     -€{discountAmount.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              {appliedPromo && promoAmount > 0 && (
+                <div className="flex justify-between text-xs bg-green-50 -mx-1 px-1 py-0.5 rounded">
+                  <span className="font-bold text-green-700">
+                    Code {appliedPromo.code}
+                  </span>
+                  <span className="font-bold text-green-600">
+                    -€{promoAmount.toFixed(2)}
                   </span>
                 </div>
               )}
