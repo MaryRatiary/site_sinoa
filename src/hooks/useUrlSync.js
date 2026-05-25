@@ -16,6 +16,15 @@ import { useLocation, useNavigate } from 'react-router-dom'
  * Si l'app n'est PAS dans une iframe (accès direct à kpopshop.netlify.app),
  * tout ce code est inactif — aucune action, aucun appel postMessage.
  */
+const normalizeIncomingPath = (path) => {
+  if (!path || typeof path !== 'string') return '/'
+  // Shopify ne peut pas servir /product/... au refresh.
+  // Le thème utilise donc /#/product/... et l'iframe reconvertit vers /product/...
+  if (path.startsWith('/#/')) return path.slice(2)
+  if (path.startsWith('#/')) return path.slice(1)
+  return path.startsWith('/') ? path : `/${path}`
+}
+
 export function useUrlSync() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -74,11 +83,12 @@ export function useUrlSync() {
         typeof msg.path === 'string' &&
         msg.path
       ) {
+        const targetPath = normalizeIncomingPath(msg.path)
         const currentPath =
           location.pathname + location.search + location.hash
-        if (msg.path !== currentPath) {
-          lastSentPath.current = msg.path
-          navigate(msg.path, { replace: msg.replace !== false })
+        if (targetPath !== currentPath) {
+          lastSentPath.current = targetPath
+          navigate(targetPath, { replace: msg.replace !== false })
         }
       }
     }
