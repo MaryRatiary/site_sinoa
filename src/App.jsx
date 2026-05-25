@@ -24,6 +24,14 @@ import ProductDetailPage from './pages/ProductDetailPage'
 import BestSellersPage from './pages/BestSellersPage'
 import SearchPage from './pages/SearchPage'
 
+// Pages légales / informationnelles
+import Faq from './pages/legal/Faq'
+import Livraisons from './pages/legal/Livraisons'
+import Cgv from './pages/legal/Cgv'
+import Retours from './pages/legal/Retours'
+import Confidentialite from './pages/legal/Confidentialite'
+import MentionsLegales from './pages/legal/MentionsLegales'
+
 
 // Composant pour les routes protégées (authentification requise)
 const ProtectedRoute = ({ children }) => {
@@ -53,6 +61,14 @@ const AppRoutes = () => {
       <Route path="/shop" element={<ShopPage />} />
       <Route path="/best-sellers" element={<BestSellersPage />} />
       <Route path="/search" element={<SearchPage />} />
+
+      {/* Pages légales / informationnelles */}
+      <Route path="/pages/faq" element={<Faq />} />
+      <Route path="/pages/livraisons" element={<Livraisons />} />
+      <Route path="/pages/cgv" element={<Cgv />} />
+      <Route path="/pages/retours" element={<Retours />} />
+      <Route path="/pages/confidentialite" element={<Confidentialite />} />
+      <Route path="/pages/mentions-legales" element={<MentionsLegales />} />
 
 
       {/* Routes pour les produits statiques - AVANT les routes dynamiques */}
