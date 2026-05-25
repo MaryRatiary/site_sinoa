@@ -43,6 +43,25 @@ const getDiscountMessage = () => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState(null);
 
+  // Shopify checkout interdit l'iframe (frame-ancestors 'none').
+  // Si l'app tourne dans une iframe (ex: Shopify Admin embedded app),
+  // window.location.href ne change que l'iframe → Shopify bloque le rendu.
+  // On force un redirect au niveau du top-frame.
+  const redirectToCheckout = (url) => {
+    try {
+      if (window.top && window.top !== window.self) {
+        window.top.location.href = url;
+        return;
+      }
+    } catch (e) {
+      // Parent cross-origin : impossible d'écrire window.top.location.
+      // Fallback : ouvrir le checkout dans un nouvel onglet (top-level).
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (win) return;
+    }
+    window.location.href = url;
+  };
+
   const handleCheckout = async () => {
     if (cartItems.length === 0) {
       alert('Votre panier est vide');
@@ -53,7 +72,7 @@ const getDiscountMessage = () => {
     handleClose();
     try {
       const { checkoutUrl } = await checkoutAPI.createShopifyCheckout(cartItems);
-      window.location.href = checkoutUrl;
+      redirectToCheckout(checkoutUrl);
     } catch (err) {
       setIsCheckingOut(false);
       setCheckoutError(err.message || 'Erreur lors du checkout');
