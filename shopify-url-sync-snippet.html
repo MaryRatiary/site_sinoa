@@ -1,6 +1,8 @@
 <iframe id="kpop-iframe" src="https://kpopshop.netlify.app/" width="100%" style="border:none;display:block;" height="800"></iframe>
+
 <script>
   (function () {
+    const APP_URL = 'https://kpopshop.netlify.app';
     const iframe = document.getElementById('kpop-iframe');
     if (!iframe) return;
 
@@ -12,7 +14,6 @@
     }
 
     function currentReactPath() {
-      // Refresh-safe : Shopify sert toujours la home, React lit la route dans le hash.
       if (window.location.hash && window.location.hash.startsWith('#/')) {
         return normalizePath(window.location.hash);
       }
@@ -34,32 +35,52 @@
       }, '*');
     }
 
+    // Important au refresh : si l'URL Shopify est /#/product/xxx,
+    // on charge directement cette route dans l'iframe Netlify.
+    const initialPath = currentReactPath();
+    let initialRouteProtected = initialPath !== '/';
+    if (initialRouteProtected) {
+      iframe.src = APP_URL + initialPath;
+    }
+
     window.addEventListener('message', (e) => {
       const data = e.data;
 
-      // Hauteur automatique de l'iframe
       if (data?.type === 'kpopshop-height') {
         iframe.style.height = data.height + 'px';
         return;
       }
 
-      // Quand React est prêt, on lui donne l'URL Shopify actuelle
       if (data?.type === 'kpopshop:ready' && data.source === 'react-app') {
         sendCurrentPathToReact(true);
         return;
       }
 
-      // Quand React change de page, on change l'URL visible Shopify sans casser le refresh
-      if (data?.type === 'kpopshop:route-change' && data.source === 'react-app' && typeof data.path === 'string') {
+      if (
+        data?.type === 'kpopshop:route-change' &&
+        data.source === 'react-app' &&
+        typeof data.path === 'string'
+      ) {
         const nextPath = normalizePath(data.path);
+
+        // Au refresh, ignorer le premier '/' envoyé par l'iframe avant sa vraie route.
+        if (initialRouteProtected && nextPath === '/') {
+          return;
+        }
+        initialRouteProtected = false;
+
         if (nextPath !== currentReactPath()) {
-          window.history.pushState({ kpopshop: true, path: nextPath }, '', toShopifyUrl(nextPath));
+          window.history.pushState(
+            { kpopshop: true, path: nextPath },
+            '',
+            toShopifyUrl(nextPath)
+          );
         }
       }
     });
 
-    // Bouton retour / suivant du navigateur
     window.addEventListener('popstate', () => {
+      initialRouteProtected = currentReactPath() !== '/';
       sendCurrentPathToReact(false);
     });
   })();
