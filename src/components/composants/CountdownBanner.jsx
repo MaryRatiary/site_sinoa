@@ -39,10 +39,10 @@ const CountdownBanner = ({ endDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 10
           <div className="w-1 h-8 bg-[#b35fc2] rounded-full"></div>
           <div className="flex flex-col">
             <h2 className="text-xs md:text-sm font-black text-gray-900 uppercase leading-none tracking-tighter" style={{ fontFamily: fontTitle }}>
-              Limited <span className="text-[#b35fc2]">Drop</span>
+              Édition <span className="text-[#b35fc2]">Limitée</span>
             </h2>
             <span className="text-[7px] md:text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em]" style={{ fontFamily: fontHunter }}>
-              Extraction Active
+              Offre en cours
             </span>
           </div>
         </div>
@@ -50,9 +50,9 @@ const CountdownBanner = ({ endDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 10
         {/* SECTION CENTRALE : COMPTEUR HORIZONTAL */}
         <div className="flex items-center gap-4 md:gap-10">
           {[
-            { label: 'H', value: timeLeft.hours },
-            { label: 'M', value: timeLeft.minutes },
-            { label: 'S', value: timeLeft.seconds }
+            { label: 'h', value: timeLeft.hours },
+            { label: 'min', value: timeLeft.minutes },
+            { label: 's', value: timeLeft.seconds }
           ].map((unit, i) => (
             <div key={unit.label} className="flex items-baseline gap-1">
               <span className="text-xl md:text-3xl font-black text-gray-900 leading-none tabular-nums" style={{ fontFamily: fontTitle }}>
@@ -68,8 +68,8 @@ const CountdownBanner = ({ endDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 10
         {/* SECTION DROITE : STATUS (Caché sur mobile très petit) */}
         <div className="hidden sm:flex items-center gap-2">
             <div className="text-right">
-                <p className="text-[7px] font-black text-gray-300 uppercase tracking-widest leading-none">Status</p>
-                <p className="text-[9px] font-black text-gray-900 uppercase">Secure</p>
+                <p className="text-[7px] font-black text-gray-300 uppercase tracking-widest leading-none">Statut</p>
+                <p className="text-[9px] font-black text-gray-900 uppercase">Sécurisé</p>
             </div>
             <div className="w-2 h-2 rounded-full bg-[#b35fc2] animate-pulse"></div>
         </div>

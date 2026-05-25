@@ -15,7 +15,6 @@ import CountDownCard from '../card/CountDownCard';
 import { FilterBar } from '../Button/FilterBar';
 import CollectiblesSection from '../section/home/CollectiblesSection';
 import RespNav from '../resp/RespNav';
-import HeaderBanners from '../composants/HeaderBanners';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
