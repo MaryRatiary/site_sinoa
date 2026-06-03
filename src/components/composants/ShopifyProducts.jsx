@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useCartStore } from '../../store/cartStore'
+import { storeOrigin, SHOPIFY_STORE } from '../../lib/shopifyConfig'
 
 export default function ShopifyProducts() {
   const [products, setProducts] = useState([])
@@ -10,11 +11,11 @@ export default function ShopifyProducts() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const storeName = import.meta.env.VITE_SHOPIFY_STORE_NAME
+        const storeName = SHOPIFY_STORE
         const token = import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN
 
         if (!storeName || !token) {
-          throw new Error('Configurez VITE_SHOPIFY_STORE_NAME et VITE_SHOPIFY_STOREFRONT_TOKEN dans .env')
+          throw new Error('Configurez VITE_SHOPIFY_STORE et VITE_SHOPIFY_STOREFRONT_TOKEN dans .env')
         }
 
         const query = `
@@ -112,7 +113,7 @@ export default function ShopifyProducts() {
                   Ajouter
                 </button>
                 <a
-                  href={`https://${import.meta.env.VITE_SHOPIFY_STORE_NAME}/products/${node.handle}`}
+                  href={`${storeOrigin(SHOPIFY_STORE)}/products/${node.handle}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition font-semibold text-center"

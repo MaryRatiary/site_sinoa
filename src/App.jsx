@@ -20,7 +20,8 @@ import AdminManagementPage from './components/admin/AdminManagementPage'
 import DynamicProductPage from './pages/DynamicProductPage'
 
 import StaticCategoryPage from './pages/StaticCategoryPage'
-import ProductDetailPage from './pages/ProductDetailPage'
+// ProductDetailPage conservé (src/pages/ProductDetailPage.jsx) comme repli/rollback.
+import ShopifyProductFrame from './components/composants/ShopifyProductFrame'
 import BestSellersPage from './pages/BestSellersPage'
 import SearchPage from './pages/SearchPage'
 
@@ -85,7 +86,7 @@ const AppRoutes = () => {
       <Route path="/staticcategory/:categoryType" element={<StaticCategoryPage />} />
 
       {/* Route pour les produits individuels (lightstick, huntrix, groupes, bestsellers) */}
-      <Route path="/product/:slug" element={<ProductDetailPage />} />
+      <Route path="/product/:slug" element={<ShopifyProductFrame />} />
 
       {/* Route dynamique pour les catégories */}
       <Route path="/category/:slug" element={<DynamicProductPage />} />
