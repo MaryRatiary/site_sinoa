@@ -1,0 +1,76 @@
+{%- comment -%}
+  Pont entre la page produit Shopify embarquée et l'app React parente.
+  Intercepte l'ajout au panier et le renvoie via postMessage au lieu du panier Shopify.
+  ⚠️ Éditer REACT_ORIGIN ci-dessous pour qu'il corresponde au domaine de l'app React (Netlify).
+{%- endcomment -%}
+<script>
+(function () {
+  var REACT_ORIGIN = 'https://kpopshop.netlify.app'; // ⚠️ domaine de l'app React
+  var VARIANTS = {{ product.variants | json }};
+  var PRODUCT = {
+    id: {{ product.id | json }},
+    name: {{ product.title | json }},
+    image: {{ product.featured_image | image_url: width: 800 | json }}
+  };
+
+  function send(msg) {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage(msg, REACT_ORIGIN);
+      }
+    } catch (e) {}
+  }
+
+  function postHeight() {
+    var h = Math.ceil(document.documentElement.scrollHeight);
+    if (h > 0) send({ type: 'sinoa:product-height', height: h });
+  }
+
+  function findVariant(id) {
+    id = String(id);
+    for (var i = 0; i < VARIANTS.length; i++) {
+      if (String(VARIANTS[i].id) === id) return VARIANTS[i];
+    }
+    return null;
+  }
+
+  document.addEventListener('submit', function (e) {
+    var form = e.target && e.target.closest ? e.target.closest('form[action*="/cart/add"]') : null;
+    if (!form) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    var fd = new FormData(form);
+    var rawId = fd.get('id');
+    var quantity = parseInt(fd.get('quantity') || '1', 10) || 1;
+    var v = findVariant(rawId);
+
+    // Format Storefront standard. Voir NOTE du plan pour basculer en ID numérique.
+    var variantId = 'gid://shopify/ProductVariant/' + rawId;
+    var price = v ? (v.price / 100) : null;
+    var image = (v && v.featured_image ? v.featured_image.src : PRODUCT.image);
+
+    send({
+      type: 'sinoa:add-to-cart',
+      product: {
+        id: PRODUCT.id,
+        name: PRODUCT.name,
+        price: price,
+        image: image,
+        variants: [{ id: variantId, price: price, image_url: image }]
+      },
+      quantity: quantity,
+      size: v ? (v.option1 || null) : null,
+      color: v ? (v.option2 || null) : null,
+      model: v ? (v.option3 || null) : null,
+      variantId: variantId
+    });
+  }, true);
+
+  if (window.ResizeObserver) {
+    try { new ResizeObserver(postHeight).observe(document.body); } catch (e) {}
+  }
+  window.addEventListener('load', postHeight);
+  document.addEventListener('DOMContentLoaded', postHeight);
+})();
+</script>

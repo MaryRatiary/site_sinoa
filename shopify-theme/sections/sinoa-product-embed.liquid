@@ -1,0 +1,42 @@
+{%- comment -%}
+  Section produit minimale pour l'embed React.
+  Pour laisser une app de bundle injecter ses blocs, remplacer le contenu
+  par la section produit native du thème, en gardant {%- raw -%}{% render 'sinoa-react-bridge' %}{%- endraw -%} à la fin.
+{%- endcomment -%}
+<div class="sinoa-product">
+  <div class="sinoa-product__media">
+    {%- if product.featured_image -%}
+      <img src="{{ product.featured_image | image_url: width: 800 }}" alt="{{ product.featured_image.alt | escape }}" loading="eager">
+    {%- endif -%}
+  </div>
+
+  <div class="sinoa-product__info">
+    <h1>{{ product.title }}</h1>
+    <div class="sinoa-product__price">{{ product.selected_or_first_available_variant.price | money }}</div>
+
+    {%- form 'product', product -%}
+      {%- if product.variants.size > 1 -%}
+        <select name="id">
+          {%- for v in product.variants -%}
+            <option value="{{ v.id }}" {% unless v.available %}disabled{% endunless %}>
+              {{ v.title }} — {{ v.price | money }}
+            </option>
+          {%- endfor -%}
+        </select>
+      {%- else -%}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      {%- endif -%}
+
+      <input type="number" name="quantity" value="1" min="1">
+      <button type="submit" name="add">Ajouter au panier</button>
+    {%- endform -%}
+
+    <div class="sinoa-product__description">{{ product.description }}</div>
+  </div>
+</div>
+
+{%- render 'sinoa-react-bridge' -%}
+
+{% schema %}
+{ "name": "Sinoa Product Embed", "settings": [] }
+{% endschema %}

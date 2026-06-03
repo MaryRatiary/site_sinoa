@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ product.title | default: shop.name }}</title>
+    {{ content_for_header }}
+    <style>
+      body.sinoa-embed { margin: 0; padding: 16px; background: #fff; font-family: system-ui, sans-serif; }
+      .sinoa-product { display: grid; gap: 24px; grid-template-columns: 1fr; max-width: 1100px; margin: 0 auto; }
+      @media (min-width: 768px) { .sinoa-product { grid-template-columns: 1fr 1fr; } }
+      .sinoa-product__media img { width: 100%; height: auto; border-radius: 12px; }
+      .sinoa-product__price { font-size: 1.5rem; font-weight: 700; margin: 12px 0; color: #5E2251; }
+      .sinoa-product select, .sinoa-product input { padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; width: 100%; box-sizing: border-box; }
+      .sinoa-product button[type="submit"] { background:#5E2251; color:#fff; border:0; padding:12px 20px; border-radius:8px; cursor:pointer; font-weight:600; }
+    </style>
+  </head>
+  <body class="sinoa-embed">
+    {{ content_for_layout }}
+  </body>
+</html>
